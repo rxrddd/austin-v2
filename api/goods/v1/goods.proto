@@ -1,0 +1,90 @@
+syntax = "proto3";
+
+package api.goods.v1;
+
+option go_package = "github.com/ZQCard/kratos-base-project/api/goods/v1;v1";
+option java_multiple_files = true;
+option java_package = "api.goods.v1";
+
+service Goods {
+	rpc CreateGoods (CreateGoodsRequest) returns (GoodsInfoResponse);
+	rpc UpdateGoods (UpdateGoodsRequest) returns (GoodsInfoResponse);
+	rpc DeleteGoods (DeleteGoodsRequest) returns (GoodsCheckResponse);
+	rpc RecoverGoods (RecoverGoodsRequest) returns (GoodsCheckResponse);
+	rpc GetGoods (GetGoodsRequest) returns (GoodsInfoResponse);
+	rpc ListGoods (ListGoodsRequest) returns (ListGoodsReply);
+	rpc SaleGoods (SaleGoodsRequest) returns (SaleGoodsReply);
+}
+
+message CreateGoodsRequest {
+	int64 id = 1;
+	string name = 2;
+	string style = 3;
+	string size = 4;
+	string code = 5;
+	float price = 6;
+	int64 number = 7;
+}
+
+message UpdateGoodsRequest {
+	int64 id = 1;
+	string name = 2;
+	string style = 3;
+	string size = 4;
+	string code = 5;
+	float price = 6;
+	int64 number = 7;
+}
+
+message DeleteGoodsRequest {
+	int64 id = 1;
+}
+
+message RecoverGoodsRequest {
+	int64 id = 1;
+}
+
+message GetGoodsRequest {
+	int64 id = 1;
+}
+
+message ListGoodsRequest {
+	int64 page_num = 1;
+	int64 page_size = 2;
+	int64 id = 3;
+	string name = 4;
+	string style = 5;
+	string size = 6;
+	string code = 7;
+	string deleted_at = 8;
+}
+message ListGoodsReply {
+	int64 total = 1;
+	repeated GoodsInfoResponse list = 2;
+}
+
+message GoodsInfoResponse {
+	int64 id = 1;
+	string name = 2;
+	string style = 3;
+	string size = 4;
+	string code = 5;
+	float price = 6;
+	int64 number = 7;
+	string created_at = 8;
+	string updated_at = 9;
+	string deleted_at = 10;
+}
+
+message GoodsCheckResponse{
+	bool is_success = 1;
+}
+
+message SaleGoodsRequest{
+	int64 id = 1;
+	int64 number = 2;
+}
+
+message SaleGoodsReply{
+	bool is_success = 1;
+}

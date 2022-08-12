@@ -1,0 +1,16 @@
+service:
+  name: kratos-base-project.adminInterface.service
+  version: v1
+  administrator:
+    endpoint: discovery:///kratos-base-project.administrator.service
+  goods:
+    endpoint: discovery:///kratos-base-project.goods.service
+trace:
+  endpoint: http://127.0.0.1:14268/api/traces
+server:
+  http:
+    addr: 0.0.0.0:8000
+    timeout: 1s
+auth:
+  service_key: "kratos-base-project-admin-service-key"
+  api_key: "kratos-base-project-admin-api-key"
