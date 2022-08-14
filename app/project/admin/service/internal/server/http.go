@@ -92,8 +92,8 @@ func NewHTTPServer(c *conf.Server, ac *conf.Auth, service *service.AdminInterfac
 		),
 		// 跨域设置
 		http.Filter(handlers.CORS(
-			handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}),
-			handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS"}),
+			handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization", "AccessToken", "X-Token", "Accept"}),
+			handlers.AllowedMethods([]string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"}),
 			handlers.AllowedOrigins([]string{"*"}),
 		)),
 	}

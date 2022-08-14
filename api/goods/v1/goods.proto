@@ -14,6 +14,7 @@ service Goods {
 	rpc GetGoods (GetGoodsRequest) returns (GoodsInfoResponse);
 	rpc ListGoods (ListGoodsRequest) returns (ListGoodsReply);
 	rpc SaleGoods (SaleGoodsRequest) returns (SaleGoodsReply);
+	rpc SaleGoodsLogList (SaleGoodsLogListRequest) returns (SaleGoodsLogListReply);
 }
 
 message CreateGoodsRequest {
@@ -87,4 +88,27 @@ message SaleGoodsRequest{
 
 message SaleGoodsReply{
 	bool is_success = 1;
+}
+
+
+message SaleGoodsLogListRequest {
+	int64 page_num = 1;
+	int64 page_size = 2;
+	int64 goods_id = 3;
+}
+
+message SaleGoodsLog {
+	int64 id = 1;
+	string name = 2;
+	string style = 3;
+	string size = 4;
+	string code = 5;
+	float price = 6;
+	int64 number = 7;
+	string created_at = 8;
+}
+
+message SaleGoodsLogListReply {
+	int64 total = 1;
+	repeated SaleGoodsLog list = 2;
 }

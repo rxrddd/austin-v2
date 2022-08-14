@@ -6,7 +6,7 @@ service:
   goods:
     endpoint: discovery:///kratos-base-project.goods.service
 trace:
-  endpoint: http://127.0.0.1:14268/api/traces
+  endpoint: http://124.222.172.237:14268/api/traces
 server:
   http:
     addr: 0.0.0.0:8000
@@ -14,3 +14,6 @@ server:
 auth:
   service_key: "kratos-base-project-admin-service-key"
   api_key: "kratos-base-project-admin-api-key"
+consul:
+  address: 124.222.172.237:8500
+  scheme: http

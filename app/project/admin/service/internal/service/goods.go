@@ -16,7 +16,7 @@ func (s *AdminInterface) CreateGoods(ctx context.Context, req *v1.CreateGoodsReq
 		Price:  req.Price,
 		Number: req.Number,
 	}
-	GoodsInfo, err := s.GoodsUseCase.Create(ctx, bg)
+	GoodsInfo, err := s.goodsUseCase.Create(ctx, bg)
 	if err != nil {
 		return nil, err
 	}
@@ -44,7 +44,7 @@ func (s *AdminInterface) UpdateGoods(ctx context.Context, req *v1.UpdateGoodsReq
 		Price:  req.Price,
 		Number: req.Number,
 	}
-	GoodsInfo, err := s.GoodsUseCase.Update(ctx, bg)
+	GoodsInfo, err := s.goodsUseCase.Update(ctx, bg)
 	if err != nil {
 		return nil, err
 	}
@@ -63,7 +63,7 @@ func (s *AdminInterface) UpdateGoods(ctx context.Context, req *v1.UpdateGoodsReq
 }
 
 func (s *AdminInterface) GetGoods(ctx context.Context, req *v1.GetGoodsRequest) (*v1.GoodsInfoResponse, error) {
-	GoodsInfo, err := s.GoodsUseCase.Get(ctx, req.Id)
+	GoodsInfo, err := s.goodsUseCase.Get(ctx, req.Id)
 	if err != nil {
 		return nil, err
 	}
@@ -83,7 +83,7 @@ func (s *AdminInterface) GetGoods(ctx context.Context, req *v1.GetGoodsRequest) 
 }
 
 func (s *AdminInterface) DeleteGoods(ctx context.Context, req *v1.DeleteGoodsRequest) (*v1.GoodsCheckResponse, error) {
-	err := s.GoodsUseCase.Delete(ctx, req.Id)
+	err := s.goodsUseCase.Delete(ctx, req.Id)
 	success := true
 	if err != nil {
 		success = false
@@ -108,7 +108,7 @@ func (s *AdminInterface) ListGoods(ctx context.Context, req *v1.ListGoodsRequest
 		Code:      req.Code,
 		DeletedAt: req.DeletedAt,
 	}
-	GoodsInfoList, count, err := s.GoodsUseCase.List(ctx, req.PageNum, req.PageSize, bg)
+	GoodsInfoList, count, err := s.goodsUseCase.List(ctx, req.PageNum, req.PageSize, bg)
 	if err != nil {
 		return nil, err
 	}
@@ -131,8 +131,19 @@ func (s *AdminInterface) ListGoods(ctx context.Context, req *v1.ListGoodsRequest
 	return response, nil
 }
 
+func (s *AdminInterface) RecoverGoods(ctx context.Context, req *v1.RecoverGoodsRequest) (*v1.GoodsCheckResponse, error) {
+	err := s.goodsUseCase.Recover(ctx, req.Id)
+	success := true
+	if err != nil {
+		success = false
+	}
+	return &v1.GoodsCheckResponse{
+		IsSuccess: success,
+	}, err
+}
+
 func (s *AdminInterface) SaleGoods(ctx context.Context, req *v1.SaleGoodsRequest) (*v1.SaleGoodsReply, error) {
-	err := s.GoodsUseCase.Sale(ctx, req.Id, req.Number)
+	err := s.goodsUseCase.Sale(ctx, req.Id, req.Number)
 	success := true
 	if err != nil {
 		success = false
@@ -142,13 +153,24 @@ func (s *AdminInterface) SaleGoods(ctx context.Context, req *v1.SaleGoodsRequest
 	}, err
 }
 
-func (s *AdminInterface) RecoverGoods(ctx context.Context, req *v1.RecoverGoodsRequest) (*v1.GoodsCheckResponse, error) {
-	err := s.GoodsUseCase.Recover(ctx, req.Id)
-	success := true
+func (s *AdminInterface) SaleGoodsLogList(ctx context.Context, req *v1.SaleGoodsLogListRequest) (*v1.SaleGoodsLogListReply, error) {
+	GoodsLogList, count, err := s.goodsUseCase.SaleGoodsLogList(ctx, req.PageNum, req.PageSize, req.GoodsId)
 	if err != nil {
-		success = false
+		return nil, err
 	}
-	return &v1.GoodsCheckResponse{
-		IsSuccess: success,
-	}, err
+	response := &v1.SaleGoodsLogListReply{}
+	response.Total = count
+	for _, v := range GoodsLogList {
+		response.List = append(response.List, &v1.SaleGoodsLog{
+			Id:        v.Id,
+			Name:      v.Name,
+			Style:     v.Style,
+			Size:      v.Size,
+			Code:      v.Code,
+			Price:     v.Price,
+			Number:    v.Number,
+			CreatedAt: v.CreatedAt,
+		})
+	}
+	return response, nil
 }

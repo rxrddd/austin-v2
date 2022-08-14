@@ -22,6 +22,17 @@ type Goods struct {
 	DeletedAt string
 }
 
+type GoodsLog struct {
+	Id        int64
+	Name      string
+	Style     string
+	Size      string
+	Code      string
+	Price     float32
+	Number    int64
+	CreatedAt string
+}
+
 // GoodsRepo 模块接口
 type GoodsRepo interface {
 	CreateGoods(ctx context.Context, reqData *Goods) (*Goods, error)
@@ -29,8 +40,9 @@ type GoodsRepo interface {
 	GetGoods(ctx context.Context, id int64) (*Goods, error)
 	ListGoods(ctx context.Context, pageNum, pageSize int64, goods *Goods) ([]*Goods, int64, error)
 	DeleteGoods(ctx context.Context, id int64) error
-	SaleGoods(ctx context.Context, id int64, number int64) error
 	RecoverGoods(ctx context.Context, id int64) error
+	SaleGoods(ctx context.Context, id int64, number int64) error
+	SaleGoodsLogList(ctx context.Context, pageNum, pageSize, goodsId int64) ([]*GoodsLog, int64, error)
 }
 
 type GoodsUseCase struct {
@@ -84,6 +96,10 @@ func (uc *GoodsUseCase) Sale(ctx context.Context, id, number int64) error {
 		return errors.New(http.StatusBadRequest, "PARAMS_ERROR", "数量不得为空")
 	}
 	return uc.repo.SaleGoods(ctx, id, number)
+}
+
+func (uc *GoodsUseCase) SaleGoodsLogList(ctx context.Context, pageNum, pageSize, goodsId int64) ([]*GoodsLog, int64, error) {
+	return uc.repo.SaleGoodsLogList(ctx, pageNum, pageSize, goodsId)
 }
 
 func (uc *GoodsUseCase) Recover(ctx context.Context, id int64) error {

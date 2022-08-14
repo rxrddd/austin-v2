@@ -2,7 +2,7 @@ service:
   name: kratos-base-project.administrator.service
   version: v1
 trace:
-  endpoint: http://127.0.0.1:14268/api/traces
+  endpoint: http://124.222.172.237:14268/api/traces
 server:
   grpc:
     addr: 0.0.0.0:9000
@@ -10,13 +10,16 @@ server:
 data:
   database:
     driver: mysql
-    source: root:root@tcp(127.0.0.1:3306)/manli?parseTime=true&collation=utf8mb4_unicode_ci&loc=Asia%2FShanghai&charset=utf8mb4
+    source: root:zhouqi445864742@tcp(124.222.172.237:3306)/manli?parseTime=true&collation=utf8mb4_unicode_ci&loc=Asia%2FShanghai&charset=utf8mb4
   redis:
-    addr: 127.0.0.1:6379
-    password:
+    addr: 124.222.172.237:6379
+    password: "123456"
     read_timeout: 0.2s
     write_timeout: 0.2s
 auth:
   service_key: "kratos-base-project-administrator-service-key"
   api_key: "kratos-base-project-administrator-api-key"
+consul:
+  address: 124.222.172.237:8500
+  scheme: http
 

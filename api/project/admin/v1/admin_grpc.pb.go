@@ -26,7 +26,7 @@ type AdminClient interface {
 	// 管理员登陆
 	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginReply, error)
 	// 管理员退出
-	Logout(ctx context.Context, in *LogoutRequest, opts ...grpc.CallOption) (*LogoutReply, error)
+	Logout(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// 获取管理员信息
 	GetAdministratorInfo(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetAdministratorInfoReply, error)
 	// 创建商品
@@ -43,6 +43,8 @@ type AdminClient interface {
 	ListGoods(ctx context.Context, in *ListGoodsRequest, opts ...grpc.CallOption) (*ListGoodsReply, error)
 	// 商品出售
 	SaleGoods(ctx context.Context, in *SaleGoodsRequest, opts ...grpc.CallOption) (*SaleGoodsReply, error)
+	// 商品出售列表
+	SaleGoodsLogList(ctx context.Context, in *SaleGoodsLogListRequest, opts ...grpc.CallOption) (*SaleGoodsLogListReply, error)
 }
 
 type adminClient struct {
@@ -62,8 +64,8 @@ func (c *adminClient) Login(ctx context.Context, in *LoginRequest, opts ...grpc.
 	return out, nil
 }
 
-func (c *adminClient) Logout(ctx context.Context, in *LogoutRequest, opts ...grpc.CallOption) (*LogoutReply, error) {
-	out := new(LogoutReply)
+func (c *adminClient) Logout(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, "/api.admin.v1.Admin/Logout", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -143,6 +145,15 @@ func (c *adminClient) SaleGoods(ctx context.Context, in *SaleGoodsRequest, opts 
 	return out, nil
 }
 
+func (c *adminClient) SaleGoodsLogList(ctx context.Context, in *SaleGoodsLogListRequest, opts ...grpc.CallOption) (*SaleGoodsLogListReply, error) {
+	out := new(SaleGoodsLogListReply)
+	err := c.cc.Invoke(ctx, "/api.admin.v1.Admin/SaleGoodsLogList", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AdminServer is the server API for Admin service.
 // All implementations must embed UnimplementedAdminServer
 // for forward compatibility
@@ -150,7 +161,7 @@ type AdminServer interface {
 	// 管理员登陆
 	Login(context.Context, *LoginRequest) (*LoginReply, error)
 	// 管理员退出
-	Logout(context.Context, *LogoutRequest) (*LogoutReply, error)
+	Logout(context.Context, *emptypb.Empty) (*emptypb.Empty, error)
 	// 获取管理员信息
 	GetAdministratorInfo(context.Context, *emptypb.Empty) (*GetAdministratorInfoReply, error)
 	// 创建商品
@@ -167,6 +178,8 @@ type AdminServer interface {
 	ListGoods(context.Context, *ListGoodsRequest) (*ListGoodsReply, error)
 	// 商品出售
 	SaleGoods(context.Context, *SaleGoodsRequest) (*SaleGoodsReply, error)
+	// 商品出售列表
+	SaleGoodsLogList(context.Context, *SaleGoodsLogListRequest) (*SaleGoodsLogListReply, error)
 	mustEmbedUnimplementedAdminServer()
 }
 
@@ -177,7 +190,7 @@ type UnimplementedAdminServer struct {
 func (UnimplementedAdminServer) Login(context.Context, *LoginRequest) (*LoginReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
 }
-func (UnimplementedAdminServer) Logout(context.Context, *LogoutRequest) (*LogoutReply, error) {
+func (UnimplementedAdminServer) Logout(context.Context, *emptypb.Empty) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Logout not implemented")
 }
 func (UnimplementedAdminServer) GetAdministratorInfo(context.Context, *emptypb.Empty) (*GetAdministratorInfoReply, error) {
@@ -203,6 +216,9 @@ func (UnimplementedAdminServer) ListGoods(context.Context, *ListGoodsRequest) (*
 }
 func (UnimplementedAdminServer) SaleGoods(context.Context, *SaleGoodsRequest) (*SaleGoodsReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SaleGoods not implemented")
+}
+func (UnimplementedAdminServer) SaleGoodsLogList(context.Context, *SaleGoodsLogListRequest) (*SaleGoodsLogListReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SaleGoodsLogList not implemented")
 }
 func (UnimplementedAdminServer) mustEmbedUnimplementedAdminServer() {}
 
@@ -236,7 +252,7 @@ func _Admin_Login_Handler(srv interface{}, ctx context.Context, dec func(interfa
 }
 
 func _Admin_Logout_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(LogoutRequest)
+	in := new(emptypb.Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -248,7 +264,7 @@ func _Admin_Logout_Handler(srv interface{}, ctx context.Context, dec func(interf
 		FullMethod: "/api.admin.v1.Admin/Logout",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AdminServer).Logout(ctx, req.(*LogoutRequest))
+		return srv.(AdminServer).Logout(ctx, req.(*emptypb.Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -397,6 +413,24 @@ func _Admin_SaleGoods_Handler(srv interface{}, ctx context.Context, dec func(int
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Admin_SaleGoodsLogList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SaleGoodsLogListRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdminServer).SaleGoodsLogList(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.admin.v1.Admin/SaleGoodsLogList",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdminServer).SaleGoodsLogList(ctx, req.(*SaleGoodsLogListRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Admin_ServiceDesc is the grpc.ServiceDesc for Admin service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -443,6 +477,10 @@ var Admin_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SaleGoods",
 			Handler:    _Admin_SaleGoods_Handler,
+		},
+		{
+			MethodName: "SaleGoodsLogList",
+			Handler:    _Admin_SaleGoodsLogList_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -10,8 +10,8 @@ func (s *AdminInterface) Login(ctx context.Context, req *v1.LoginRequest) (*v1.L
 	return s.authUseCase.Login(ctx, req)
 }
 
-func (s *AdminInterface) Logout(ctx context.Context, req *v1.LogoutRequest) (*v1.LogoutReply, error) {
-	return &v1.LogoutReply{}, nil
+func (s *AdminInterface) Logout(ctx context.Context, empty *emptypb.Empty) (*emptypb.Empty, error) {
+	return nil, nil
 }
 
 func (s *AdminInterface) GetAdministratorInfo(ctx context.Context, empty *emptypb.Empty) (*v1.GetAdministratorInfoReply, error) {

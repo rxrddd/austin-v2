@@ -18,9 +18,9 @@ service Admin {
 	};
 
 	// 管理员退出
-	rpc Logout(LogoutRequest) returns (LogoutReply) {
+	rpc Logout(google.protobuf.Empty) returns (google.protobuf.Empty) {
 		option (google.api.http) = {
-			post : "/admin/v1/login"
+			post : "/admin/v1/logout"
 			body : "*"
 		};
 	};
@@ -78,7 +78,36 @@ service Admin {
 			body : "*"
 		};
 	};
+	// 商品出售列表
+	rpc SaleGoodsLogList (SaleGoodsLogListRequest) returns (SaleGoodsLogListReply){
+		option (google.api.http) = {
+			get : "/admin/v1/goods/sale/logs"
+		};
+	};
 }
+
+message SaleGoodsLogListRequest {
+	int64 page_num = 1;
+	int64 page_size = 2;
+	int64 goods_id = 3;
+}
+
+message SaleGoodsLog {
+	int64 id = 1;
+	string name = 2;
+	string style = 3;
+	string size = 4;
+	string code = 5;
+	float price = 6;
+	int64 number = 7;
+	string created_at = 8;
+}
+
+message SaleGoodsLogListReply {
+	int64 total = 1;
+	repeated SaleGoodsLog list = 2;
+}
+
 message LoginRequest {
 	string username = 1;
 	string password = 2;
@@ -86,12 +115,6 @@ message LoginRequest {
 
 message LoginReply {
 	string token = 1;
-}
-
-message LogoutRequest {
-}
-
-message LogoutReply {
 }
 
 message GetAdministratorInfoReply {

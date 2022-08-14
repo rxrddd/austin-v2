@@ -88,21 +88,26 @@ ent:
 docker:
 	cd ../../.. && docker build -f deploy/build/Dockerfile --build-arg APP_RELATIVE_PATH=$(APP_RELATIVE_PATH) -t $(DOCKER_IMAGE) .
 
+.PHONY: dockerAdmin
+dockerAdmin:
+	cd ../../../../ && docker build -f deploy/build/DockerfileAdmin --build-arg APP_RELATIVE_PATH=$(APP_RELATIVE_PATH) -t $(DOCKER_IMAGE) .
+
 .PHONY: wire
 # generate wire
 wire:
 	cd cmd/server && wire
 
-.PHONY: api
-# generate api proto
-api: grpc http swagger errors
-
 .PHONY: config
 # generate internal proto
 config:
-	protoc --proto_path=./internal \
- 	       --go_out=paths=source_relative:./internal \
+	protoc --proto_path=. \
+	       --proto_path=./third_party \
+ 	       --go_out=paths=source_relative:. \
 	       $(INTERNAL_PROTO_FILES)
+
+.PHONY: api
+# generate api proto
+api: grpc http swagger errors
 
 .PHONY: all
 # generate all

@@ -1,6 +1,7 @@
 package errResponse
 
 import (
+	"fmt"
 	"github.com/go-kratos/kratos/v2/errors"
 	"net/http"
 )
@@ -55,6 +56,8 @@ var reasonCodeAll = map[string]int{
 
 // SetCustomizeErrInfo 根据err.Reason返回自定义包装错误
 func SetCustomizeErrInfo(err error) error {
+	fmt.Println("err")
+	fmt.Println(err)
 	e := errors.FromError(err)
 	// 如果 e.Code = 504 则是服务不可达
 	if e.Code == http.StatusGatewayTimeout {

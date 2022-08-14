@@ -18,6 +18,33 @@ type goodsRepo struct {
 	sg   *singleflight.Group
 }
 
+func (g goodsRepo) SaleGoodsLogList(ctx context.Context, pageNum, pageSize, goodsId int64) ([]*biz.GoodsLog, int64, error) {
+	var res []*biz.GoodsLog
+	reply, err := g.data.goodsClient.SaleGoodsLogList(ctx, &goodsClientV1.SaleGoodsLogListRequest{
+		PageNum:  pageNum,
+		PageSize: pageSize,
+		GoodsId:  goodsId,
+	})
+	if err != nil {
+		return res, 0, err
+	}
+
+	for _, v := range reply.List {
+		tmp := &biz.GoodsLog{
+			Id:        v.Id,
+			Name:      v.Name,
+			Style:     v.Style,
+			Size:      v.Size,
+			Code:      v.Code,
+			Price:     v.Price,
+			Number:    v.Number,
+			CreatedAt: v.CreatedAt,
+		}
+		res = append(res, tmp)
+	}
+	return res, reply.Total, nil
+}
+
 func (g goodsRepo) CreateGoods(ctx context.Context, reqData *biz.Goods) (*biz.Goods, error) {
 	reply, err := g.data.goodsClient.CreateGoods(ctx, &goodsClientV1.CreateGoodsRequest{
 		Name:   reqData.Name,
