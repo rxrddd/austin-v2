@@ -14,7 +14,6 @@ import (
 	tracesdk "go.opentelemetry.io/otel/sdk/trace"
 
 	administratorClientV1 "github.com/ZQCard/kratos-base-project/api/administrator/v1"
-	goodsClientV1 "github.com/ZQCard/kratos-base-project/api/goods/v1"
 )
 
 // ProviderSet is data providers.
@@ -24,15 +23,12 @@ var ProviderSet = wire.NewSet(
 	NewDiscovery,
 	NewAdministratorServiceClient,
 	NewAdministratorRepo,
-	NewGoodsClient,
-	NewGoodsRepo,
 )
 
 // Data .
 type Data struct {
 	log                 *log.Helper
 	administratorClient administratorClientV1.AdministratorClient
-	goodsClient         goodsClientV1.GoodsClient
 }
 
 // NewData .
@@ -40,13 +36,11 @@ func NewData(
 	conf *conf.Data,
 	logger log.Logger,
 	administratorClient administratorClientV1.AdministratorClient,
-	goodsClient goodsClientV1.GoodsClient,
 ) (*Data, error) {
 	l := log.NewHelper(log.With(logger, "module", "data"))
 	return &Data{
 		log:                 l,
 		administratorClient: administratorClient,
-		goodsClient:         goodsClient,
 	}, nil
 }
 
@@ -91,25 +85,5 @@ func NewAdministratorServiceClient(ac *conf.Auth, sr *conf.Service, r registry.D
 		panic(err)
 	}
 	c := administratorClientV1.NewAdministratorClient(conn)
-	return c
-}
-
-func NewGoodsClient(ac *conf.Auth, sr *conf.Service, r registry.Discovery, tp *tracesdk.TracerProvider) goodsClientV1.GoodsClient {
-	conn, err := grpc.DialInsecure(
-		context.Background(),
-		grpc.WithEndpoint(sr.Goods.Endpoint),
-		grpc.WithDiscovery(r),
-		grpc.WithMiddleware(
-			tracing.Client(tracing.WithTracerProvider(tp)),
-			recovery.Recovery(),
-			//jwt.Client(func(token *jwt2.Token) (interface{}, error) {
-			//	return []byte(ac.ServiceKey), nil
-			//}, jwt.WithSigningMethod(jwt2.SigningMethodHS256)),
-		),
-	)
-	if err != nil {
-		panic(err)
-	}
-	c := goodsClientV1.NewGoodsClient(conn)
 	return c
 }

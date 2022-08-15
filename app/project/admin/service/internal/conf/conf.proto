@@ -66,10 +66,6 @@ message Service {
   message Administrator {
     string endpoint = 1;
   }
-  message Goods {
-    string endpoint = 1;
-  }
   Administrator administrator = 3;
-  Goods goods =4;
 }
 

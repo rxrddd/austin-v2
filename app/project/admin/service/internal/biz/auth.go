@@ -2,8 +2,6 @@ package biz
 
 import (
 	"context"
-	"github.com/go-kratos/kratos/v2/errors"
-
 	"github.com/golang-jwt/jwt/v4"
 
 	"github.com/ZQCard/kratos-base-project/api/project/admin/v1"
@@ -26,11 +24,6 @@ func (receiver *AuthUseCase) Login(ctx context.Context, req *v1.LoginRequest) (*
 	// 获取用户
 	user, err := receiver.administratorRepo.FindLoginAdministratorByUsername(ctx, req.Username)
 	if err != nil {
-		// 通过判断 *Error.Reason 和 *Error.Code
-		e := errors.FromError(err)
-		if e.Reason == "USER_NAME_EMPTY" && e.Code == 500 {
-			// do something
-		}
 		return nil, err
 	}
 

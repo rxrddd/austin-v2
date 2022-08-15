@@ -3,8 +3,6 @@ service:
   version: v1
   administrator:
     endpoint: discovery:///kratos-base-project.administrator.service
-  goods:
-    endpoint: discovery:///kratos-base-project.goods.service
 trace:
   endpoint: http://124.222.172.237:14268/api/traces
 server:

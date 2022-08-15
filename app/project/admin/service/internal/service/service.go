@@ -14,19 +14,16 @@ type AdminInterface struct {
 	v1.UnimplementedAdminServer
 	administratorUseCase *biz.AdministratorUseCase
 	authUseCase          *biz.AuthUseCase
-	goodsUseCase         *biz.GoodsUseCase
 	log                  *log.Helper
 }
 
 func NewAdminInterface(
 	administratorUseCase *biz.AdministratorUseCase,
 	authUseCase *biz.AuthUseCase,
-	goodsCase *biz.GoodsUseCase,
 	logger log.Logger) *AdminInterface {
 	return &AdminInterface{
 		log:                  log.NewHelper(log.With(logger, "module", "service/interface")),
 		administratorUseCase: administratorUseCase,
 		authUseCase:          authUseCase,
-		goodsUseCase:         goodsCase,
 	}
 }

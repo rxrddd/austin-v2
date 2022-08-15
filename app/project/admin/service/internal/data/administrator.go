@@ -58,7 +58,7 @@ func (rp administratorRepo) FindLoginAdministratorByUsername(ctx context.Context
 			Username: username,
 		})
 		if err != nil {
-			return nil, errors.New(http.StatusInternalServerError, "SYSTEM_ERROR", "系统繁忙,请稍后再试")
+			return &biz.Administrator{}, err
 		}
 		return &biz.Administrator{
 			Id:       user.Id,

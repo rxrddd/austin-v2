@@ -23,17 +23,14 @@ import (
 func wireApp(confServer *conf.Server, registry *conf.Registry, confData *conf.Data, auth *conf.Auth, confService *conf.Service, logger log.Logger, tracerProvider *trace.TracerProvider) (*kratos.App, func(), error) {
 	discovery := data.NewDiscovery(registry)
 	administratorClient := data.NewAdministratorServiceClient(auth, confService, discovery, tracerProvider)
-	goodsClient := data.NewGoodsClient(auth, confService, discovery, tracerProvider)
-	dataData, err := data.NewData(confData, logger, administratorClient, goodsClient)
+	dataData, err := data.NewData(confData, logger, administratorClient)
 	if err != nil {
 		return nil, nil, err
 	}
 	administratorRepo := data.NewAdministratorRepo(dataData, logger)
 	administratorUseCase := biz.NewAdministratorUseCase(administratorRepo, logger)
 	authUseCase := biz.NewAuthUseCase(auth, administratorRepo)
-	goodsRepo := data.NewGoodsRepo(dataData, logger)
-	goodsUseCase := biz.NewGoodsUseCase(goodsRepo, logger)
-	adminInterface := service.NewAdminInterface(administratorUseCase, authUseCase, goodsUseCase, logger)
+	adminInterface := service.NewAdminInterface(administratorUseCase, authUseCase, logger)
 	httpServer := server.NewHTTPServer(confServer, auth, adminInterface, tracerProvider, logger)
 	registrar := data.NewRegistrar(registry)
 	app := newApp(logger, httpServer, registrar)

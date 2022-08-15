@@ -139,7 +139,6 @@ func responseEncoder(w stdhttp.ResponseWriter, r *stdhttp.Request, i interface{}
 }
 
 func errorEncoder(w stdhttp.ResponseWriter, r *stdhttp.Request, err error) {
-
 	codec, _ := http.CodecForRequest(r, "Accept")
 	w.Header().Set("Content-Type", "application/"+codec.Name())
 	// 返回码均是200
