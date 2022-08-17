@@ -1,19 +1,17 @@
 package data
 
 import (
-	"context"
+	"github.com/ZQCard/kratos-base-project/app/administrator/service/internal/conf"
+	"github.com/go-redis/redis"
 
 	"github.com/go-kratos/kratos/contrib/registry/consul/v2"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/registry"
-	"github.com/go-redis/redis/v8"
 	"github.com/google/wire"
 	consulAPI "github.com/hashicorp/consul/api"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"time"
-
-	"github.com/ZQCard/kratos-base-project/app/administrator/service/internal/conf"
 )
 
 // ProviderSet is data providers.
@@ -46,7 +44,6 @@ func NewData(db *gorm.DB, redisCmd redis.Cmdable, logger log.Logger) (*Data, fun
 	}, nil
 }
 
-
 func NewDiscovery(conf *conf.Registry) registry.Discovery {
 	c := consulAPI.DefaultConfig()
 	c.Address = conf.Consul.Address
@@ -75,21 +72,18 @@ func NewRedisCmd(conf *conf.Data, logger log.Logger) redis.Cmdable {
 	logs := log.NewHelper(log.With(logger, "module", "administrator-service/data/redis"))
 	client := redis.NewClient(&redis.Options{
 		Addr:         conf.Redis.Addr,
-		Password: 	  conf.Redis.Password,
+		Password:     conf.Redis.Password,
 		ReadTimeout:  conf.Redis.ReadTimeout.AsDuration(),
 		WriteTimeout: conf.Redis.WriteTimeout.AsDuration(),
 		DialTimeout:  time.Second * 2,
 		PoolSize:     10,
 	})
-	timeout, cancelFunc := context.WithTimeout(context.Background(), time.Second*2)
-	defer cancelFunc()
-	err := client.Ping(timeout).Err()
+	err := client.Ping().Err()
 	if err != nil {
 		logs.Fatalf("redis connect error: %v", err)
 	}
 	return client
 }
-
 
 func NewMysqlCmd(conf *conf.Data, logger log.Logger) *gorm.DB {
 	logs := log.NewHelper(log.With(logger, "module", "administrator-service/data/mysql"))

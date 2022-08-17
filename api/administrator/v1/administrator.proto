@@ -3,43 +3,27 @@ syntax = "proto3";
 package api.administrator.v1;
 
 option go_package = "github.com/ZQCard/kratos-base-project/api/administrator/v1;v1";
+option java_multiple_files = true;
+option java_package = "api.administrator.v1";
 
 service Administrator {
-	rpc GetLoginAdministratorByUsername(GetLoginAdministratorByUsernameRequest) returns (GetLoginAdministratorByUsernameReply);
-	rpc VerifyPassword(VerifyPasswordRequest) returns (VerifyPasswordReply);
 	rpc CreateAdministrator (CreateAdministratorRequest) returns (AdministratorInfoResponse);
 	rpc UpdateAdministrator (UpdateAdministratorRequest) returns (AdministratorInfoResponse);
-	rpc DeleteAdministrator (DeleteAdministratorRequest) returns (AdministratorCheckResponse);
 	rpc GetAdministrator (GetAdministratorRequest) returns (AdministratorInfoResponse);
 	rpc ListAdministrator (ListAdministratorRequest) returns (ListAdministratorReply);
-
+	rpc DeleteAdministrator (DeleteAdministratorRequest) returns (AdministratorCheckResponse);
+	rpc RecoverAdministrator (RecoverAdministratorRequest) returns (AdministratorCheckResponse);
+	rpc VerifyAdministratorPassword(VerifyAdministratorPasswordRequest) returns (VerifyAdministratorPasswordReply);
 }
-
-message GetLoginAdministratorByUsernameRequest {
-	string username = 1;
-}
-message GetLoginAdministratorByUsernameReply {
-	int64 id = 1;
-	string username = 2;
-
-}
-
-message VerifyPasswordRequest {
-	int64 id = 1;
-	string password = 2;
-}
-
-message VerifyPasswordReply {
-	bool success = 2;
-}
-
 
 message CreateAdministratorRequest {
+	int64 id = 1;
 	string username = 2;
 	string password = 3;
 	string mobile = 4;
 	string nickname = 5;
 	string avatar = 6;
+	int64 status = 7;
 }
 
 message UpdateAdministratorRequest {
@@ -56,15 +40,26 @@ message DeleteAdministratorRequest {
 	int64 id = 1;
 }
 
+message RecoverAdministratorRequest {
+	int64 id = 1;
+}
+
 message GetAdministratorRequest {
 	int64 id = 1;
 	string username = 2;
 	string mobile = 3;
+	int64 status = 4;
 }
 
 message ListAdministratorRequest {
 	int64 page_num = 1;
 	int64 page_size = 2;
+	string username = 3;
+	string mobile = 4;
+	string nickname = 5;
+	int64 status = 6;
+	string created_at_start = 7;
+	string created_at_end = 8;
 }
 message ListAdministratorReply {
 	int64 total = 1;
@@ -84,5 +79,14 @@ message AdministratorInfoResponse {
 }
 
 message AdministratorCheckResponse{
+	bool is_success = 1;
+}
+
+message VerifyAdministratorPasswordRequest {
+	int64 id = 1;
+	string password = 2;
+}
+
+message VerifyAdministratorPasswordReply{
 	bool is_success = 1;
 }

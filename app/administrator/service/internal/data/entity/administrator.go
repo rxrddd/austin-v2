@@ -6,14 +6,14 @@ import (
 )
 
 const (
+	// AdministratorDeleted 已经删除
+	AdministratorDeleted = "1"
+	// AdministratorUnDeleted 未删除
+	AdministratorUnDeleted = "2"
 	// AdministratorStatusOK 状态正常
 	AdministratorStatusOK = 1
 	// AdministratorStatusForbid 状态禁用
 	AdministratorStatusForbid = 2
-	// AdministratorDeleted 用户已删除
-	AdministratorDeleted = "1"
-	// AdministratorUnDeleted 用户未删除
-	AdministratorUnDeleted = "0"
 )
 
 type AdministratorEntity struct {

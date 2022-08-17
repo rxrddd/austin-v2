@@ -2,151 +2,147 @@ package data
 
 import (
 	"context"
+	"github.com/ZQCard/kratos-base-project/app/administrator/service/internal/biz"
 	"github.com/ZQCard/kratos-base-project/app/administrator/service/internal/data/entity"
-	"github.com/ZQCard/kratos-base-project/app/administrator/service/internal/pkg/util"
+	"github.com/ZQCard/kratos-base-project/pkg/errResponse"
+	"github.com/ZQCard/kratos-base-project/pkg/utils/encryption"
+	"github.com/ZQCard/kratos-base-project/pkg/utils/timeHelper"
 	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/log"
 	"gorm.io/gorm"
 	"net/http"
-	"time"
-
-	"github.com/ZQCard/kratos-base-project/app/administrator/service/internal/biz"
 )
 
-type administratorRepo struct {
+type AdministratorRepo struct {
 	data *Data
 	log  *log.Helper
 }
 
-func (a administratorRepo) VerifyPassword(ctx context.Context, id int64, password string) (bool, error) {
-	administrator := entity.AdministratorEntity{}
-	if err := a.data.db.Model(&entity.AdministratorEntity{}).Where("id = ?", id).First(&administrator).Error; err != nil {
-		return false, errors.New(500, "SYSTEM_ERROR", err.Error())
-
-	}
-	if administrator.Id != id {
-		return false, errors.New(400, "ADMINISTRATOR_MOBILE_EXIST", "ADMINISTRATOR_RECORD_NOT_FOUND")
-	}
-	return util.CheckPasswordHash(password, administrator.Salt, administrator.Password), nil
-}
-
 // searchParam 搜索条件
-func (a administratorRepo) searchParam(params map[string]interface{}) *gorm.DB {
-	conn := a.data.db.Model(&entity.AdministratorEntity{})
-	if id, ok := params["id"]; ok && id.(int64) != 0 {
+func (s AdministratorRepo) searchParam(params map[string]interface{}) *gorm.DB {
+	conn := s.data.db.Model(&entity.AdministratorEntity{})
+	if id, ok := params["id"]; ok && id != nil {
 		conn = conn.Where("id = ?", id)
 	}
-	if notId, ok := params["notId"]; ok && notId.(int64) != 0 {
-		conn = conn.Where("id != ?", notId)
+	if nickname, ok := params["nickname_like"]; ok && nickname != nil && nickname.(string) != "" {
+		conn = conn.Where("nickname LIKE ?", "%"+nickname.(string)+"%")
 	}
-	if username, ok := params["username"]; ok && username.(string) != "" {
-		conn = conn.Where("username = ?", username)
+	if nickname, ok := params["nickname"]; ok && nickname != nil && nickname.(string) != "" {
+		conn = conn.Where("nickname = ?", nickname.(string))
 	}
-	if mobile, ok := params["mobile"]; ok && mobile.(string) != "" {
-		conn = conn.Where("mobile = ?", mobile)
+	if username, ok := params["username_like"]; ok && username != nil && username.(string) != "" {
+		conn = conn.Where("username LIKE ?", "%"+username.(string)+"%")
 	}
-	// 包含删除
+	if username, ok := params["username"]; ok && username != nil && username.(string) != "" {
+		conn = conn.Where("username = ?", username.(string))
+	}
+	if mobile, ok := params["mobile_like"]; ok && mobile != nil && mobile.(string) != "" {
+		conn = conn.Where("mobile LIKE ?", "%"+mobile.(string)+"%")
+	}
+	if mobile, ok := params["mobile"]; ok && mobile != nil && mobile.(string) != "" {
+		conn = conn.Where("mobile = ?", mobile.(string))
+	}
+	// 开始时间
+	if start, ok := params["created_at_start"]; ok && start != nil && start.(string) != "" {
+		conn = conn.Where("created_at >= ", start.(string))
+	}
+	// 结束时间
+	if end, ok := params["created_at_end"]; ok && end != nil && end.(string) != "" {
+		conn = conn.Where("created_at <= ", end.(string))
+	}
+	// 已删除
 	if isDeleted, ok := params["is_deleted"]; ok && isDeleted.(string) == entity.AdministratorDeleted {
 		conn = conn.Scopes(entity.HasDelete())
 	}
-	if notDeleted, ok := params["not_deleted"]; ok && notDeleted.(string) == entity.AdministratorUnDeleted {
+	// 未删除
+	if isDeleted, ok := params["is_deleted"]; ok && isDeleted.(string) == entity.AdministratorUnDeleted {
 		conn = conn.Scopes(entity.UnDelete())
 	}
+
 	return conn
 }
 
-// GetAdministratorByParams 根据条件获取数据
-func (a administratorRepo) GetAdministratorByParams(params map[string]interface{}) (record entity.AdministratorEntity, err error) {
+func (s AdministratorRepo) GetAdministratorByParams(params map[string]interface{}) (record entity.AdministratorEntity, err error) {
 	if len(params) == 0 {
-		return entity.AdministratorEntity{}, errors.New(http.StatusBadRequest, "MISSING_CONDITION", "缺少搜索条件")
+		return entity.AdministratorEntity{}, errResponse.SetGRpcErrByReason(errResponse.ReasonMissingParams)
 	}
-	conn := a.searchParam(params)
+	conn := s.searchParam(params)
 	if err = conn.First(&record).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return entity.AdministratorEntity{}, errors.New(http.StatusBadRequest, "ADMINISTRATOR_RECORD_NOT_FOUND", biz.ErrRecordNotFound)
+			return entity.AdministratorEntity{}, errResponse.SetGRpcErrByReason(errResponse.ReasonAdministratorNotFound)
 		}
-		return record, errors.New(500, "SYSTEM_ERROR", err.Error())
+		return record, errors.New(http.StatusInternalServerError, errResponse.ReasonSystemError, err.Error())
 	}
 	return record, nil
 }
 
-func (a administratorRepo) CreateAdministrator(ctx context.Context, reqData *biz.Administrator) (*biz.Administrator, error) {
-	modelTable := entity.AdministratorEntity{}
+func (s AdministratorRepo) CreateAdministrator(ctx context.Context, reqData *biz.Administrator) (*biz.Administrator, error) {
 	// 查看用户名是否存在
-	record, _ := a.GetAdministratorByParams(map[string]interface{}{
+	recordTmp, _ := s.GetAdministratorByParams(map[string]interface{}{
 		"username": reqData.Username,
 	})
-	if record.Id != 0 {
-		return nil, errors.New(400, "ADMINISTRATOR_USERNAME_EXIST", "用户名已存在")
+	if recordTmp.Id != 0 {
+		return nil, errResponse.SetGRpcErrByReason(errResponse.ReasonAdministratorUsernameExist)
 	}
-
 	// 查看手机号是否存在
-	record, _ = a.GetAdministratorByParams(map[string]interface{}{
+	recordTmp, _ = s.GetAdministratorByParams(map[string]interface{}{
 		"mobile": reqData.Mobile,
 	})
-	if record.Id != 0 {
-		return nil, errors.New(400, "ADMINISTRATOR_MOBILE_EXIST", "管理员手机号已存在")
+	if recordTmp.Id != 0 {
+		return nil, errResponse.SetGRpcErrByReason(errResponse.ReasonAdministratorMobileExist)
 	}
-	modelTable.Username = reqData.Username
-	modelTable.Salt, modelTable.Password = util.HashPassword(reqData.Password)
-	modelTable.Mobile = reqData.Mobile
-	modelTable.Nickname = reqData.Nickname
-	modelTable.Avatar = reqData.Avatar
-	modelTable.Status = entity.AdministratorStatusOK
+	salt, password := encryption.HashPassword(reqData.Password)
+	modelTable := entity.AdministratorEntity{
+		Username:  reqData.Username,
+		Salt:      salt,
+		Password:  password,
+		Nickname:  reqData.Nickname,
+		Mobile:    reqData.Mobile,
+		Status:    entity.AdministratorStatusOK,
+		Avatar:    reqData.Avatar,
+		CreatedAt: timeHelper.GetCurrentTime(),
+		UpdatedAt: timeHelper.GetCurrentTime(),
+		DeletedAt: "",
+	}
 
-	if err := a.data.db.Model(&modelTable).Create(&modelTable).Error; err != nil {
-		return nil, errors.New(500, "SYSTEM_ERROR", err.Error())
+	modelTable.Id = reqData.Id
+	if err := s.data.db.Model(&modelTable).Create(&modelTable).Error; err != nil {
+		return nil, errors.New(http.StatusInternalServerError, errResponse.ReasonSystemError, err.Error())
+
 	}
-	// 返回数据
 	response := ModelToResponse(modelTable)
 	return &response, nil
 }
 
-func (a administratorRepo) UpdateAdministrator(ctx context.Context, reqData *biz.Administrator) (*biz.Administrator, error) {
+func (s AdministratorRepo) UpdateAdministrator(ctx context.Context, reqData *biz.Administrator) (*biz.Administrator, error) {
 	// 根据id查找记录
-	record, err := a.GetAdministratorByParams(map[string]interface{}{
+	record, err := s.GetAdministratorByParams(map[string]interface{}{
 		"id": reqData.Id,
 	})
 	if err != nil {
 		return nil, err
 	}
-	if record.Id != reqData.Id {
-		return nil, errors.New(http.StatusBadRequest, "ADMINISTRATOR_RECORD_NOT_FOUND", biz.ErrRecordNotFound)
+	// 如果 密码不为空，则更新密码和盐
+	if reqData.Password != "" {
+		salt, password := encryption.HashPassword(reqData.Password)
+		record.Salt = salt
+		record.Password = password
 	}
-	// 查看用户名是否存在
-	recordTmp, _ := a.GetAdministratorByParams(map[string]interface{}{
-		"username": reqData.Username,
-		"notId":    reqData.Id,
-	})
-	if recordTmp.Id != 0 {
-		return nil, errors.New(400, "ADMINISTRATOR_MOBILE_EXIST", "管理员用户名已存在")
-	}
-
-	// 查看手机号是否存在
-	recordTmp, _ = a.GetAdministratorByParams(map[string]interface{}{
-		"mobile": reqData.Mobile,
-		"notId":  reqData.Id,
-	})
-	if recordTmp.Id != 0 {
-		return nil, errors.New(400, "ADMINISTRATOR_MOBILE_EXIST", "管理员手机号已存在")
-	}
-	// 更新记录
-	record.Username = reqData.Username
-	record.Password = util.HashSaltPassword(record.Salt, reqData.Password)
-	record.Mobile = reqData.Mobile
-	record.Nickname = reqData.Nickname
 	record.Avatar = reqData.Avatar
-	if err := a.data.db.Model(&record).Where("id = ?", record.Id).Save(&record).Error; err != nil {
-		return nil, errors.New(500, "SYSTEM_ERROR", err.Error())
+	record.Nickname = reqData.Nickname
+	record.Status = reqData.Status
+	// 更新字段
+	if err := s.data.db.Model(&record).Where("id = ?", record.Id).Save(&record).Error; err != nil {
+		return nil, errors.New(http.StatusInternalServerError, errResponse.ReasonSystemError, err.Error())
 	}
 	// 返回数据
 	response := ModelToResponse(record)
 	return &response, nil
 }
 
-func (a administratorRepo) GetAdministrator(ctx context.Context, params map[string]interface{}) (*biz.Administrator, error) {
+func (s AdministratorRepo) GetAdministrator(ctx context.Context, params map[string]interface{}) (*biz.Administrator, error) {
 	// 根据id查找记录
-	record, err := a.GetAdministratorByParams(params)
+	record, err := s.GetAdministratorByParams(params)
 	if err != nil {
 		return nil, err
 	}
@@ -155,56 +151,82 @@ func (a administratorRepo) GetAdministrator(ctx context.Context, params map[stri
 	return &response, nil
 }
 
-func (a administratorRepo) ListAdministrator(ctx context.Context, pageNum, pageSize int64) ([]*biz.Administrator, int64, error) {
+func (s AdministratorRepo) ListAdministrator(ctx context.Context, pageNum, pageSize int64, params map[string]interface{}) ([]*biz.Administrator, int64, error) {
 	list := []entity.AdministratorEntity{}
-	conn := a.searchParam(map[string]interface{}{})
+	// 电话号码模糊搜索
+	params["mobile_like"] = params["mobile"]
+	delete(params, "mobile")
+	params["nickname_like"] = params["nickname"]
+	delete(params, "nickname")
+	conn := s.searchParam(params)
 	err := conn.Scopes(entity.Paginate(pageNum, pageSize)).Find(&list).Error
 	if err != nil {
-		return nil, 0, errors.New(500, "SYSTEM_ERROR", err.Error())
+		return nil, 0, errors.New(http.StatusInternalServerError, errResponse.ReasonSystemError, err.Error())
 	}
 
 	count := int64(0)
 	conn.Count(&count)
 	rv := make([]*biz.Administrator, 0, len(list))
 	for _, record := range list {
-		serviceName := ModelToResponse(record)
-		rv = append(rv, &serviceName)
+		administrator := ModelToResponse(record)
+		rv = append(rv, &administrator)
 	}
 	return rv, count, nil
 }
 
-func (a administratorRepo) DeleteAdministrator(ctx context.Context, id int64) error {
+func (s AdministratorRepo) DeleteAdministrator(ctx context.Context, id int64) error {
 	// 根据id查找记录
-	record, err := a.GetAdministratorByParams(map[string]interface{}{
+	record, err := s.GetAdministratorByParams(map[string]interface{}{
 		"id": id,
 	})
 	if err != nil {
 		return err
 	}
-	err = a.data.db.Model(&record).Where("id = ?", id).UpdateColumn("deleted_at", time.Now().Format("2006-01-02 15:04:05")).Error
+	return s.data.db.Model(&record).Where("id = ?", id).UpdateColumn("deleted_at", timeHelper.GetCurrentYMDHIS()).Error
+}
+
+func (s AdministratorRepo) RecoverAdministrator(ctx context.Context, id int64) error {
+	if id == 0 {
+		return errResponse.SetGRpcErrByReason(errResponse.ReasonMissingParams)
+	}
+	err := s.data.db.Model(entity.AdministratorEntity{}).Where("id = ?", id).UpdateColumn("deleted_at", "").Error
 	if err != nil {
-		return errors.New(500, "SYSTEM_ERROR", err.Error())
+		return errors.New(http.StatusInternalServerError, errResponse.ReasonSystemError, err.Error())
 	}
 	return nil
 }
 
+func (s AdministratorRepo) VerifyAdministratorPassword(ctx context.Context, id int64, password string) (bool, error) {
+	administrator := entity.AdministratorEntity{}
+	if err := s.data.db.Model(&entity.AdministratorEntity{}).Where("id = ?", id).First(&administrator).Error; err != nil {
+		return false, errors.New(500, "SYSTEM_ERROR", err.Error())
+	}
+	if administrator.Id != id {
+		return false, errors.New(400, "ADMINISTRATOR_MOBILE_EXIST", "ADMINISTRATOR_RECORD_NOT_FOUND")
+	}
+	return encryption.CheckPasswordHash(password, administrator.Salt, administrator.Password), nil
+}
+
 // ModelToResponse 转换 administrator 表中所有字段的值
 func ModelToResponse(administrator entity.AdministratorEntity) biz.Administrator {
-	administratorInfoRsp := biz.Administrator{}
-	administratorInfoRsp.Id = administrator.Id
-	administratorInfoRsp.Username = administrator.Username
-	administratorInfoRsp.Mobile = administrator.Mobile
-	administratorInfoRsp.Nickname = administrator.Nickname
-	administratorInfoRsp.Avatar = administrator.Avatar
-	administratorInfoRsp.Status = administrator.Status
-	administratorInfoRsp.CreatedAt = administrator.CreatedAt.Format("2006-01-02 15:04:05")
-	administratorInfoRsp.UpdatedAt = administrator.UpdatedAt.Format("2006-01-02 15:04:05")
-	administratorInfoRsp.DeletedAt = administrator.DeletedAt
+	administratorInfoRsp := biz.Administrator{
+		Id:        administrator.Id,
+		Username:  administrator.Username,
+		Salt:      administrator.Salt,
+		Password:  administrator.Password,
+		Nickname:  administrator.Nickname,
+		Mobile:    administrator.Mobile,
+		Status:    administrator.Status,
+		Avatar:    administrator.Avatar,
+		CreatedAt: timeHelper.FormatYMDHIS(administrator.CreatedAt),
+		UpdatedAt: timeHelper.FormatYMDHIS(administrator.UpdatedAt),
+		DeletedAt: administrator.DeletedAt,
+	}
 	return administratorInfoRsp
 }
 
 func NewAdministratorRepo(data *Data, logger log.Logger) biz.AdministratorRepo {
-	return &administratorRepo{
+	return &AdministratorRepo{
 		data: data,
 		log:  log.NewHelper(log.With(logger, "module", "data/administrator-service")),
 	}

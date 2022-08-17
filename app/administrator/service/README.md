@@ -1,51 +1,64 @@
-# Kratos Project Template
+# Kratos Project CRUD Template
+基于[kratos-layout](https://github.com/go-kratos/kratos-layout) 生成的crud项目模板,根据文件夹名称生成第一个字母大写服务。
 
-## Install Kratos
-```
-go install github.com/go-kratos/kratos/cmd/kratos/v2@latest
-```
-## Create a service
-```
-# Create a template project
-kratos new server
+### 中间件
+服务发现 consul
 
-cd server
-# Add a proto template
-kratos proto add api/server/server.proto
-# Generate the proto code
-kratos proto client api/server/server.proto
-# Generate the source code of service by proto file
-kratos proto server api/server/server.proto -t internal/service
+链路追踪 jaeger
 
-go generate ./...
-go build -o ./bin/ ./...
-./bin/server -conf ./configs
-```
-## Generate other auxiliary files by Makefile
-```
-# Download and update dependencies
-make init
-# Generate API files (include: pb.go, http, grpc, validate, swagger) by proto file
-make api
-# Generate all files
-make all
-```
-## Automated Initialization (wire)
-```
-# install wire
-go get github.com/google/wire/cmd/wire
+缓存 redis
 
-# generate wire
-cd cmd/server
-wire
-```
+数据库 mysql
 
-## Docker
+数据库中间件 gorm
+
+
+### 使用方式
+
+PS：前提已经安装好kratos
+
+# 开始使用
+### 创建项目
+通过 kratos 命令创建项目指定模板：
+
 ```bash
-# build
-docker build -t <your-docker-image-name> .
-
-# run
-docker run --rm -p 8000:8000 -p 9000:9000 -v </path/to/your/configs>:/data/conf <your-docker-image-name>
+kratos new administrator -r https://github.com/ZQCard/kratos-base-project.git
 ```
 
+### 使用命令
+```bash
+# 初始化项目代码
+make newServiceInit
+```
+
+### 更改数据库配置
+```bash
+vim ./internal/configs/config.yaml
+```
+
+### 更改数据表名称
+```bash
+vim ./internal/data/entity/serviceName.go TableName()
+```
+
+### 数据表结构
+```sql
+CREATE TABLE `serviceName` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `name` char(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '名称',
+  `created_at` timestamp NOT NULL COMMENT '创建时间',
+  `updated_at` timestamp NOT NULL COMMENT '更新时间',
+  `deleted_at` char(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '删除时间',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='数据表备注';
+```
+
+### 执行程序
+```bash
+# 启动端口 :12345
+kratos run
+```
+
+### 最后
+
+基于以上步骤，修改相关文件(proto、service、biz、data)，基于自己的业务逻辑填充数据库字段，进行crud

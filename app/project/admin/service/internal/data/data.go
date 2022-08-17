@@ -2,6 +2,7 @@ package data
 
 import (
 	"context"
+	v1 "github.com/ZQCard/kratos-base-project/api/administrator/v1"
 	"github.com/ZQCard/kratos-base-project/app/project/admin/service/internal/conf"
 	consul "github.com/go-kratos/kratos/contrib/registry/consul/v2"
 	"github.com/go-kratos/kratos/v2/log"
@@ -12,8 +13,6 @@ import (
 	"github.com/google/wire"
 	consulAPI "github.com/hashicorp/consul/api"
 	tracesdk "go.opentelemetry.io/otel/sdk/trace"
-
-	administratorClientV1 "github.com/ZQCard/kratos-base-project/api/administrator/v1"
 )
 
 // ProviderSet is data providers.
@@ -28,14 +27,14 @@ var ProviderSet = wire.NewSet(
 // Data .
 type Data struct {
 	log                 *log.Helper
-	administratorClient administratorClientV1.AdministratorClient
+	administratorClient v1.AdministratorClient
 }
 
 // NewData .
 func NewData(
 	conf *conf.Data,
 	logger log.Logger,
-	administratorClient administratorClientV1.AdministratorClient,
+	administratorClient v1.AdministratorClient,
 ) (*Data, error) {
 	l := log.NewHelper(log.With(logger, "module", "data"))
 	return &Data{
@@ -68,7 +67,7 @@ func NewRegistrar(conf *conf.Registry) registry.Registrar {
 	return r
 }
 
-func NewAdministratorServiceClient(ac *conf.Auth, sr *conf.Service, r registry.Discovery, tp *tracesdk.TracerProvider) administratorClientV1.AdministratorClient {
+func NewAdministratorServiceClient(ac *conf.Auth, sr *conf.Service, r registry.Discovery, tp *tracesdk.TracerProvider) v1.AdministratorClient {
 	conn, err := grpc.DialInsecure(
 		context.Background(),
 		grpc.WithEndpoint(sr.Administrator.Endpoint),
@@ -84,6 +83,6 @@ func NewAdministratorServiceClient(ac *conf.Auth, sr *conf.Service, r registry.D
 	if err != nil {
 		panic(err)
 	}
-	c := administratorClientV1.NewAdministratorClient(conn)
+	c := v1.NewAdministratorClient(conn)
 	return c
 }

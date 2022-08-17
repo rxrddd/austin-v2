@@ -19,17 +19,9 @@ var _ = binding.EncodeURL
 const _ = http.SupportPackageIsVersion1
 
 type AdminHTTPServer interface {
-	CreateGoods(context.Context, *CreateGoodsRequest) (*GoodsInfoResponse, error)
-	DeleteGoods(context.Context, *DeleteGoodsRequest) (*GoodsCheckResponse, error)
 	GetAdministratorInfo(context.Context, *emptypb.Empty) (*GetAdministratorInfoReply, error)
-	GetGoods(context.Context, *GetGoodsRequest) (*GoodsInfoResponse, error)
-	ListGoods(context.Context, *ListGoodsRequest) (*ListGoodsReply, error)
 	Login(context.Context, *LoginRequest) (*LoginReply, error)
 	Logout(context.Context, *emptypb.Empty) (*emptypb.Empty, error)
-	RecoverGoods(context.Context, *RecoverGoodsRequest) (*GoodsCheckResponse, error)
-	SaleGoods(context.Context, *SaleGoodsRequest) (*SaleGoodsReply, error)
-	SaleGoodsLogList(context.Context, *SaleGoodsLogListRequest) (*SaleGoodsLogListReply, error)
-	UpdateGoods(context.Context, *UpdateGoodsRequest) (*GoodsInfoResponse, error)
 }
 
 func RegisterAdminHTTPServer(s *http.Server, srv AdminHTTPServer) {
@@ -37,14 +29,6 @@ func RegisterAdminHTTPServer(s *http.Server, srv AdminHTTPServer) {
 	r.POST("/admin/v1/login", _Admin_Login0_HTTP_Handler(srv))
 	r.POST("/admin/v1/logout", _Admin_Logout0_HTTP_Handler(srv))
 	r.GET("/admin/v1/getAdministratorInfo", _Admin_GetAdministratorInfo0_HTTP_Handler(srv))
-	r.POST("/admin/v1/goods", _Admin_CreateGoods0_HTTP_Handler(srv))
-	r.PUT("/admin/v1/goods", _Admin_UpdateGoods0_HTTP_Handler(srv))
-	r.DELETE("/admin/v1/goods/{id}", _Admin_DeleteGoods0_HTTP_Handler(srv))
-	r.PATCH("/admin/v1/goods", _Admin_RecoverGoods0_HTTP_Handler(srv))
-	r.GET("/admin/v1/goods/{id}", _Admin_GetGoods0_HTTP_Handler(srv))
-	r.GET("/admin/v1/goods", _Admin_ListGoods0_HTTP_Handler(srv))
-	r.POST("/admin/v1/goods/sale", _Admin_SaleGoods0_HTTP_Handler(srv))
-	r.GET("/admin/v1/goods/sale/logs", _Admin_SaleGoodsLogList0_HTTP_Handler(srv))
 }
 
 func _Admin_Login0_HTTP_Handler(srv AdminHTTPServer) func(ctx http.Context) error {
@@ -104,176 +88,10 @@ func _Admin_GetAdministratorInfo0_HTTP_Handler(srv AdminHTTPServer) func(ctx htt
 	}
 }
 
-func _Admin_CreateGoods0_HTTP_Handler(srv AdminHTTPServer) func(ctx http.Context) error {
-	return func(ctx http.Context) error {
-		var in CreateGoodsRequest
-		if err := ctx.Bind(&in); err != nil {
-			return err
-		}
-		http.SetOperation(ctx, "/api.admin.v1.Admin/CreateGoods")
-		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
-			return srv.CreateGoods(ctx, req.(*CreateGoodsRequest))
-		})
-		out, err := h(ctx, &in)
-		if err != nil {
-			return err
-		}
-		reply := out.(*GoodsInfoResponse)
-		return ctx.Result(200, reply)
-	}
-}
-
-func _Admin_UpdateGoods0_HTTP_Handler(srv AdminHTTPServer) func(ctx http.Context) error {
-	return func(ctx http.Context) error {
-		var in UpdateGoodsRequest
-		if err := ctx.Bind(&in); err != nil {
-			return err
-		}
-		http.SetOperation(ctx, "/api.admin.v1.Admin/UpdateGoods")
-		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
-			return srv.UpdateGoods(ctx, req.(*UpdateGoodsRequest))
-		})
-		out, err := h(ctx, &in)
-		if err != nil {
-			return err
-		}
-		reply := out.(*GoodsInfoResponse)
-		return ctx.Result(200, reply)
-	}
-}
-
-func _Admin_DeleteGoods0_HTTP_Handler(srv AdminHTTPServer) func(ctx http.Context) error {
-	return func(ctx http.Context) error {
-		var in DeleteGoodsRequest
-		if err := ctx.BindQuery(&in); err != nil {
-			return err
-		}
-		if err := ctx.BindVars(&in); err != nil {
-			return err
-		}
-		http.SetOperation(ctx, "/api.admin.v1.Admin/DeleteGoods")
-		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
-			return srv.DeleteGoods(ctx, req.(*DeleteGoodsRequest))
-		})
-		out, err := h(ctx, &in)
-		if err != nil {
-			return err
-		}
-		reply := out.(*GoodsCheckResponse)
-		return ctx.Result(200, reply)
-	}
-}
-
-func _Admin_RecoverGoods0_HTTP_Handler(srv AdminHTTPServer) func(ctx http.Context) error {
-	return func(ctx http.Context) error {
-		var in RecoverGoodsRequest
-		if err := ctx.Bind(&in); err != nil {
-			return err
-		}
-		http.SetOperation(ctx, "/api.admin.v1.Admin/RecoverGoods")
-		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
-			return srv.RecoverGoods(ctx, req.(*RecoverGoodsRequest))
-		})
-		out, err := h(ctx, &in)
-		if err != nil {
-			return err
-		}
-		reply := out.(*GoodsCheckResponse)
-		return ctx.Result(200, reply)
-	}
-}
-
-func _Admin_GetGoods0_HTTP_Handler(srv AdminHTTPServer) func(ctx http.Context) error {
-	return func(ctx http.Context) error {
-		var in GetGoodsRequest
-		if err := ctx.BindQuery(&in); err != nil {
-			return err
-		}
-		if err := ctx.BindVars(&in); err != nil {
-			return err
-		}
-		http.SetOperation(ctx, "/api.admin.v1.Admin/GetGoods")
-		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
-			return srv.GetGoods(ctx, req.(*GetGoodsRequest))
-		})
-		out, err := h(ctx, &in)
-		if err != nil {
-			return err
-		}
-		reply := out.(*GoodsInfoResponse)
-		return ctx.Result(200, reply)
-	}
-}
-
-func _Admin_ListGoods0_HTTP_Handler(srv AdminHTTPServer) func(ctx http.Context) error {
-	return func(ctx http.Context) error {
-		var in ListGoodsRequest
-		if err := ctx.BindQuery(&in); err != nil {
-			return err
-		}
-		http.SetOperation(ctx, "/api.admin.v1.Admin/ListGoods")
-		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
-			return srv.ListGoods(ctx, req.(*ListGoodsRequest))
-		})
-		out, err := h(ctx, &in)
-		if err != nil {
-			return err
-		}
-		reply := out.(*ListGoodsReply)
-		return ctx.Result(200, reply)
-	}
-}
-
-func _Admin_SaleGoods0_HTTP_Handler(srv AdminHTTPServer) func(ctx http.Context) error {
-	return func(ctx http.Context) error {
-		var in SaleGoodsRequest
-		if err := ctx.Bind(&in); err != nil {
-			return err
-		}
-		http.SetOperation(ctx, "/api.admin.v1.Admin/SaleGoods")
-		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
-			return srv.SaleGoods(ctx, req.(*SaleGoodsRequest))
-		})
-		out, err := h(ctx, &in)
-		if err != nil {
-			return err
-		}
-		reply := out.(*SaleGoodsReply)
-		return ctx.Result(200, reply)
-	}
-}
-
-func _Admin_SaleGoodsLogList0_HTTP_Handler(srv AdminHTTPServer) func(ctx http.Context) error {
-	return func(ctx http.Context) error {
-		var in SaleGoodsLogListRequest
-		if err := ctx.BindQuery(&in); err != nil {
-			return err
-		}
-		http.SetOperation(ctx, "/api.admin.v1.Admin/SaleGoodsLogList")
-		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
-			return srv.SaleGoodsLogList(ctx, req.(*SaleGoodsLogListRequest))
-		})
-		out, err := h(ctx, &in)
-		if err != nil {
-			return err
-		}
-		reply := out.(*SaleGoodsLogListReply)
-		return ctx.Result(200, reply)
-	}
-}
-
 type AdminHTTPClient interface {
-	CreateGoods(ctx context.Context, req *CreateGoodsRequest, opts ...http.CallOption) (rsp *GoodsInfoResponse, err error)
-	DeleteGoods(ctx context.Context, req *DeleteGoodsRequest, opts ...http.CallOption) (rsp *GoodsCheckResponse, err error)
 	GetAdministratorInfo(ctx context.Context, req *emptypb.Empty, opts ...http.CallOption) (rsp *GetAdministratorInfoReply, err error)
-	GetGoods(ctx context.Context, req *GetGoodsRequest, opts ...http.CallOption) (rsp *GoodsInfoResponse, err error)
-	ListGoods(ctx context.Context, req *ListGoodsRequest, opts ...http.CallOption) (rsp *ListGoodsReply, err error)
 	Login(ctx context.Context, req *LoginRequest, opts ...http.CallOption) (rsp *LoginReply, err error)
 	Logout(ctx context.Context, req *emptypb.Empty, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
-	RecoverGoods(ctx context.Context, req *RecoverGoodsRequest, opts ...http.CallOption) (rsp *GoodsCheckResponse, err error)
-	SaleGoods(ctx context.Context, req *SaleGoodsRequest, opts ...http.CallOption) (rsp *SaleGoodsReply, err error)
-	SaleGoodsLogList(ctx context.Context, req *SaleGoodsLogListRequest, opts ...http.CallOption) (rsp *SaleGoodsLogListReply, err error)
-	UpdateGoods(ctx context.Context, req *UpdateGoodsRequest, opts ...http.CallOption) (rsp *GoodsInfoResponse, err error)
 }
 
 type AdminHTTPClientImpl struct {
@@ -284,63 +102,11 @@ func NewAdminHTTPClient(client *http.Client) AdminHTTPClient {
 	return &AdminHTTPClientImpl{client}
 }
 
-func (c *AdminHTTPClientImpl) CreateGoods(ctx context.Context, in *CreateGoodsRequest, opts ...http.CallOption) (*GoodsInfoResponse, error) {
-	var out GoodsInfoResponse
-	pattern := "/admin/v1/goods"
-	path := binding.EncodeURL(pattern, in, false)
-	opts = append(opts, http.Operation("/api.admin.v1.Admin/CreateGoods"))
-	opts = append(opts, http.PathTemplate(pattern))
-	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return &out, err
-}
-
-func (c *AdminHTTPClientImpl) DeleteGoods(ctx context.Context, in *DeleteGoodsRequest, opts ...http.CallOption) (*GoodsCheckResponse, error) {
-	var out GoodsCheckResponse
-	pattern := "/admin/v1/goods/{id}"
-	path := binding.EncodeURL(pattern, in, true)
-	opts = append(opts, http.Operation("/api.admin.v1.Admin/DeleteGoods"))
-	opts = append(opts, http.PathTemplate(pattern))
-	err := c.cc.Invoke(ctx, "DELETE", path, nil, &out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return &out, err
-}
-
 func (c *AdminHTTPClientImpl) GetAdministratorInfo(ctx context.Context, in *emptypb.Empty, opts ...http.CallOption) (*GetAdministratorInfoReply, error) {
 	var out GetAdministratorInfoReply
 	pattern := "/admin/v1/getAdministratorInfo"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation("/api.admin.v1.Admin/GetAdministratorInfo"))
-	opts = append(opts, http.PathTemplate(pattern))
-	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return &out, err
-}
-
-func (c *AdminHTTPClientImpl) GetGoods(ctx context.Context, in *GetGoodsRequest, opts ...http.CallOption) (*GoodsInfoResponse, error) {
-	var out GoodsInfoResponse
-	pattern := "/admin/v1/goods/{id}"
-	path := binding.EncodeURL(pattern, in, true)
-	opts = append(opts, http.Operation("/api.admin.v1.Admin/GetGoods"))
-	opts = append(opts, http.PathTemplate(pattern))
-	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return &out, err
-}
-
-func (c *AdminHTTPClientImpl) ListGoods(ctx context.Context, in *ListGoodsRequest, opts ...http.CallOption) (*ListGoodsReply, error) {
-	var out ListGoodsReply
-	pattern := "/admin/v1/goods"
-	path := binding.EncodeURL(pattern, in, true)
-	opts = append(opts, http.Operation("/api.admin.v1.Admin/ListGoods"))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
 	if err != nil {
@@ -369,58 +135,6 @@ func (c *AdminHTTPClientImpl) Logout(ctx context.Context, in *emptypb.Empty, opt
 	opts = append(opts, http.Operation("/api.admin.v1.Admin/Logout"))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return &out, err
-}
-
-func (c *AdminHTTPClientImpl) RecoverGoods(ctx context.Context, in *RecoverGoodsRequest, opts ...http.CallOption) (*GoodsCheckResponse, error) {
-	var out GoodsCheckResponse
-	pattern := "/admin/v1/goods"
-	path := binding.EncodeURL(pattern, in, false)
-	opts = append(opts, http.Operation("/api.admin.v1.Admin/RecoverGoods"))
-	opts = append(opts, http.PathTemplate(pattern))
-	err := c.cc.Invoke(ctx, "PATCH", path, in, &out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return &out, err
-}
-
-func (c *AdminHTTPClientImpl) SaleGoods(ctx context.Context, in *SaleGoodsRequest, opts ...http.CallOption) (*SaleGoodsReply, error) {
-	var out SaleGoodsReply
-	pattern := "/admin/v1/goods/sale"
-	path := binding.EncodeURL(pattern, in, false)
-	opts = append(opts, http.Operation("/api.admin.v1.Admin/SaleGoods"))
-	opts = append(opts, http.PathTemplate(pattern))
-	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return &out, err
-}
-
-func (c *AdminHTTPClientImpl) SaleGoodsLogList(ctx context.Context, in *SaleGoodsLogListRequest, opts ...http.CallOption) (*SaleGoodsLogListReply, error) {
-	var out SaleGoodsLogListReply
-	pattern := "/admin/v1/goods/sale/logs"
-	path := binding.EncodeURL(pattern, in, true)
-	opts = append(opts, http.Operation("/api.admin.v1.Admin/SaleGoodsLogList"))
-	opts = append(opts, http.PathTemplate(pattern))
-	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return &out, err
-}
-
-func (c *AdminHTTPClientImpl) UpdateGoods(ctx context.Context, in *UpdateGoodsRequest, opts ...http.CallOption) (*GoodsInfoResponse, error) {
-	var out GoodsInfoResponse
-	pattern := "/admin/v1/goods"
-	path := binding.EncodeURL(pattern, in, false)
-	opts = append(opts, http.Operation("/api.admin.v1.Admin/UpdateGoods"))
-	opts = append(opts, http.PathTemplate(pattern))
-	err := c.cc.Invoke(ctx, "PUT", path, in, &out, opts...)
 	if err != nil {
 		return nil, err
 	}

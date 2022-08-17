@@ -29,22 +29,6 @@ type AdminClient interface {
 	Logout(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// 获取管理员信息
 	GetAdministratorInfo(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetAdministratorInfoReply, error)
-	// 创建商品
-	CreateGoods(ctx context.Context, in *CreateGoodsRequest, opts ...grpc.CallOption) (*GoodsInfoResponse, error)
-	// 更新商品
-	UpdateGoods(ctx context.Context, in *UpdateGoodsRequest, opts ...grpc.CallOption) (*GoodsInfoResponse, error)
-	// 删除商品
-	DeleteGoods(ctx context.Context, in *DeleteGoodsRequest, opts ...grpc.CallOption) (*GoodsCheckResponse, error)
-	// 恢复商品
-	RecoverGoods(ctx context.Context, in *RecoverGoodsRequest, opts ...grpc.CallOption) (*GoodsCheckResponse, error)
-	// 商品详情
-	GetGoods(ctx context.Context, in *GetGoodsRequest, opts ...grpc.CallOption) (*GoodsInfoResponse, error)
-	// 商品列表
-	ListGoods(ctx context.Context, in *ListGoodsRequest, opts ...grpc.CallOption) (*ListGoodsReply, error)
-	// 商品出售
-	SaleGoods(ctx context.Context, in *SaleGoodsRequest, opts ...grpc.CallOption) (*SaleGoodsReply, error)
-	// 商品出售列表
-	SaleGoodsLogList(ctx context.Context, in *SaleGoodsLogListRequest, opts ...grpc.CallOption) (*SaleGoodsLogListReply, error)
 }
 
 type adminClient struct {
@@ -82,78 +66,6 @@ func (c *adminClient) GetAdministratorInfo(ctx context.Context, in *emptypb.Empt
 	return out, nil
 }
 
-func (c *adminClient) CreateGoods(ctx context.Context, in *CreateGoodsRequest, opts ...grpc.CallOption) (*GoodsInfoResponse, error) {
-	out := new(GoodsInfoResponse)
-	err := c.cc.Invoke(ctx, "/api.admin.v1.Admin/CreateGoods", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *adminClient) UpdateGoods(ctx context.Context, in *UpdateGoodsRequest, opts ...grpc.CallOption) (*GoodsInfoResponse, error) {
-	out := new(GoodsInfoResponse)
-	err := c.cc.Invoke(ctx, "/api.admin.v1.Admin/UpdateGoods", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *adminClient) DeleteGoods(ctx context.Context, in *DeleteGoodsRequest, opts ...grpc.CallOption) (*GoodsCheckResponse, error) {
-	out := new(GoodsCheckResponse)
-	err := c.cc.Invoke(ctx, "/api.admin.v1.Admin/DeleteGoods", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *adminClient) RecoverGoods(ctx context.Context, in *RecoverGoodsRequest, opts ...grpc.CallOption) (*GoodsCheckResponse, error) {
-	out := new(GoodsCheckResponse)
-	err := c.cc.Invoke(ctx, "/api.admin.v1.Admin/RecoverGoods", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *adminClient) GetGoods(ctx context.Context, in *GetGoodsRequest, opts ...grpc.CallOption) (*GoodsInfoResponse, error) {
-	out := new(GoodsInfoResponse)
-	err := c.cc.Invoke(ctx, "/api.admin.v1.Admin/GetGoods", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *adminClient) ListGoods(ctx context.Context, in *ListGoodsRequest, opts ...grpc.CallOption) (*ListGoodsReply, error) {
-	out := new(ListGoodsReply)
-	err := c.cc.Invoke(ctx, "/api.admin.v1.Admin/ListGoods", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *adminClient) SaleGoods(ctx context.Context, in *SaleGoodsRequest, opts ...grpc.CallOption) (*SaleGoodsReply, error) {
-	out := new(SaleGoodsReply)
-	err := c.cc.Invoke(ctx, "/api.admin.v1.Admin/SaleGoods", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *adminClient) SaleGoodsLogList(ctx context.Context, in *SaleGoodsLogListRequest, opts ...grpc.CallOption) (*SaleGoodsLogListReply, error) {
-	out := new(SaleGoodsLogListReply)
-	err := c.cc.Invoke(ctx, "/api.admin.v1.Admin/SaleGoodsLogList", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // AdminServer is the server API for Admin service.
 // All implementations must embed UnimplementedAdminServer
 // for forward compatibility
@@ -164,22 +76,6 @@ type AdminServer interface {
 	Logout(context.Context, *emptypb.Empty) (*emptypb.Empty, error)
 	// 获取管理员信息
 	GetAdministratorInfo(context.Context, *emptypb.Empty) (*GetAdministratorInfoReply, error)
-	// 创建商品
-	CreateGoods(context.Context, *CreateGoodsRequest) (*GoodsInfoResponse, error)
-	// 更新商品
-	UpdateGoods(context.Context, *UpdateGoodsRequest) (*GoodsInfoResponse, error)
-	// 删除商品
-	DeleteGoods(context.Context, *DeleteGoodsRequest) (*GoodsCheckResponse, error)
-	// 恢复商品
-	RecoverGoods(context.Context, *RecoverGoodsRequest) (*GoodsCheckResponse, error)
-	// 商品详情
-	GetGoods(context.Context, *GetGoodsRequest) (*GoodsInfoResponse, error)
-	// 商品列表
-	ListGoods(context.Context, *ListGoodsRequest) (*ListGoodsReply, error)
-	// 商品出售
-	SaleGoods(context.Context, *SaleGoodsRequest) (*SaleGoodsReply, error)
-	// 商品出售列表
-	SaleGoodsLogList(context.Context, *SaleGoodsLogListRequest) (*SaleGoodsLogListReply, error)
 	mustEmbedUnimplementedAdminServer()
 }
 
@@ -195,30 +91,6 @@ func (UnimplementedAdminServer) Logout(context.Context, *emptypb.Empty) (*emptyp
 }
 func (UnimplementedAdminServer) GetAdministratorInfo(context.Context, *emptypb.Empty) (*GetAdministratorInfoReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAdministratorInfo not implemented")
-}
-func (UnimplementedAdminServer) CreateGoods(context.Context, *CreateGoodsRequest) (*GoodsInfoResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateGoods not implemented")
-}
-func (UnimplementedAdminServer) UpdateGoods(context.Context, *UpdateGoodsRequest) (*GoodsInfoResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateGoods not implemented")
-}
-func (UnimplementedAdminServer) DeleteGoods(context.Context, *DeleteGoodsRequest) (*GoodsCheckResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DeleteGoods not implemented")
-}
-func (UnimplementedAdminServer) RecoverGoods(context.Context, *RecoverGoodsRequest) (*GoodsCheckResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method RecoverGoods not implemented")
-}
-func (UnimplementedAdminServer) GetGoods(context.Context, *GetGoodsRequest) (*GoodsInfoResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetGoods not implemented")
-}
-func (UnimplementedAdminServer) ListGoods(context.Context, *ListGoodsRequest) (*ListGoodsReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListGoods not implemented")
-}
-func (UnimplementedAdminServer) SaleGoods(context.Context, *SaleGoodsRequest) (*SaleGoodsReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SaleGoods not implemented")
-}
-func (UnimplementedAdminServer) SaleGoodsLogList(context.Context, *SaleGoodsLogListRequest) (*SaleGoodsLogListReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SaleGoodsLogList not implemented")
 }
 func (UnimplementedAdminServer) mustEmbedUnimplementedAdminServer() {}
 
@@ -287,150 +159,6 @@ func _Admin_GetAdministratorInfo_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Admin_CreateGoods_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateGoodsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AdminServer).CreateGoods(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/api.admin.v1.Admin/CreateGoods",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AdminServer).CreateGoods(ctx, req.(*CreateGoodsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Admin_UpdateGoods_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UpdateGoodsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AdminServer).UpdateGoods(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/api.admin.v1.Admin/UpdateGoods",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AdminServer).UpdateGoods(ctx, req.(*UpdateGoodsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Admin_DeleteGoods_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DeleteGoodsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AdminServer).DeleteGoods(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/api.admin.v1.Admin/DeleteGoods",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AdminServer).DeleteGoods(ctx, req.(*DeleteGoodsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Admin_RecoverGoods_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(RecoverGoodsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AdminServer).RecoverGoods(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/api.admin.v1.Admin/RecoverGoods",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AdminServer).RecoverGoods(ctx, req.(*RecoverGoodsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Admin_GetGoods_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetGoodsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AdminServer).GetGoods(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/api.admin.v1.Admin/GetGoods",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AdminServer).GetGoods(ctx, req.(*GetGoodsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Admin_ListGoods_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListGoodsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AdminServer).ListGoods(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/api.admin.v1.Admin/ListGoods",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AdminServer).ListGoods(ctx, req.(*ListGoodsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Admin_SaleGoods_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SaleGoodsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AdminServer).SaleGoods(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/api.admin.v1.Admin/SaleGoods",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AdminServer).SaleGoods(ctx, req.(*SaleGoodsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Admin_SaleGoodsLogList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SaleGoodsLogListRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AdminServer).SaleGoodsLogList(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/api.admin.v1.Admin/SaleGoodsLogList",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AdminServer).SaleGoodsLogList(ctx, req.(*SaleGoodsLogListRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 // Admin_ServiceDesc is the grpc.ServiceDesc for Admin service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -449,38 +177,6 @@ var Admin_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetAdministratorInfo",
 			Handler:    _Admin_GetAdministratorInfo_Handler,
-		},
-		{
-			MethodName: "CreateGoods",
-			Handler:    _Admin_CreateGoods_Handler,
-		},
-		{
-			MethodName: "UpdateGoods",
-			Handler:    _Admin_UpdateGoods_Handler,
-		},
-		{
-			MethodName: "DeleteGoods",
-			Handler:    _Admin_DeleteGoods_Handler,
-		},
-		{
-			MethodName: "RecoverGoods",
-			Handler:    _Admin_RecoverGoods_Handler,
-		},
-		{
-			MethodName: "GetGoods",
-			Handler:    _Admin_GetGoods_Handler,
-		},
-		{
-			MethodName: "ListGoods",
-			Handler:    _Admin_ListGoods_Handler,
-		},
-		{
-			MethodName: "SaleGoods",
-			Handler:    _Admin_SaleGoods_Handler,
-		},
-		{
-			MethodName: "SaleGoodsLogList",
-			Handler:    _Admin_SaleGoodsLogList_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

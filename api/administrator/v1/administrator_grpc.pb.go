@@ -22,13 +22,13 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AdministratorClient interface {
-	GetLoginAdministratorByUsername(ctx context.Context, in *GetLoginAdministratorByUsernameRequest, opts ...grpc.CallOption) (*GetLoginAdministratorByUsernameReply, error)
-	VerifyPassword(ctx context.Context, in *VerifyPasswordRequest, opts ...grpc.CallOption) (*VerifyPasswordReply, error)
 	CreateAdministrator(ctx context.Context, in *CreateAdministratorRequest, opts ...grpc.CallOption) (*AdministratorInfoResponse, error)
 	UpdateAdministrator(ctx context.Context, in *UpdateAdministratorRequest, opts ...grpc.CallOption) (*AdministratorInfoResponse, error)
-	DeleteAdministrator(ctx context.Context, in *DeleteAdministratorRequest, opts ...grpc.CallOption) (*AdministratorCheckResponse, error)
 	GetAdministrator(ctx context.Context, in *GetAdministratorRequest, opts ...grpc.CallOption) (*AdministratorInfoResponse, error)
 	ListAdministrator(ctx context.Context, in *ListAdministratorRequest, opts ...grpc.CallOption) (*ListAdministratorReply, error)
+	DeleteAdministrator(ctx context.Context, in *DeleteAdministratorRequest, opts ...grpc.CallOption) (*AdministratorCheckResponse, error)
+	RecoverAdministrator(ctx context.Context, in *RecoverAdministratorRequest, opts ...grpc.CallOption) (*AdministratorCheckResponse, error)
+	VerifyAdministratorPassword(ctx context.Context, in *VerifyAdministratorPasswordRequest, opts ...grpc.CallOption) (*VerifyAdministratorPasswordReply, error)
 }
 
 type administratorClient struct {
@@ -37,24 +37,6 @@ type administratorClient struct {
 
 func NewAdministratorClient(cc grpc.ClientConnInterface) AdministratorClient {
 	return &administratorClient{cc}
-}
-
-func (c *administratorClient) GetLoginAdministratorByUsername(ctx context.Context, in *GetLoginAdministratorByUsernameRequest, opts ...grpc.CallOption) (*GetLoginAdministratorByUsernameReply, error) {
-	out := new(GetLoginAdministratorByUsernameReply)
-	err := c.cc.Invoke(ctx, "/api.administrator.v1.Administrator/GetLoginAdministratorByUsername", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *administratorClient) VerifyPassword(ctx context.Context, in *VerifyPasswordRequest, opts ...grpc.CallOption) (*VerifyPasswordReply, error) {
-	out := new(VerifyPasswordReply)
-	err := c.cc.Invoke(ctx, "/api.administrator.v1.Administrator/VerifyPassword", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
 }
 
 func (c *administratorClient) CreateAdministrator(ctx context.Context, in *CreateAdministratorRequest, opts ...grpc.CallOption) (*AdministratorInfoResponse, error) {
@@ -69,15 +51,6 @@ func (c *administratorClient) CreateAdministrator(ctx context.Context, in *Creat
 func (c *administratorClient) UpdateAdministrator(ctx context.Context, in *UpdateAdministratorRequest, opts ...grpc.CallOption) (*AdministratorInfoResponse, error) {
 	out := new(AdministratorInfoResponse)
 	err := c.cc.Invoke(ctx, "/api.administrator.v1.Administrator/UpdateAdministrator", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *administratorClient) DeleteAdministrator(ctx context.Context, in *DeleteAdministratorRequest, opts ...grpc.CallOption) (*AdministratorCheckResponse, error) {
-	out := new(AdministratorCheckResponse)
-	err := c.cc.Invoke(ctx, "/api.administrator.v1.Administrator/DeleteAdministrator", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -102,17 +75,44 @@ func (c *administratorClient) ListAdministrator(ctx context.Context, in *ListAdm
 	return out, nil
 }
 
+func (c *administratorClient) DeleteAdministrator(ctx context.Context, in *DeleteAdministratorRequest, opts ...grpc.CallOption) (*AdministratorCheckResponse, error) {
+	out := new(AdministratorCheckResponse)
+	err := c.cc.Invoke(ctx, "/api.administrator.v1.Administrator/DeleteAdministrator", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *administratorClient) RecoverAdministrator(ctx context.Context, in *RecoverAdministratorRequest, opts ...grpc.CallOption) (*AdministratorCheckResponse, error) {
+	out := new(AdministratorCheckResponse)
+	err := c.cc.Invoke(ctx, "/api.administrator.v1.Administrator/RecoverAdministrator", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *administratorClient) VerifyAdministratorPassword(ctx context.Context, in *VerifyAdministratorPasswordRequest, opts ...grpc.CallOption) (*VerifyAdministratorPasswordReply, error) {
+	out := new(VerifyAdministratorPasswordReply)
+	err := c.cc.Invoke(ctx, "/api.administrator.v1.Administrator/VerifyAdministratorPassword", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AdministratorServer is the server API for Administrator service.
 // All implementations must embed UnimplementedAdministratorServer
 // for forward compatibility
 type AdministratorServer interface {
-	GetLoginAdministratorByUsername(context.Context, *GetLoginAdministratorByUsernameRequest) (*GetLoginAdministratorByUsernameReply, error)
-	VerifyPassword(context.Context, *VerifyPasswordRequest) (*VerifyPasswordReply, error)
 	CreateAdministrator(context.Context, *CreateAdministratorRequest) (*AdministratorInfoResponse, error)
 	UpdateAdministrator(context.Context, *UpdateAdministratorRequest) (*AdministratorInfoResponse, error)
-	DeleteAdministrator(context.Context, *DeleteAdministratorRequest) (*AdministratorCheckResponse, error)
 	GetAdministrator(context.Context, *GetAdministratorRequest) (*AdministratorInfoResponse, error)
 	ListAdministrator(context.Context, *ListAdministratorRequest) (*ListAdministratorReply, error)
+	DeleteAdministrator(context.Context, *DeleteAdministratorRequest) (*AdministratorCheckResponse, error)
+	RecoverAdministrator(context.Context, *RecoverAdministratorRequest) (*AdministratorCheckResponse, error)
+	VerifyAdministratorPassword(context.Context, *VerifyAdministratorPasswordRequest) (*VerifyAdministratorPasswordReply, error)
 	mustEmbedUnimplementedAdministratorServer()
 }
 
@@ -120,26 +120,26 @@ type AdministratorServer interface {
 type UnimplementedAdministratorServer struct {
 }
 
-func (UnimplementedAdministratorServer) GetLoginAdministratorByUsername(context.Context, *GetLoginAdministratorByUsernameRequest) (*GetLoginAdministratorByUsernameReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetLoginAdministratorByUsername not implemented")
-}
-func (UnimplementedAdministratorServer) VerifyPassword(context.Context, *VerifyPasswordRequest) (*VerifyPasswordReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method VerifyPassword not implemented")
-}
 func (UnimplementedAdministratorServer) CreateAdministrator(context.Context, *CreateAdministratorRequest) (*AdministratorInfoResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateAdministrator not implemented")
 }
 func (UnimplementedAdministratorServer) UpdateAdministrator(context.Context, *UpdateAdministratorRequest) (*AdministratorInfoResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateAdministrator not implemented")
 }
-func (UnimplementedAdministratorServer) DeleteAdministrator(context.Context, *DeleteAdministratorRequest) (*AdministratorCheckResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DeleteAdministrator not implemented")
-}
 func (UnimplementedAdministratorServer) GetAdministrator(context.Context, *GetAdministratorRequest) (*AdministratorInfoResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAdministrator not implemented")
 }
 func (UnimplementedAdministratorServer) ListAdministrator(context.Context, *ListAdministratorRequest) (*ListAdministratorReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListAdministrator not implemented")
+}
+func (UnimplementedAdministratorServer) DeleteAdministrator(context.Context, *DeleteAdministratorRequest) (*AdministratorCheckResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteAdministrator not implemented")
+}
+func (UnimplementedAdministratorServer) RecoverAdministrator(context.Context, *RecoverAdministratorRequest) (*AdministratorCheckResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RecoverAdministrator not implemented")
+}
+func (UnimplementedAdministratorServer) VerifyAdministratorPassword(context.Context, *VerifyAdministratorPasswordRequest) (*VerifyAdministratorPasswordReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method VerifyAdministratorPassword not implemented")
 }
 func (UnimplementedAdministratorServer) mustEmbedUnimplementedAdministratorServer() {}
 
@@ -152,42 +152,6 @@ type UnsafeAdministratorServer interface {
 
 func RegisterAdministratorServer(s grpc.ServiceRegistrar, srv AdministratorServer) {
 	s.RegisterService(&Administrator_ServiceDesc, srv)
-}
-
-func _Administrator_GetLoginAdministratorByUsername_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetLoginAdministratorByUsernameRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AdministratorServer).GetLoginAdministratorByUsername(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/api.administrator.v1.Administrator/GetLoginAdministratorByUsername",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AdministratorServer).GetLoginAdministratorByUsername(ctx, req.(*GetLoginAdministratorByUsernameRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Administrator_VerifyPassword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(VerifyPasswordRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AdministratorServer).VerifyPassword(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/api.administrator.v1.Administrator/VerifyPassword",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AdministratorServer).VerifyPassword(ctx, req.(*VerifyPasswordRequest))
-	}
-	return interceptor(ctx, in, info, handler)
 }
 
 func _Administrator_CreateAdministrator_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -222,24 +186,6 @@ func _Administrator_UpdateAdministrator_Handler(srv interface{}, ctx context.Con
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AdministratorServer).UpdateAdministrator(ctx, req.(*UpdateAdministratorRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Administrator_DeleteAdministrator_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DeleteAdministratorRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AdministratorServer).DeleteAdministrator(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/api.administrator.v1.Administrator/DeleteAdministrator",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AdministratorServer).DeleteAdministrator(ctx, req.(*DeleteAdministratorRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -280,6 +226,60 @@ func _Administrator_ListAdministrator_Handler(srv interface{}, ctx context.Conte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Administrator_DeleteAdministrator_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteAdministratorRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdministratorServer).DeleteAdministrator(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.administrator.v1.Administrator/DeleteAdministrator",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdministratorServer).DeleteAdministrator(ctx, req.(*DeleteAdministratorRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Administrator_RecoverAdministrator_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RecoverAdministratorRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdministratorServer).RecoverAdministrator(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.administrator.v1.Administrator/RecoverAdministrator",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdministratorServer).RecoverAdministrator(ctx, req.(*RecoverAdministratorRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Administrator_VerifyAdministratorPassword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(VerifyAdministratorPasswordRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdministratorServer).VerifyAdministratorPassword(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.administrator.v1.Administrator/VerifyAdministratorPassword",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdministratorServer).VerifyAdministratorPassword(ctx, req.(*VerifyAdministratorPasswordRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Administrator_ServiceDesc is the grpc.ServiceDesc for Administrator service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -287,14 +287,6 @@ var Administrator_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "api.administrator.v1.Administrator",
 	HandlerType: (*AdministratorServer)(nil),
 	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "GetLoginAdministratorByUsername",
-			Handler:    _Administrator_GetLoginAdministratorByUsername_Handler,
-		},
-		{
-			MethodName: "VerifyPassword",
-			Handler:    _Administrator_VerifyPassword_Handler,
-		},
 		{
 			MethodName: "CreateAdministrator",
 			Handler:    _Administrator_CreateAdministrator_Handler,
@@ -304,16 +296,24 @@ var Administrator_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Administrator_UpdateAdministrator_Handler,
 		},
 		{
-			MethodName: "DeleteAdministrator",
-			Handler:    _Administrator_DeleteAdministrator_Handler,
-		},
-		{
 			MethodName: "GetAdministrator",
 			Handler:    _Administrator_GetAdministrator_Handler,
 		},
 		{
 			MethodName: "ListAdministrator",
 			Handler:    _Administrator_ListAdministrator_Handler,
+		},
+		{
+			MethodName: "DeleteAdministrator",
+			Handler:    _Administrator_DeleteAdministrator_Handler,
+		},
+		{
+			MethodName: "RecoverAdministrator",
+			Handler:    _Administrator_RecoverAdministrator_Handler,
+		},
+		{
+			MethodName: "VerifyAdministratorPassword",
+			Handler:    _Administrator_VerifyAdministratorPassword_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

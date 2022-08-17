@@ -3,7 +3,7 @@ package server
 import (
 	"context"
 	"fmt"
-	"github.com/ZQCard/kratos-base-project/third_party/errResponse"
+	"github.com/ZQCard/kratos-base-project/pkg/errResponse"
 	"github.com/go-kratos/kratos/v2/encoding"
 	"github.com/go-kratos/kratos/v2/errors"
 	stdhttp "net/http"

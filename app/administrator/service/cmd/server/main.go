@@ -2,23 +2,21 @@ package main
 
 import (
 	"flag"
+	"github.com/ZQCard/kratos-base-project/app/administrator/service/internal/conf"
 	"github.com/bwmarrin/snowflake"
-	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/attribute"
+	"github.com/go-kratos/kratos/v2/registry"
+	"go.opentelemetry.io/otel/sdk/resource"
 	"os"
 
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/config"
 	"github.com/go-kratos/kratos/v2/config/file"
 	"github.com/go-kratos/kratos/v2/log"
-	"github.com/go-kratos/kratos/v2/registry"
+	"github.com/go-kratos/kratos/v2/middleware/tracing"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
 	"go.opentelemetry.io/otel/exporters/jaeger"
-	"go.opentelemetry.io/otel/sdk/resource"
 	tracesdk "go.opentelemetry.io/otel/sdk/trace"
 	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
-
-	"github.com/ZQCard/kratos-base-project/app/administrator/service/internal/conf"
 )
 
 // go build -ldflags "-X main.Version=x.y.z"
@@ -54,12 +52,14 @@ func newApp(logger log.Logger, gs *grpc.Server, rr registry.Registrar) *kratos.A
 func main() {
 	flag.Parse()
 	logger := log.With(log.NewStdLogger(os.Stdout),
-		"service.name", Name,
-		"service.version", Version,
 		"ts", log.DefaultTimestamp,
 		"caller", log.DefaultCaller,
+		"service.id", Id,
+		"service.name", Name,
+		"service.version", Version,
+		"trace.id", tracing.TraceID(),
+		"span.id", tracing.SpanID(),
 	)
-
 	c := config.New(
 		config.WithSource(
 			file.NewSource(flagconf),
@@ -89,7 +89,6 @@ func main() {
 	if err := c.Scan(&rc); err != nil {
 		panic(err)
 	}
-
 	exp, err := jaeger.New(jaeger.WithCollectorEndpoint(jaeger.WithEndpoint(bc.Trace.Endpoint)))
 	if err != nil {
 		panic(err)
@@ -98,10 +97,9 @@ func main() {
 		tracesdk.WithBatcher(exp),
 		tracesdk.WithResource(resource.NewSchemaless(
 			semconv.ServiceNameKey.String(Name),
-			attribute.String("env", "dev"),
 		)),
 	)
-	otel.SetTracerProvider(tp)
+
 	app, cleanup, err := wireApp(bc.Server, &rc, bc.Data, bc.Auth, logger, tp)
 	if err != nil {
 		panic(err)

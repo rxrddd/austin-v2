@@ -4,7 +4,7 @@ package kratos.api;
 
 import "google/protobuf/duration.proto";
 
-option go_package = "github.com/ZQCard/kratos-base-project/app/administrator/service/internal/conf;conf";
+option go_package = "github.com/ZQCard/kratos-base-project/internal/conf;conf";
 
 message Bootstrap {
   Service service = 1;
@@ -18,7 +18,6 @@ message Service {
   string name = 1;
   string version = 2;
 }
-
 message Trace {
   string endpoint = 1;
 }
