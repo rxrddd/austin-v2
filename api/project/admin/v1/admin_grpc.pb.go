@@ -27,8 +27,66 @@ type AdminClient interface {
 	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginReply, error)
 	// 管理员退出
 	Logout(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	// 获取管理员信息
-	GetAdministratorInfo(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetAdministratorInfoReply, error)
+	// 管理员详情
+	GetAdministratorInfo(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*AdministratorInfoResponse, error)
+	// 管理员列表
+	GetAdministratorList(ctx context.Context, in *ListAdministratorRequest, opts ...grpc.CallOption) (*ListAdministratorReply, error)
+	// 管理员创建
+	CreateAdministrator(ctx context.Context, in *CreateAdministratorRequest, opts ...grpc.CallOption) (*AdministratorInfoResponse, error)
+	// 管理员更新
+	UpdateAdministrator(ctx context.Context, in *UpdateAdministratorRequest, opts ...grpc.CallOption) (*AdministratorInfoResponse, error)
+	// 管理员删除
+	DeleteAdministrator(ctx context.Context, in *DeleteAdministratorRequest, opts ...grpc.CallOption) (*CheckReply, error)
+	// 管理员恢复
+	RecoverAdministrator(ctx context.Context, in *RecoverAdministratorRequest, opts ...grpc.CallOption) (*CheckReply, error)
+	// 角色列表
+	GetRoleList(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetRoleListReply, error)
+	// 角色创建
+	CreateRole(ctx context.Context, in *CreateRoleRequest, opts ...grpc.CallOption) (*RoleInfo, error)
+	// 角色更新
+	UpdateRole(ctx context.Context, in *UpdateRoleRequest, opts ...grpc.CallOption) (*RoleInfo, error)
+	// 角色删除
+	DeleteRole(ctx context.Context, in *DeleteRoleRequest, opts ...grpc.CallOption) (*CheckReply, error)
+	// 设置用户角色关系
+	AddRolesForUser(ctx context.Context, in *AddRolesForUserRequest, opts ...grpc.CallOption) (*CheckReply, error)
+	// 获取用户角色列表
+	GetRolesForUser(ctx context.Context, in *GetRolesForUserRequest, opts ...grpc.CallOption) (*GetRolesForUserReply, error)
+	// 获取角色用户列表
+	GetUsersForRole(ctx context.Context, in *GetUsersForRoleRequest, opts ...grpc.CallOption) (*GetUsersForRoleReply, error)
+	// 删除用户某个角色
+	DeleteRoleForUser(ctx context.Context, in *DeleteRoleForUserRequest, opts ...grpc.CallOption) (*CheckReply, error)
+	// 删除用户所有角色
+	DeleteRolesForUser(ctx context.Context, in *DeleteRolesForUserRequest, opts ...grpc.CallOption) (*CheckReply, error)
+	// 策略授权规则列表
+	GetPolicies(ctx context.Context, in *GetPoliciesRequest, opts ...grpc.CallOption) (*GetPoliciesReply, error)
+	// 策略添加授权规则
+	UpdatePolicies(ctx context.Context, in *UpdatePoliciesRequest, opts ...grpc.CallOption) (*CheckReply, error)
+	// 所有Api列表
+	GetApiAll(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetApiAllReply, error)
+	// Api列表
+	GetApiList(ctx context.Context, in *GetApiListRequest, opts ...grpc.CallOption) (*GetApiListReply, error)
+	// Api创建
+	CreateApi(ctx context.Context, in *CreateApiRequest, opts ...grpc.CallOption) (*ApiInfo, error)
+	// Api更新
+	UpdateApi(ctx context.Context, in *UpdateApiRequest, opts ...grpc.CallOption) (*ApiInfo, error)
+	// Api删除
+	DeleteApi(ctx context.Context, in *DeleteApiRequest, opts ...grpc.CallOption) (*CheckReply, error)
+	// 所有Menu列表
+	GetMenuAll(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetMenuTreeReply, error)
+	// Menu列表
+	GetMenuTree(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetMenuTreeReply, error)
+	// Menu创建
+	CreateMenu(ctx context.Context, in *CreateMenuRequest, opts ...grpc.CallOption) (*MenuInfo, error)
+	// Menu更新
+	UpdateMenu(ctx context.Context, in *UpdateMenuRequest, opts ...grpc.CallOption) (*MenuInfo, error)
+	// Menu删除
+	DeleteMenu(ctx context.Context, in *DeleteMenuRequest, opts ...grpc.CallOption) (*CheckReply, error)
+	// 角色菜单列表树
+	GetRoleMenuTree(ctx context.Context, in *GetRoleMenuRequest, opts ...grpc.CallOption) (*GetMenuTreeReply, error)
+	// 角色菜单列表
+	GetRoleMenu(ctx context.Context, in *GetRoleMenuRequest, opts ...grpc.CallOption) (*GetMenuTreeReply, error)
+	// 角色菜单更新
+	SetRoleMenu(ctx context.Context, in *SetRoleMenuRequest, opts ...grpc.CallOption) (*CheckReply, error)
 }
 
 type adminClient struct {
@@ -57,9 +115,270 @@ func (c *adminClient) Logout(ctx context.Context, in *emptypb.Empty, opts ...grp
 	return out, nil
 }
 
-func (c *adminClient) GetAdministratorInfo(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetAdministratorInfoReply, error) {
-	out := new(GetAdministratorInfoReply)
+func (c *adminClient) GetAdministratorInfo(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*AdministratorInfoResponse, error) {
+	out := new(AdministratorInfoResponse)
 	err := c.cc.Invoke(ctx, "/api.admin.v1.Admin/GetAdministratorInfo", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *adminClient) GetAdministratorList(ctx context.Context, in *ListAdministratorRequest, opts ...grpc.CallOption) (*ListAdministratorReply, error) {
+	out := new(ListAdministratorReply)
+	err := c.cc.Invoke(ctx, "/api.admin.v1.Admin/GetAdministratorList", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *adminClient) CreateAdministrator(ctx context.Context, in *CreateAdministratorRequest, opts ...grpc.CallOption) (*AdministratorInfoResponse, error) {
+	out := new(AdministratorInfoResponse)
+	err := c.cc.Invoke(ctx, "/api.admin.v1.Admin/CreateAdministrator", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *adminClient) UpdateAdministrator(ctx context.Context, in *UpdateAdministratorRequest, opts ...grpc.CallOption) (*AdministratorInfoResponse, error) {
+	out := new(AdministratorInfoResponse)
+	err := c.cc.Invoke(ctx, "/api.admin.v1.Admin/UpdateAdministrator", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *adminClient) DeleteAdministrator(ctx context.Context, in *DeleteAdministratorRequest, opts ...grpc.CallOption) (*CheckReply, error) {
+	out := new(CheckReply)
+	err := c.cc.Invoke(ctx, "/api.admin.v1.Admin/DeleteAdministrator", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *adminClient) RecoverAdministrator(ctx context.Context, in *RecoverAdministratorRequest, opts ...grpc.CallOption) (*CheckReply, error) {
+	out := new(CheckReply)
+	err := c.cc.Invoke(ctx, "/api.admin.v1.Admin/RecoverAdministrator", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *adminClient) GetRoleList(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetRoleListReply, error) {
+	out := new(GetRoleListReply)
+	err := c.cc.Invoke(ctx, "/api.admin.v1.Admin/GetRoleList", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *adminClient) CreateRole(ctx context.Context, in *CreateRoleRequest, opts ...grpc.CallOption) (*RoleInfo, error) {
+	out := new(RoleInfo)
+	err := c.cc.Invoke(ctx, "/api.admin.v1.Admin/CreateRole", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *adminClient) UpdateRole(ctx context.Context, in *UpdateRoleRequest, opts ...grpc.CallOption) (*RoleInfo, error) {
+	out := new(RoleInfo)
+	err := c.cc.Invoke(ctx, "/api.admin.v1.Admin/UpdateRole", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *adminClient) DeleteRole(ctx context.Context, in *DeleteRoleRequest, opts ...grpc.CallOption) (*CheckReply, error) {
+	out := new(CheckReply)
+	err := c.cc.Invoke(ctx, "/api.admin.v1.Admin/DeleteRole", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *adminClient) AddRolesForUser(ctx context.Context, in *AddRolesForUserRequest, opts ...grpc.CallOption) (*CheckReply, error) {
+	out := new(CheckReply)
+	err := c.cc.Invoke(ctx, "/api.admin.v1.Admin/AddRolesForUser", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *adminClient) GetRolesForUser(ctx context.Context, in *GetRolesForUserRequest, opts ...grpc.CallOption) (*GetRolesForUserReply, error) {
+	out := new(GetRolesForUserReply)
+	err := c.cc.Invoke(ctx, "/api.admin.v1.Admin/GetRolesForUser", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *adminClient) GetUsersForRole(ctx context.Context, in *GetUsersForRoleRequest, opts ...grpc.CallOption) (*GetUsersForRoleReply, error) {
+	out := new(GetUsersForRoleReply)
+	err := c.cc.Invoke(ctx, "/api.admin.v1.Admin/GetUsersForRole", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *adminClient) DeleteRoleForUser(ctx context.Context, in *DeleteRoleForUserRequest, opts ...grpc.CallOption) (*CheckReply, error) {
+	out := new(CheckReply)
+	err := c.cc.Invoke(ctx, "/api.admin.v1.Admin/DeleteRoleForUser", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *adminClient) DeleteRolesForUser(ctx context.Context, in *DeleteRolesForUserRequest, opts ...grpc.CallOption) (*CheckReply, error) {
+	out := new(CheckReply)
+	err := c.cc.Invoke(ctx, "/api.admin.v1.Admin/DeleteRolesForUser", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *adminClient) GetPolicies(ctx context.Context, in *GetPoliciesRequest, opts ...grpc.CallOption) (*GetPoliciesReply, error) {
+	out := new(GetPoliciesReply)
+	err := c.cc.Invoke(ctx, "/api.admin.v1.Admin/GetPolicies", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *adminClient) UpdatePolicies(ctx context.Context, in *UpdatePoliciesRequest, opts ...grpc.CallOption) (*CheckReply, error) {
+	out := new(CheckReply)
+	err := c.cc.Invoke(ctx, "/api.admin.v1.Admin/UpdatePolicies", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *adminClient) GetApiAll(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetApiAllReply, error) {
+	out := new(GetApiAllReply)
+	err := c.cc.Invoke(ctx, "/api.admin.v1.Admin/GetApiAll", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *adminClient) GetApiList(ctx context.Context, in *GetApiListRequest, opts ...grpc.CallOption) (*GetApiListReply, error) {
+	out := new(GetApiListReply)
+	err := c.cc.Invoke(ctx, "/api.admin.v1.Admin/GetApiList", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *adminClient) CreateApi(ctx context.Context, in *CreateApiRequest, opts ...grpc.CallOption) (*ApiInfo, error) {
+	out := new(ApiInfo)
+	err := c.cc.Invoke(ctx, "/api.admin.v1.Admin/CreateApi", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *adminClient) UpdateApi(ctx context.Context, in *UpdateApiRequest, opts ...grpc.CallOption) (*ApiInfo, error) {
+	out := new(ApiInfo)
+	err := c.cc.Invoke(ctx, "/api.admin.v1.Admin/UpdateApi", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *adminClient) DeleteApi(ctx context.Context, in *DeleteApiRequest, opts ...grpc.CallOption) (*CheckReply, error) {
+	out := new(CheckReply)
+	err := c.cc.Invoke(ctx, "/api.admin.v1.Admin/DeleteApi", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *adminClient) GetMenuAll(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetMenuTreeReply, error) {
+	out := new(GetMenuTreeReply)
+	err := c.cc.Invoke(ctx, "/api.admin.v1.Admin/GetMenuAll", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *adminClient) GetMenuTree(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetMenuTreeReply, error) {
+	out := new(GetMenuTreeReply)
+	err := c.cc.Invoke(ctx, "/api.admin.v1.Admin/GetMenuTree", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *adminClient) CreateMenu(ctx context.Context, in *CreateMenuRequest, opts ...grpc.CallOption) (*MenuInfo, error) {
+	out := new(MenuInfo)
+	err := c.cc.Invoke(ctx, "/api.admin.v1.Admin/CreateMenu", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *adminClient) UpdateMenu(ctx context.Context, in *UpdateMenuRequest, opts ...grpc.CallOption) (*MenuInfo, error) {
+	out := new(MenuInfo)
+	err := c.cc.Invoke(ctx, "/api.admin.v1.Admin/UpdateMenu", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *adminClient) DeleteMenu(ctx context.Context, in *DeleteMenuRequest, opts ...grpc.CallOption) (*CheckReply, error) {
+	out := new(CheckReply)
+	err := c.cc.Invoke(ctx, "/api.admin.v1.Admin/DeleteMenu", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *adminClient) GetRoleMenuTree(ctx context.Context, in *GetRoleMenuRequest, opts ...grpc.CallOption) (*GetMenuTreeReply, error) {
+	out := new(GetMenuTreeReply)
+	err := c.cc.Invoke(ctx, "/api.admin.v1.Admin/GetRoleMenuTree", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *adminClient) GetRoleMenu(ctx context.Context, in *GetRoleMenuRequest, opts ...grpc.CallOption) (*GetMenuTreeReply, error) {
+	out := new(GetMenuTreeReply)
+	err := c.cc.Invoke(ctx, "/api.admin.v1.Admin/GetRoleMenu", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *adminClient) SetRoleMenu(ctx context.Context, in *SetRoleMenuRequest, opts ...grpc.CallOption) (*CheckReply, error) {
+	out := new(CheckReply)
+	err := c.cc.Invoke(ctx, "/api.admin.v1.Admin/SetRoleMenu", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -74,8 +393,66 @@ type AdminServer interface {
 	Login(context.Context, *LoginRequest) (*LoginReply, error)
 	// 管理员退出
 	Logout(context.Context, *emptypb.Empty) (*emptypb.Empty, error)
-	// 获取管理员信息
-	GetAdministratorInfo(context.Context, *emptypb.Empty) (*GetAdministratorInfoReply, error)
+	// 管理员详情
+	GetAdministratorInfo(context.Context, *emptypb.Empty) (*AdministratorInfoResponse, error)
+	// 管理员列表
+	GetAdministratorList(context.Context, *ListAdministratorRequest) (*ListAdministratorReply, error)
+	// 管理员创建
+	CreateAdministrator(context.Context, *CreateAdministratorRequest) (*AdministratorInfoResponse, error)
+	// 管理员更新
+	UpdateAdministrator(context.Context, *UpdateAdministratorRequest) (*AdministratorInfoResponse, error)
+	// 管理员删除
+	DeleteAdministrator(context.Context, *DeleteAdministratorRequest) (*CheckReply, error)
+	// 管理员恢复
+	RecoverAdministrator(context.Context, *RecoverAdministratorRequest) (*CheckReply, error)
+	// 角色列表
+	GetRoleList(context.Context, *emptypb.Empty) (*GetRoleListReply, error)
+	// 角色创建
+	CreateRole(context.Context, *CreateRoleRequest) (*RoleInfo, error)
+	// 角色更新
+	UpdateRole(context.Context, *UpdateRoleRequest) (*RoleInfo, error)
+	// 角色删除
+	DeleteRole(context.Context, *DeleteRoleRequest) (*CheckReply, error)
+	// 设置用户角色关系
+	AddRolesForUser(context.Context, *AddRolesForUserRequest) (*CheckReply, error)
+	// 获取用户角色列表
+	GetRolesForUser(context.Context, *GetRolesForUserRequest) (*GetRolesForUserReply, error)
+	// 获取角色用户列表
+	GetUsersForRole(context.Context, *GetUsersForRoleRequest) (*GetUsersForRoleReply, error)
+	// 删除用户某个角色
+	DeleteRoleForUser(context.Context, *DeleteRoleForUserRequest) (*CheckReply, error)
+	// 删除用户所有角色
+	DeleteRolesForUser(context.Context, *DeleteRolesForUserRequest) (*CheckReply, error)
+	// 策略授权规则列表
+	GetPolicies(context.Context, *GetPoliciesRequest) (*GetPoliciesReply, error)
+	// 策略添加授权规则
+	UpdatePolicies(context.Context, *UpdatePoliciesRequest) (*CheckReply, error)
+	// 所有Api列表
+	GetApiAll(context.Context, *emptypb.Empty) (*GetApiAllReply, error)
+	// Api列表
+	GetApiList(context.Context, *GetApiListRequest) (*GetApiListReply, error)
+	// Api创建
+	CreateApi(context.Context, *CreateApiRequest) (*ApiInfo, error)
+	// Api更新
+	UpdateApi(context.Context, *UpdateApiRequest) (*ApiInfo, error)
+	// Api删除
+	DeleteApi(context.Context, *DeleteApiRequest) (*CheckReply, error)
+	// 所有Menu列表
+	GetMenuAll(context.Context, *emptypb.Empty) (*GetMenuTreeReply, error)
+	// Menu列表
+	GetMenuTree(context.Context, *emptypb.Empty) (*GetMenuTreeReply, error)
+	// Menu创建
+	CreateMenu(context.Context, *CreateMenuRequest) (*MenuInfo, error)
+	// Menu更新
+	UpdateMenu(context.Context, *UpdateMenuRequest) (*MenuInfo, error)
+	// Menu删除
+	DeleteMenu(context.Context, *DeleteMenuRequest) (*CheckReply, error)
+	// 角色菜单列表树
+	GetRoleMenuTree(context.Context, *GetRoleMenuRequest) (*GetMenuTreeReply, error)
+	// 角色菜单列表
+	GetRoleMenu(context.Context, *GetRoleMenuRequest) (*GetMenuTreeReply, error)
+	// 角色菜单更新
+	SetRoleMenu(context.Context, *SetRoleMenuRequest) (*CheckReply, error)
 	mustEmbedUnimplementedAdminServer()
 }
 
@@ -89,8 +466,95 @@ func (UnimplementedAdminServer) Login(context.Context, *LoginRequest) (*LoginRep
 func (UnimplementedAdminServer) Logout(context.Context, *emptypb.Empty) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Logout not implemented")
 }
-func (UnimplementedAdminServer) GetAdministratorInfo(context.Context, *emptypb.Empty) (*GetAdministratorInfoReply, error) {
+func (UnimplementedAdminServer) GetAdministratorInfo(context.Context, *emptypb.Empty) (*AdministratorInfoResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAdministratorInfo not implemented")
+}
+func (UnimplementedAdminServer) GetAdministratorList(context.Context, *ListAdministratorRequest) (*ListAdministratorReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAdministratorList not implemented")
+}
+func (UnimplementedAdminServer) CreateAdministrator(context.Context, *CreateAdministratorRequest) (*AdministratorInfoResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateAdministrator not implemented")
+}
+func (UnimplementedAdminServer) UpdateAdministrator(context.Context, *UpdateAdministratorRequest) (*AdministratorInfoResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateAdministrator not implemented")
+}
+func (UnimplementedAdminServer) DeleteAdministrator(context.Context, *DeleteAdministratorRequest) (*CheckReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteAdministrator not implemented")
+}
+func (UnimplementedAdminServer) RecoverAdministrator(context.Context, *RecoverAdministratorRequest) (*CheckReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RecoverAdministrator not implemented")
+}
+func (UnimplementedAdminServer) GetRoleList(context.Context, *emptypb.Empty) (*GetRoleListReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetRoleList not implemented")
+}
+func (UnimplementedAdminServer) CreateRole(context.Context, *CreateRoleRequest) (*RoleInfo, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateRole not implemented")
+}
+func (UnimplementedAdminServer) UpdateRole(context.Context, *UpdateRoleRequest) (*RoleInfo, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateRole not implemented")
+}
+func (UnimplementedAdminServer) DeleteRole(context.Context, *DeleteRoleRequest) (*CheckReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteRole not implemented")
+}
+func (UnimplementedAdminServer) AddRolesForUser(context.Context, *AddRolesForUserRequest) (*CheckReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddRolesForUser not implemented")
+}
+func (UnimplementedAdminServer) GetRolesForUser(context.Context, *GetRolesForUserRequest) (*GetRolesForUserReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetRolesForUser not implemented")
+}
+func (UnimplementedAdminServer) GetUsersForRole(context.Context, *GetUsersForRoleRequest) (*GetUsersForRoleReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUsersForRole not implemented")
+}
+func (UnimplementedAdminServer) DeleteRoleForUser(context.Context, *DeleteRoleForUserRequest) (*CheckReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteRoleForUser not implemented")
+}
+func (UnimplementedAdminServer) DeleteRolesForUser(context.Context, *DeleteRolesForUserRequest) (*CheckReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteRolesForUser not implemented")
+}
+func (UnimplementedAdminServer) GetPolicies(context.Context, *GetPoliciesRequest) (*GetPoliciesReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetPolicies not implemented")
+}
+func (UnimplementedAdminServer) UpdatePolicies(context.Context, *UpdatePoliciesRequest) (*CheckReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdatePolicies not implemented")
+}
+func (UnimplementedAdminServer) GetApiAll(context.Context, *emptypb.Empty) (*GetApiAllReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetApiAll not implemented")
+}
+func (UnimplementedAdminServer) GetApiList(context.Context, *GetApiListRequest) (*GetApiListReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetApiList not implemented")
+}
+func (UnimplementedAdminServer) CreateApi(context.Context, *CreateApiRequest) (*ApiInfo, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateApi not implemented")
+}
+func (UnimplementedAdminServer) UpdateApi(context.Context, *UpdateApiRequest) (*ApiInfo, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateApi not implemented")
+}
+func (UnimplementedAdminServer) DeleteApi(context.Context, *DeleteApiRequest) (*CheckReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteApi not implemented")
+}
+func (UnimplementedAdminServer) GetMenuAll(context.Context, *emptypb.Empty) (*GetMenuTreeReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetMenuAll not implemented")
+}
+func (UnimplementedAdminServer) GetMenuTree(context.Context, *emptypb.Empty) (*GetMenuTreeReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetMenuTree not implemented")
+}
+func (UnimplementedAdminServer) CreateMenu(context.Context, *CreateMenuRequest) (*MenuInfo, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateMenu not implemented")
+}
+func (UnimplementedAdminServer) UpdateMenu(context.Context, *UpdateMenuRequest) (*MenuInfo, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateMenu not implemented")
+}
+func (UnimplementedAdminServer) DeleteMenu(context.Context, *DeleteMenuRequest) (*CheckReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteMenu not implemented")
+}
+func (UnimplementedAdminServer) GetRoleMenuTree(context.Context, *GetRoleMenuRequest) (*GetMenuTreeReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetRoleMenuTree not implemented")
+}
+func (UnimplementedAdminServer) GetRoleMenu(context.Context, *GetRoleMenuRequest) (*GetMenuTreeReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetRoleMenu not implemented")
+}
+func (UnimplementedAdminServer) SetRoleMenu(context.Context, *SetRoleMenuRequest) (*CheckReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SetRoleMenu not implemented")
 }
 func (UnimplementedAdminServer) mustEmbedUnimplementedAdminServer() {}
 
@@ -159,6 +623,528 @@ func _Admin_GetAdministratorInfo_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Admin_GetAdministratorList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListAdministratorRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdminServer).GetAdministratorList(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.admin.v1.Admin/GetAdministratorList",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdminServer).GetAdministratorList(ctx, req.(*ListAdministratorRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Admin_CreateAdministrator_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateAdministratorRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdminServer).CreateAdministrator(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.admin.v1.Admin/CreateAdministrator",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdminServer).CreateAdministrator(ctx, req.(*CreateAdministratorRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Admin_UpdateAdministrator_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateAdministratorRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdminServer).UpdateAdministrator(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.admin.v1.Admin/UpdateAdministrator",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdminServer).UpdateAdministrator(ctx, req.(*UpdateAdministratorRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Admin_DeleteAdministrator_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteAdministratorRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdminServer).DeleteAdministrator(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.admin.v1.Admin/DeleteAdministrator",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdminServer).DeleteAdministrator(ctx, req.(*DeleteAdministratorRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Admin_RecoverAdministrator_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RecoverAdministratorRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdminServer).RecoverAdministrator(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.admin.v1.Admin/RecoverAdministrator",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdminServer).RecoverAdministrator(ctx, req.(*RecoverAdministratorRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Admin_GetRoleList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdminServer).GetRoleList(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.admin.v1.Admin/GetRoleList",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdminServer).GetRoleList(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Admin_CreateRole_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateRoleRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdminServer).CreateRole(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.admin.v1.Admin/CreateRole",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdminServer).CreateRole(ctx, req.(*CreateRoleRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Admin_UpdateRole_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateRoleRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdminServer).UpdateRole(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.admin.v1.Admin/UpdateRole",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdminServer).UpdateRole(ctx, req.(*UpdateRoleRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Admin_DeleteRole_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteRoleRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdminServer).DeleteRole(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.admin.v1.Admin/DeleteRole",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdminServer).DeleteRole(ctx, req.(*DeleteRoleRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Admin_AddRolesForUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AddRolesForUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdminServer).AddRolesForUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.admin.v1.Admin/AddRolesForUser",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdminServer).AddRolesForUser(ctx, req.(*AddRolesForUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Admin_GetRolesForUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetRolesForUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdminServer).GetRolesForUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.admin.v1.Admin/GetRolesForUser",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdminServer).GetRolesForUser(ctx, req.(*GetRolesForUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Admin_GetUsersForRole_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUsersForRoleRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdminServer).GetUsersForRole(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.admin.v1.Admin/GetUsersForRole",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdminServer).GetUsersForRole(ctx, req.(*GetUsersForRoleRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Admin_DeleteRoleForUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteRoleForUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdminServer).DeleteRoleForUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.admin.v1.Admin/DeleteRoleForUser",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdminServer).DeleteRoleForUser(ctx, req.(*DeleteRoleForUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Admin_DeleteRolesForUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteRolesForUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdminServer).DeleteRolesForUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.admin.v1.Admin/DeleteRolesForUser",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdminServer).DeleteRolesForUser(ctx, req.(*DeleteRolesForUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Admin_GetPolicies_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetPoliciesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdminServer).GetPolicies(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.admin.v1.Admin/GetPolicies",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdminServer).GetPolicies(ctx, req.(*GetPoliciesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Admin_UpdatePolicies_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdatePoliciesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdminServer).UpdatePolicies(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.admin.v1.Admin/UpdatePolicies",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdminServer).UpdatePolicies(ctx, req.(*UpdatePoliciesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Admin_GetApiAll_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdminServer).GetApiAll(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.admin.v1.Admin/GetApiAll",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdminServer).GetApiAll(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Admin_GetApiList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetApiListRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdminServer).GetApiList(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.admin.v1.Admin/GetApiList",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdminServer).GetApiList(ctx, req.(*GetApiListRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Admin_CreateApi_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateApiRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdminServer).CreateApi(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.admin.v1.Admin/CreateApi",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdminServer).CreateApi(ctx, req.(*CreateApiRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Admin_UpdateApi_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateApiRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdminServer).UpdateApi(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.admin.v1.Admin/UpdateApi",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdminServer).UpdateApi(ctx, req.(*UpdateApiRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Admin_DeleteApi_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteApiRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdminServer).DeleteApi(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.admin.v1.Admin/DeleteApi",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdminServer).DeleteApi(ctx, req.(*DeleteApiRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Admin_GetMenuAll_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdminServer).GetMenuAll(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.admin.v1.Admin/GetMenuAll",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdminServer).GetMenuAll(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Admin_GetMenuTree_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdminServer).GetMenuTree(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.admin.v1.Admin/GetMenuTree",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdminServer).GetMenuTree(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Admin_CreateMenu_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateMenuRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdminServer).CreateMenu(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.admin.v1.Admin/CreateMenu",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdminServer).CreateMenu(ctx, req.(*CreateMenuRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Admin_UpdateMenu_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateMenuRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdminServer).UpdateMenu(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.admin.v1.Admin/UpdateMenu",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdminServer).UpdateMenu(ctx, req.(*UpdateMenuRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Admin_DeleteMenu_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteMenuRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdminServer).DeleteMenu(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.admin.v1.Admin/DeleteMenu",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdminServer).DeleteMenu(ctx, req.(*DeleteMenuRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Admin_GetRoleMenuTree_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetRoleMenuRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdminServer).GetRoleMenuTree(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.admin.v1.Admin/GetRoleMenuTree",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdminServer).GetRoleMenuTree(ctx, req.(*GetRoleMenuRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Admin_GetRoleMenu_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetRoleMenuRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdminServer).GetRoleMenu(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.admin.v1.Admin/GetRoleMenu",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdminServer).GetRoleMenu(ctx, req.(*GetRoleMenuRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Admin_SetRoleMenu_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SetRoleMenuRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdminServer).SetRoleMenu(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.admin.v1.Admin/SetRoleMenu",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdminServer).SetRoleMenu(ctx, req.(*SetRoleMenuRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Admin_ServiceDesc is the grpc.ServiceDesc for Admin service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -177,6 +1163,122 @@ var Admin_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetAdministratorInfo",
 			Handler:    _Admin_GetAdministratorInfo_Handler,
+		},
+		{
+			MethodName: "GetAdministratorList",
+			Handler:    _Admin_GetAdministratorList_Handler,
+		},
+		{
+			MethodName: "CreateAdministrator",
+			Handler:    _Admin_CreateAdministrator_Handler,
+		},
+		{
+			MethodName: "UpdateAdministrator",
+			Handler:    _Admin_UpdateAdministrator_Handler,
+		},
+		{
+			MethodName: "DeleteAdministrator",
+			Handler:    _Admin_DeleteAdministrator_Handler,
+		},
+		{
+			MethodName: "RecoverAdministrator",
+			Handler:    _Admin_RecoverAdministrator_Handler,
+		},
+		{
+			MethodName: "GetRoleList",
+			Handler:    _Admin_GetRoleList_Handler,
+		},
+		{
+			MethodName: "CreateRole",
+			Handler:    _Admin_CreateRole_Handler,
+		},
+		{
+			MethodName: "UpdateRole",
+			Handler:    _Admin_UpdateRole_Handler,
+		},
+		{
+			MethodName: "DeleteRole",
+			Handler:    _Admin_DeleteRole_Handler,
+		},
+		{
+			MethodName: "AddRolesForUser",
+			Handler:    _Admin_AddRolesForUser_Handler,
+		},
+		{
+			MethodName: "GetRolesForUser",
+			Handler:    _Admin_GetRolesForUser_Handler,
+		},
+		{
+			MethodName: "GetUsersForRole",
+			Handler:    _Admin_GetUsersForRole_Handler,
+		},
+		{
+			MethodName: "DeleteRoleForUser",
+			Handler:    _Admin_DeleteRoleForUser_Handler,
+		},
+		{
+			MethodName: "DeleteRolesForUser",
+			Handler:    _Admin_DeleteRolesForUser_Handler,
+		},
+		{
+			MethodName: "GetPolicies",
+			Handler:    _Admin_GetPolicies_Handler,
+		},
+		{
+			MethodName: "UpdatePolicies",
+			Handler:    _Admin_UpdatePolicies_Handler,
+		},
+		{
+			MethodName: "GetApiAll",
+			Handler:    _Admin_GetApiAll_Handler,
+		},
+		{
+			MethodName: "GetApiList",
+			Handler:    _Admin_GetApiList_Handler,
+		},
+		{
+			MethodName: "CreateApi",
+			Handler:    _Admin_CreateApi_Handler,
+		},
+		{
+			MethodName: "UpdateApi",
+			Handler:    _Admin_UpdateApi_Handler,
+		},
+		{
+			MethodName: "DeleteApi",
+			Handler:    _Admin_DeleteApi_Handler,
+		},
+		{
+			MethodName: "GetMenuAll",
+			Handler:    _Admin_GetMenuAll_Handler,
+		},
+		{
+			MethodName: "GetMenuTree",
+			Handler:    _Admin_GetMenuTree_Handler,
+		},
+		{
+			MethodName: "CreateMenu",
+			Handler:    _Admin_CreateMenu_Handler,
+		},
+		{
+			MethodName: "UpdateMenu",
+			Handler:    _Admin_UpdateMenu_Handler,
+		},
+		{
+			MethodName: "DeleteMenu",
+			Handler:    _Admin_DeleteMenu_Handler,
+		},
+		{
+			MethodName: "GetRoleMenuTree",
+			Handler:    _Admin_GetRoleMenuTree_Handler,
+		},
+		{
+			MethodName: "GetRoleMenu",
+			Handler:    _Admin_GetRoleMenu_Handler,
+		},
+		{
+			MethodName: "SetRoleMenu",
+			Handler:    _Admin_SetRoleMenu_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

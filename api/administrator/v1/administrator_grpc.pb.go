@@ -26,9 +26,9 @@ type AdministratorClient interface {
 	UpdateAdministrator(ctx context.Context, in *UpdateAdministratorRequest, opts ...grpc.CallOption) (*AdministratorInfoResponse, error)
 	GetAdministrator(ctx context.Context, in *GetAdministratorRequest, opts ...grpc.CallOption) (*AdministratorInfoResponse, error)
 	ListAdministrator(ctx context.Context, in *ListAdministratorRequest, opts ...grpc.CallOption) (*ListAdministratorReply, error)
-	DeleteAdministrator(ctx context.Context, in *DeleteAdministratorRequest, opts ...grpc.CallOption) (*AdministratorCheckResponse, error)
-	RecoverAdministrator(ctx context.Context, in *RecoverAdministratorRequest, opts ...grpc.CallOption) (*AdministratorCheckResponse, error)
-	VerifyAdministratorPassword(ctx context.Context, in *VerifyAdministratorPasswordRequest, opts ...grpc.CallOption) (*VerifyAdministratorPasswordReply, error)
+	DeleteAdministrator(ctx context.Context, in *DeleteAdministratorRequest, opts ...grpc.CallOption) (*CheckReply, error)
+	RecoverAdministrator(ctx context.Context, in *RecoverAdministratorRequest, opts ...grpc.CallOption) (*CheckReply, error)
+	VerifyAdministratorPassword(ctx context.Context, in *VerifyAdministratorPasswordRequest, opts ...grpc.CallOption) (*CheckReply, error)
 }
 
 type administratorClient struct {
@@ -75,8 +75,8 @@ func (c *administratorClient) ListAdministrator(ctx context.Context, in *ListAdm
 	return out, nil
 }
 
-func (c *administratorClient) DeleteAdministrator(ctx context.Context, in *DeleteAdministratorRequest, opts ...grpc.CallOption) (*AdministratorCheckResponse, error) {
-	out := new(AdministratorCheckResponse)
+func (c *administratorClient) DeleteAdministrator(ctx context.Context, in *DeleteAdministratorRequest, opts ...grpc.CallOption) (*CheckReply, error) {
+	out := new(CheckReply)
 	err := c.cc.Invoke(ctx, "/api.administrator.v1.Administrator/DeleteAdministrator", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -84,8 +84,8 @@ func (c *administratorClient) DeleteAdministrator(ctx context.Context, in *Delet
 	return out, nil
 }
 
-func (c *administratorClient) RecoverAdministrator(ctx context.Context, in *RecoverAdministratorRequest, opts ...grpc.CallOption) (*AdministratorCheckResponse, error) {
-	out := new(AdministratorCheckResponse)
+func (c *administratorClient) RecoverAdministrator(ctx context.Context, in *RecoverAdministratorRequest, opts ...grpc.CallOption) (*CheckReply, error) {
+	out := new(CheckReply)
 	err := c.cc.Invoke(ctx, "/api.administrator.v1.Administrator/RecoverAdministrator", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -93,8 +93,8 @@ func (c *administratorClient) RecoverAdministrator(ctx context.Context, in *Reco
 	return out, nil
 }
 
-func (c *administratorClient) VerifyAdministratorPassword(ctx context.Context, in *VerifyAdministratorPasswordRequest, opts ...grpc.CallOption) (*VerifyAdministratorPasswordReply, error) {
-	out := new(VerifyAdministratorPasswordReply)
+func (c *administratorClient) VerifyAdministratorPassword(ctx context.Context, in *VerifyAdministratorPasswordRequest, opts ...grpc.CallOption) (*CheckReply, error) {
+	out := new(CheckReply)
 	err := c.cc.Invoke(ctx, "/api.administrator.v1.Administrator/VerifyAdministratorPassword", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -110,9 +110,9 @@ type AdministratorServer interface {
 	UpdateAdministrator(context.Context, *UpdateAdministratorRequest) (*AdministratorInfoResponse, error)
 	GetAdministrator(context.Context, *GetAdministratorRequest) (*AdministratorInfoResponse, error)
 	ListAdministrator(context.Context, *ListAdministratorRequest) (*ListAdministratorReply, error)
-	DeleteAdministrator(context.Context, *DeleteAdministratorRequest) (*AdministratorCheckResponse, error)
-	RecoverAdministrator(context.Context, *RecoverAdministratorRequest) (*AdministratorCheckResponse, error)
-	VerifyAdministratorPassword(context.Context, *VerifyAdministratorPasswordRequest) (*VerifyAdministratorPasswordReply, error)
+	DeleteAdministrator(context.Context, *DeleteAdministratorRequest) (*CheckReply, error)
+	RecoverAdministrator(context.Context, *RecoverAdministratorRequest) (*CheckReply, error)
+	VerifyAdministratorPassword(context.Context, *VerifyAdministratorPasswordRequest) (*CheckReply, error)
 	mustEmbedUnimplementedAdministratorServer()
 }
 
@@ -132,13 +132,13 @@ func (UnimplementedAdministratorServer) GetAdministrator(context.Context, *GetAd
 func (UnimplementedAdministratorServer) ListAdministrator(context.Context, *ListAdministratorRequest) (*ListAdministratorReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListAdministrator not implemented")
 }
-func (UnimplementedAdministratorServer) DeleteAdministrator(context.Context, *DeleteAdministratorRequest) (*AdministratorCheckResponse, error) {
+func (UnimplementedAdministratorServer) DeleteAdministrator(context.Context, *DeleteAdministratorRequest) (*CheckReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteAdministrator not implemented")
 }
-func (UnimplementedAdministratorServer) RecoverAdministrator(context.Context, *RecoverAdministratorRequest) (*AdministratorCheckResponse, error) {
+func (UnimplementedAdministratorServer) RecoverAdministrator(context.Context, *RecoverAdministratorRequest) (*CheckReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RecoverAdministrator not implemented")
 }
-func (UnimplementedAdministratorServer) VerifyAdministratorPassword(context.Context, *VerifyAdministratorPasswordRequest) (*VerifyAdministratorPasswordReply, error) {
+func (UnimplementedAdministratorServer) VerifyAdministratorPassword(context.Context, *VerifyAdministratorPasswordRequest) (*CheckReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method VerifyAdministratorPassword not implemented")
 }
 func (UnimplementedAdministratorServer) mustEmbedUnimplementedAdministratorServer() {}

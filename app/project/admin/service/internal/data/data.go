@@ -1,18 +1,14 @@
 package data
 
 import (
-	"context"
-	v1 "github.com/ZQCard/kratos-base-project/api/administrator/v1"
+	administratorV1 "github.com/ZQCard/kratos-base-project/api/administrator/v1"
+	authorizationV1 "github.com/ZQCard/kratos-base-project/api/authorization/v1"
 	"github.com/ZQCard/kratos-base-project/app/project/admin/service/internal/conf"
 	consul "github.com/go-kratos/kratos/contrib/registry/consul/v2"
 	"github.com/go-kratos/kratos/v2/log"
-	"github.com/go-kratos/kratos/v2/middleware/recovery"
-	"github.com/go-kratos/kratos/v2/middleware/tracing"
 	"github.com/go-kratos/kratos/v2/registry"
-	"github.com/go-kratos/kratos/v2/transport/grpc"
 	"github.com/google/wire"
 	consulAPI "github.com/hashicorp/consul/api"
-	tracesdk "go.opentelemetry.io/otel/sdk/trace"
 )
 
 // ProviderSet is data providers.
@@ -20,26 +16,30 @@ var ProviderSet = wire.NewSet(
 	NewData,
 	NewRegistrar,
 	NewDiscovery,
-	NewAdministratorServiceClient,
 	NewAdministratorRepo,
+	NewAuthorizationRepo,
+	NewAdministratorServiceClient,
+	NewAuthorizationServiceClient,
 )
 
 // Data .
 type Data struct {
 	log                 *log.Helper
-	administratorClient v1.AdministratorClient
+	administratorClient administratorV1.AdministratorClient
+	authorizationClient authorizationV1.AuthorizationClient
 }
 
 // NewData .
 func NewData(
-	conf *conf.Data,
 	logger log.Logger,
-	administratorClient v1.AdministratorClient,
+	administratorClient administratorV1.AdministratorClient,
+	authorizationClient authorizationV1.AuthorizationClient,
 ) (*Data, error) {
 	l := log.NewHelper(log.With(logger, "module", "data"))
 	return &Data{
 		log:                 l,
 		administratorClient: administratorClient,
+		authorizationClient: authorizationClient,
 	}, nil
 }
 
@@ -65,24 +65,4 @@ func NewRegistrar(conf *conf.Registry) registry.Registrar {
 	}
 	r := consul.New(cli, consul.WithHealthCheck(false))
 	return r
-}
-
-func NewAdministratorServiceClient(ac *conf.Auth, sr *conf.Service, r registry.Discovery, tp *tracesdk.TracerProvider) v1.AdministratorClient {
-	conn, err := grpc.DialInsecure(
-		context.Background(),
-		grpc.WithEndpoint(sr.Administrator.Endpoint),
-		grpc.WithDiscovery(r),
-		grpc.WithMiddleware(
-			tracing.Client(tracing.WithTracerProvider(tp)),
-			recovery.Recovery(),
-			//jwt.Client(func(token *jwt2.Token) (interface{}, error) {
-			//	return []byte(ac.ServiceKey), nil
-			//}, jwt.WithSigningMethod(jwt2.SigningMethodHS256)),
-		),
-	)
-	if err != nil {
-		panic(err)
-	}
-	c := v1.NewAdministratorClient(conn)
-	return c
 }

@@ -7,7 +7,6 @@
 package main
 
 import (
-	"github.com/ZQCard/kratos-base-project/app/project/admin/service/internal/biz"
 	"github.com/ZQCard/kratos-base-project/app/project/admin/service/internal/conf"
 	"github.com/ZQCard/kratos-base-project/app/project/admin/service/internal/data"
 	"github.com/ZQCard/kratos-base-project/app/project/admin/service/internal/server"
@@ -23,14 +22,14 @@ import (
 func wireApp(confServer *conf.Server, registry *conf.Registry, confData *conf.Data, auth *conf.Auth, confService *conf.Service, logger log.Logger, tracerProvider *trace.TracerProvider) (*kratos.App, func(), error) {
 	discovery := data.NewDiscovery(registry)
 	administratorClient := data.NewAdministratorServiceClient(auth, confService, discovery, tracerProvider)
-	dataData, err := data.NewData(confData, logger, administratorClient)
+	authorizationClient := data.NewAuthorizationServiceClient(auth, confService, discovery, tracerProvider)
+	dataData, err := data.NewData(logger, administratorClient, authorizationClient)
 	if err != nil {
 		return nil, nil, err
 	}
 	administratorRepo := data.NewAdministratorRepo(dataData, logger)
-	administratorUseCase := biz.NewAdministratorUseCase(administratorRepo, logger)
-	authUseCase := biz.NewAuthUseCase(auth, administratorRepo)
-	adminInterface := service.NewAdminInterface(administratorUseCase, authUseCase, logger)
+	authorizationRepo := data.NewAuthorizationRepo(dataData, logger)
+	adminInterface := service.NewAdminInterface(administratorRepo, authorizationRepo, logger)
 	httpServer := server.NewHTTPServer(confServer, auth, adminInterface, tracerProvider, logger)
 	registrar := data.NewRegistrar(registry)
 	app := newApp(logger, httpServer, registrar)

@@ -25,6 +25,7 @@ type AdministratorEntity struct {
 	Nickname  string
 	Avatar    string
 	Status    int64
+	Role      string
 	CreatedAt *time.Time
 	UpdatedAt *time.Time
 	DeletedAt string

@@ -29,6 +29,7 @@ func (s *AdministratorService) CreateAdministrator(ctx context.Context, req *v1.
 		Mobile:   req.Mobile,
 		Status:   req.Status,
 		Avatar:   req.Avatar,
+		Role:     req.Role,
 	}
 	administratorInfo, err := s.administratorUseCase.Create(ctx, bc)
 	if err != nil {
@@ -38,10 +39,14 @@ func (s *AdministratorService) CreateAdministrator(ctx context.Context, req *v1.
 }
 func (s *AdministratorService) UpdateAdministrator(ctx context.Context, req *v1.UpdateAdministratorRequest) (*v1.AdministratorInfoResponse, error) {
 	bc := &biz.Administrator{
-		Id:     req.Id,
-		Mobile: req.Mobile,
-		Status: req.Status,
-		Avatar: req.Avatar,
+		Id:       req.Id,
+		Username: req.Username,
+		Password: req.Password,
+		Nickname: req.Nickname,
+		Mobile:   req.Mobile,
+		Status:   req.Status,
+		Avatar:   req.Avatar,
+		Role:     req.Role,
 	}
 	administratorInfo, err := s.administratorUseCase.Update(ctx, bc)
 	if err != nil {
@@ -50,24 +55,24 @@ func (s *AdministratorService) UpdateAdministrator(ctx context.Context, req *v1.
 	return bizAdministratorToInfoReply(administratorInfo), nil
 }
 
-func (s *AdministratorService) DeleteAdministrator(ctx context.Context, req *v1.DeleteAdministratorRequest) (*v1.AdministratorCheckResponse, error) {
+func (s *AdministratorService) DeleteAdministrator(ctx context.Context, req *v1.DeleteAdministratorRequest) (*v1.CheckReply, error) {
 	err := s.administratorUseCase.Delete(ctx, req.Id)
 	success := true
 	if err != nil {
 		success = false
 	}
-	return &v1.AdministratorCheckResponse{
+	return &v1.CheckReply{
 		IsSuccess: success,
 	}, err
 }
 
-func (s *AdministratorService) RecoverAdministrator(ctx context.Context, req *v1.RecoverAdministratorRequest) (*v1.AdministratorCheckResponse, error) {
+func (s *AdministratorService) RecoverAdministrator(ctx context.Context, req *v1.RecoverAdministratorRequest) (*v1.CheckReply, error) {
 	err := s.administratorUseCase.Recover(ctx, req.Id)
 	success := true
 	if err != nil {
 		success = false
 	}
-	return &v1.AdministratorCheckResponse{
+	return &v1.CheckReply{
 		IsSuccess: success,
 	}, err
 }
@@ -105,9 +110,9 @@ func (s *AdministratorService) ListAdministrator(ctx context.Context, req *v1.Li
 	return response, nil
 }
 
-func (s *AdministratorService) VerifyAdministratorPassword(ctx context.Context, req *v1.VerifyAdministratorPasswordRequest) (*v1.VerifyAdministratorPasswordReply, error) {
+func (s *AdministratorService) VerifyAdministratorPassword(ctx context.Context, req *v1.VerifyAdministratorPasswordRequest) (*v1.CheckReply, error) {
 	res, err := s.administratorUseCase.VerifyAdministratorPassword(ctx, req)
-	return &v1.VerifyAdministratorPasswordReply{
+	return &v1.CheckReply{
 		IsSuccess: res,
 	}, err
 }
@@ -120,6 +125,7 @@ func bizAdministratorToInfoReply(info *biz.Administrator) *v1.AdministratorInfoR
 		Mobile:    info.Mobile,
 		Status:    info.Status,
 		Avatar:    info.Avatar,
+		Role:      info.Role,
 		CreatedAt: info.CreatedAt,
 		UpdatedAt: info.CreatedAt,
 		DeletedAt: info.DeletedAt,

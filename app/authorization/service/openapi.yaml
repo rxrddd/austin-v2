@@ -1,0 +1,690 @@
+# Generated with protoc-gen-openapi
+# https://github.com/google/gnostic/tree/master/apps/protoc-gen-openapi
+
+openapi: 3.0.3
+info:
+    title: Authorization
+    version: 0.0.1
+paths:
+    /authorization/v1/addRolesForUser:
+        post:
+            summary: 设置用户角色关系
+            operationId: Authorization_AddRolesForUser
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/AddRolesForUserRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/CheckReply'
+    /authorization/v1/api:
+        get:
+            summary: Api列表
+            operationId: Authorization_GetApiList
+            parameters:
+                - name: page_num
+                  in: query
+                  schema:
+                    type: string
+                - name: page_size
+                  in: query
+                  schema:
+                    type: string
+                - name: group
+                  in: query
+                  schema:
+                    type: string
+                - name: name
+                  in: query
+                  schema:
+                    type: string
+                - name: path
+                  in: query
+                  schema:
+                    type: string
+                - name: method
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GetApiListReply'
+        put:
+            summary: Api更新
+            operationId: Authorization_UpdateApi
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UpdateApiRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ApiInfo'
+        post:
+            summary: Api创建
+            operationId: Authorization_CreateApi
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateApiRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ApiInfo'
+    /authorization/v1/api/{id}:
+        delete:
+            summary: Api删除
+            operationId: Authorization_DeleteApi
+            parameters:
+                - name: id
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/CheckReply'
+    /authorization/v1/apiAll:
+        get:
+            summary: 所有Api列表
+            operationId: Authorization_GetApiAll
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GetApiAllReply'
+    /authorization/v1/checkAuthorization:
+        post:
+            summary: 检查权限
+            operationId: Authorization_CheckAuthorization
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CheckAuthorizationRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/CheckReply'
+    /authorization/v1/deleteRoleForUser:
+        delete:
+            summary: 删除用户某个角色
+            operationId: Authorization_DeleteRoleForUser
+            parameters:
+                - name: user_identify
+                  in: query
+                  schema:
+                    type: string
+                - name: role
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/CheckReply'
+    /authorization/v1/deleteRolesForUser:
+        delete:
+            summary: 删除用户所有角色
+            operationId: Authorization_DeleteRolesForUser
+            parameters:
+                - name: user_identify
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/CheckReply'
+    /authorization/v1/getPolicies:
+        get:
+            summary: 策略授权规则列表
+            operationId: Authorization_GetPolicies
+            parameters:
+                - name: role_name
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GetPoliciesReply'
+    /authorization/v1/getRolesForUser:
+        get:
+            summary: 获取用户角色列表
+            operationId: Authorization_GetRolesForUser
+            parameters:
+                - name: user_identify
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GetRolesForUserReply'
+    /authorization/v1/getUsersForRole:
+        get:
+            summary: 获取角色用户列表
+            operationId: Authorization_GetUsersForRole
+            parameters:
+                - name: role
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GetUsersForRoleReply'
+    /authorization/v1/menu:
+        put:
+            summary: Menu更新
+            operationId: Authorization_UpdateMenu
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UpdateMenuRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/MenuInfo'
+        post:
+            summary: Menu创建
+            operationId: Authorization_CreateMenu
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateMenuRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/MenuInfo'
+    /authorization/v1/menu/{id}:
+        delete:
+            summary: Menu删除
+            operationId: Authorization_DeleteMenu
+            parameters:
+                - name: id
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/CheckReply'
+    /authorization/v1/menuAll:
+        get:
+            summary: 所有Menu列表
+            operationId: Authorization_GetMenuAll
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GetMenuTreeReply'
+    /authorization/v1/menuTree:
+        get:
+            summary: Menu列表
+            operationId: Authorization_GetMenuTree
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GetMenuTreeReply'
+    /authorization/v1/role:
+        get:
+            summary: 角色列表
+            operationId: Authorization_GetRoleList
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GetRoleListReply'
+        put:
+            summary: 角色更新
+            operationId: Authorization_UpdateRole
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UpdateRoleRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/RoleInfo'
+        post:
+            summary: 角色创建
+            operationId: Authorization_CreateRole
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateRoleRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/RoleInfo'
+    /authorization/v1/role/{id}:
+        delete:
+            summary: 角色删除
+            operationId: Authorization_DeleteRole
+            parameters:
+                - name: id
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/CheckReply'
+    /authorization/v1/roleMenu:
+        get:
+            summary: 角色菜单列表
+            operationId: Authorization_GetRoleMenu
+            parameters:
+                - name: role_id
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GetMenuTreeReply'
+        post:
+            summary: 角色菜单更新
+            operationId: Authorization_SetRoleMenu
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/SetRoleMenuRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/CheckReply'
+    /authorization/v1/roleMenuTree:
+        get:
+            summary: 角色菜单列表树
+            operationId: Authorization_GetRoleMenuTree
+            parameters:
+                - name: role_id
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GetMenuTreeReply'
+    /authorization/v1/updatePolicies:
+        post:
+            summary: 策略添加授权规则
+            operationId: Authorization_UpdatePolicies
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UpdatePoliciesRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/CheckReply'
+components:
+    schemas:
+        AddRolesForUserRequest:
+            properties:
+                user_identify:
+                    type: string
+                roles:
+                    type: array
+                    items:
+                        type: string
+        ApiInfo:
+            properties:
+                id:
+                    type: integer
+                    format: int64
+                group:
+                    type: string
+                name:
+                    type: string
+                path:
+                    type: string
+                method:
+                    type: string
+                created_at:
+                    type: string
+                updated_at:
+                    type: string
+        CheckAuthorizationRequest:
+            properties:
+                userIdentity:
+                    type: string
+                sub:
+                    type: array
+                    items:
+                        type: string
+                obj:
+                    type: string
+                act:
+                    type: string
+        CheckReply:
+            properties:
+                is_success:
+                    type: boolean
+        CreateApiRequest:
+            properties:
+                group:
+                    type: string
+                name:
+                    type: string
+                path:
+                    type: string
+                method:
+                    type: string
+        CreateMenuRequest:
+            properties:
+                parent_id:
+                    type: integer
+                    format: int64
+                path:
+                    type: string
+                name:
+                    type: string
+                hidden:
+                    type: integer
+                    format: int64
+                component:
+                    type: string
+                sort:
+                    type: integer
+                    format: int64
+                title:
+                    type: string
+                icon:
+                    type: string
+                menuBtns:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/MenuBtn'
+        CreateRoleRequest:
+            properties:
+                parent_id:
+                    type: integer
+                    format: int64
+                name:
+                    type: string
+        GetApiAllReply:
+            properties:
+                list:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/ApiInfo'
+        GetApiListReply:
+            properties:
+                total:
+                    type: integer
+                    format: int64
+                list:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/ApiInfo'
+        GetMenuTreeReply:
+            properties:
+                list:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/MenuInfo'
+        GetPoliciesReply:
+            properties:
+                policyRules:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/PolicyRules'
+        GetRoleListReply:
+            properties:
+                list:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/RoleInfo'
+        GetRolesForUserReply:
+            properties:
+                roles:
+                    type: array
+                    items:
+                        type: string
+        GetUsersForRoleReply:
+            properties:
+                users:
+                    type: array
+                    items:
+                        type: string
+        MenuBtn:
+            properties:
+                id:
+                    type: integer
+                    format: int64
+                menu_id:
+                    type: integer
+                    format: int64
+                name:
+                    type: string
+                description:
+                    type: string
+                created_at:
+                    type: string
+                updated_at:
+                    type: string
+        MenuInfo:
+            properties:
+                id:
+                    type: integer
+                    format: int64
+                parent_id:
+                    type: integer
+                    format: int64
+                path:
+                    type: string
+                name:
+                    type: string
+                hidden:
+                    type: integer
+                    format: int64
+                component:
+                    type: string
+                sort:
+                    type: integer
+                    format: int64
+                title:
+                    type: string
+                icon:
+                    type: string
+                created_at:
+                    type: string
+                updated_at:
+                    type: string
+                children:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/MenuInfo'
+                menuBtns:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/MenuBtn'
+        PolicyRules:
+            properties:
+                path:
+                    type: string
+                method:
+                    type: string
+        RoleInfo:
+            properties:
+                id:
+                    type: integer
+                    format: int64
+                parent_id:
+                    type: integer
+                    format: int64
+                name:
+                    type: string
+                created_at:
+                    type: string
+                updated_at:
+                    type: string
+                children:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/RoleInfo'
+        SetRoleMenuRequest:
+            properties:
+                role_id:
+                    type: integer
+                    format: int64
+                menu_ids:
+                    type: array
+                    items:
+                        type: integer
+        UpdateApiRequest:
+            properties:
+                id:
+                    type: integer
+                    format: int64
+                group:
+                    type: string
+                name:
+                    type: string
+                path:
+                    type: string
+                method:
+                    type: string
+        UpdateMenuRequest:
+            properties:
+                id:
+                    type: integer
+                    format: int64
+                parent_id:
+                    type: integer
+                    format: int64
+                path:
+                    type: string
+                name:
+                    type: string
+                hidden:
+                    type: integer
+                    format: int64
+                component:
+                    type: string
+                sort:
+                    type: integer
+                    format: int64
+                title:
+                    type: string
+                icon:
+                    type: string
+                menuBtns:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/MenuBtn'
+        UpdatePoliciesRequest:
+            properties:
+                role:
+                    type: string
+                policyRules:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/PolicyRules'
+        UpdateRoleRequest:
+            properties:
+                id:
+                    type: integer
+                    format: int64
+                parent_id:
+                    type: integer
+                    format: int64
+                name:
+                    type: string

@@ -2,13 +2,13 @@ package server
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"github.com/ZQCard/kratos-base-project/pkg/errResponse"
-	"github.com/go-kratos/kratos/v2/encoding"
+	"github.com/ZQCard/kratos-base-project/pkg/middleware/casbin"
+	"github.com/casbin/casbin/v2/model"
+	gormadapter "github.com/casbin/gorm-adapter/v3"
 	"github.com/go-kratos/kratos/v2/errors"
-	stdhttp "net/http"
-	"time"
-
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware"
 	"github.com/go-kratos/kratos/v2/middleware/auth/jwt"
@@ -21,6 +21,9 @@ import (
 	jwt2 "github.com/golang-jwt/jwt/v4"
 	"github.com/gorilla/handlers"
 	tracesdk "go.opentelemetry.io/otel/sdk/trace"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
+	stdhttp "net/http"
 
 	"github.com/ZQCard/kratos-base-project/api/project/admin/v1"
 	"github.com/ZQCard/kratos-base-project/app/project/admin/service/internal/conf"
@@ -57,7 +60,7 @@ func setGlobalData() middleware.Middleware {
 		return func(ctx context.Context, req interface{}) (reply interface{}, err error) {
 			claim, _ := jwt.FromContext(ctx)
 			if claim == nil {
-				return handler(ctx, req)
+				return nil, errResponse.SetErrByReason(errResponse.ReasonUnauthorizedInfoMissing)
 			}
 			claimInfo := claim.(jwt2.MapClaims)
 			AdministratorId := int64(claimInfo["AdministratorId"].(float64))
@@ -70,6 +73,18 @@ func setGlobalData() middleware.Middleware {
 
 // NewHTTPServer new a HTTP server.
 func NewHTTPServer(c *conf.Server, ac *conf.Auth, service *service.AdminInterface, tp *tracesdk.TracerProvider, logger log.Logger) *http.Server {
+	// 初始化基础数据库 casbin权限控制策略,连接基础库
+	db, err := gorm.Open(mysql.Open(ac.CasbinSource), &gorm.Config{})
+	if err != nil {
+		log.Fatalf("mysql connect error: %v", err)
+	}
+	a, _ := gormadapter.NewAdapterByDB(db)
+	// 加载权限配置文件
+	m, err := model.NewModelFromString(ac.CasbinModel)
+	if err != nil {
+		log.Fatalf(err.Error())
+	}
+
 	var opts = []http.ServerOption{
 		http.Middleware(
 			recovery.Recovery(),
@@ -85,10 +100,14 @@ func NewHTTPServer(c *conf.Server, ac *conf.Auth, service *service.AdminInterfac
 					jwt.WithClaims(func() jwt2.Claims {
 						return jwt2.MapClaims{}
 					})),
+				setGlobalData(),
+				casbin.Server(
+					casbin.WithCasbinModel(m),
+					casbin.WithCasbinPolicy(a),
+				),
 			).
 				Match(NewWhiteListMatcher()).
 				Build(),
-			setGlobalData(),
 		),
 		// 跨域设置
 		http.Filter(handlers.CORS(
@@ -116,24 +135,30 @@ func NewHTTPServer(c *conf.Server, ac *conf.Auth, service *service.AdminInterfac
 	return srv
 }
 
-func responseEncoder(w stdhttp.ResponseWriter, r *stdhttp.Request, i interface{}) error {
-	type response struct {
-		Code    int64       `json:"code"`
-		Data    interface{} `json:"data"`
-		Message string      `json:"message"`
-		Ts      int64       `json:"ts"`
-	}
-	reply := &response{
-		Code: 0,
-		Data: i,
-		Ts:   time.Now().Unix(),
-	}
-	codec := encoding.GetCodec("json")
-	data, err := codec.Marshal(reply)
+type Response struct {
+	Code    int         `json:"code"`
+	Message string      `json:"msg"`
+	Data    interface{} `json:"data"`
+}
+
+func responseEncoder(w stdhttp.ResponseWriter, r *stdhttp.Request, v interface{}) error {
+	reply := &Response{}
+	reply.Code = 0
+	reply.Message = "success"
+
+	codec, _ := http.CodecForRequest(r, "Accept")
+	data, err := codec.Marshal(v)
+	_ = json.Unmarshal(data, &reply.Data)
 	if err != nil {
 		return err
 	}
-	w.Header().Set("Content-Type", "application/json")
+
+	data, err = codec.Marshal(reply)
+	if err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", codec.Name())
+	w.WriteHeader(stdhttp.StatusOK)
 	w.Write(data)
 	return nil
 }

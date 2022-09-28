@@ -22,6 +22,7 @@ type Administrator struct {
 	Nickname  string `validate:"required,max=50" label:"昵称"`
 	Avatar    string `validate:"required,max=150" label:"头像地址"`
 	Status    int64  `validate:"required,oneof=1 2" label:"状态"`
+	Role      string
 	CreatedAt string
 	UpdatedAt string
 	DeletedAt string
@@ -72,6 +73,11 @@ func (uc *AdministratorUseCase) Recover(ctx context.Context, id int64) error {
 func (uc *AdministratorUseCase) Update(ctx context.Context, data *Administrator) (*Administrator, error) {
 	if data.Id == 0 {
 		return &Administrator{}, errResponse.SetCustomizeErrInfoByReason(errResponse.ReasonMissingId)
+	}
+
+	err := validate.ValidateStructCN(data)
+	if err != nil {
+		return &Administrator{}, errors.New(http.StatusBadRequest, errResponse.ReasonParamsError, err.Error())
 	}
 	return uc.repo.UpdateAdministrator(ctx, data)
 }

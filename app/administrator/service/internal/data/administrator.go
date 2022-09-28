@@ -64,12 +64,12 @@ func (s AdministratorRepo) searchParam(params map[string]interface{}) *gorm.DB {
 
 func (s AdministratorRepo) GetAdministratorByParams(params map[string]interface{}) (record entity.AdministratorEntity, err error) {
 	if len(params) == 0 {
-		return entity.AdministratorEntity{}, errResponse.SetGRpcErrByReason(errResponse.ReasonMissingParams)
+		return entity.AdministratorEntity{}, errResponse.SetErrByReason(errResponse.ReasonMissingParams)
 	}
 	conn := s.searchParam(params)
 	if err = conn.First(&record).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return entity.AdministratorEntity{}, errResponse.SetGRpcErrByReason(errResponse.ReasonAdministratorNotFound)
+			return entity.AdministratorEntity{}, errResponse.SetErrByReason(errResponse.ReasonAdministratorNotFound)
 		}
 		return record, errors.New(http.StatusInternalServerError, errResponse.ReasonSystemError, err.Error())
 	}
@@ -82,14 +82,14 @@ func (s AdministratorRepo) CreateAdministrator(ctx context.Context, reqData *biz
 		"username": reqData.Username,
 	})
 	if recordTmp.Id != 0 {
-		return nil, errResponse.SetGRpcErrByReason(errResponse.ReasonAdministratorUsernameExist)
+		return nil, errResponse.SetErrByReason(errResponse.ReasonAdministratorUsernameExist)
 	}
 	// 查看手机号是否存在
 	recordTmp, _ = s.GetAdministratorByParams(map[string]interface{}{
 		"mobile": reqData.Mobile,
 	})
 	if recordTmp.Id != 0 {
-		return nil, errResponse.SetGRpcErrByReason(errResponse.ReasonAdministratorMobileExist)
+		return nil, errResponse.SetErrByReason(errResponse.ReasonAdministratorMobileExist)
 	}
 	salt, password := encryption.HashPassword(reqData.Password)
 	modelTable := entity.AdministratorEntity{
@@ -99,6 +99,7 @@ func (s AdministratorRepo) CreateAdministrator(ctx context.Context, reqData *biz
 		Nickname:  reqData.Nickname,
 		Mobile:    reqData.Mobile,
 		Status:    entity.AdministratorStatusOK,
+		Role:      reqData.Role,
 		Avatar:    reqData.Avatar,
 		CreatedAt: timeHelper.GetCurrentTime(),
 		UpdatedAt: timeHelper.GetCurrentTime(),
@@ -131,6 +132,7 @@ func (s AdministratorRepo) UpdateAdministrator(ctx context.Context, reqData *biz
 	record.Avatar = reqData.Avatar
 	record.Nickname = reqData.Nickname
 	record.Status = reqData.Status
+	record.Role = reqData.Role
 	// 更新字段
 	if err := s.data.db.Model(&record).Where("id = ?", record.Id).Save(&record).Error; err != nil {
 		return nil, errors.New(http.StatusInternalServerError, errResponse.ReasonSystemError, err.Error())
@@ -187,7 +189,7 @@ func (s AdministratorRepo) DeleteAdministrator(ctx context.Context, id int64) er
 
 func (s AdministratorRepo) RecoverAdministrator(ctx context.Context, id int64) error {
 	if id == 0 {
-		return errResponse.SetGRpcErrByReason(errResponse.ReasonMissingParams)
+		return errResponse.SetErrByReason(errResponse.ReasonMissingParams)
 	}
 	err := s.data.db.Model(entity.AdministratorEntity{}).Where("id = ?", id).UpdateColumn("deleted_at", "").Error
 	if err != nil {
@@ -218,6 +220,7 @@ func ModelToResponse(administrator entity.AdministratorEntity) biz.Administrator
 		Mobile:    administrator.Mobile,
 		Status:    administrator.Status,
 		Avatar:    administrator.Avatar,
+		Role:      administrator.Role,
 		CreatedAt: timeHelper.FormatYMDHIS(administrator.CreatedAt),
 		UpdatedAt: timeHelper.FormatYMDHIS(administrator.UpdatedAt),
 		DeletedAt: administrator.DeletedAt,

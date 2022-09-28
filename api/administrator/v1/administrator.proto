@@ -11,9 +11,9 @@ service Administrator {
 	rpc UpdateAdministrator (UpdateAdministratorRequest) returns (AdministratorInfoResponse);
 	rpc GetAdministrator (GetAdministratorRequest) returns (AdministratorInfoResponse);
 	rpc ListAdministrator (ListAdministratorRequest) returns (ListAdministratorReply);
-	rpc DeleteAdministrator (DeleteAdministratorRequest) returns (AdministratorCheckResponse);
-	rpc RecoverAdministrator (RecoverAdministratorRequest) returns (AdministratorCheckResponse);
-	rpc VerifyAdministratorPassword(VerifyAdministratorPasswordRequest) returns (VerifyAdministratorPasswordReply);
+	rpc DeleteAdministrator (DeleteAdministratorRequest) returns (CheckReply);
+	rpc RecoverAdministrator (RecoverAdministratorRequest) returns (CheckReply);
+	rpc VerifyAdministratorPassword(VerifyAdministratorPasswordRequest) returns (CheckReply);
 }
 
 message CreateAdministratorRequest {
@@ -24,6 +24,7 @@ message CreateAdministratorRequest {
 	string nickname = 5;
 	string avatar = 6;
 	int64 status = 7;
+	string role = 8;
 }
 
 message UpdateAdministratorRequest {
@@ -34,6 +35,7 @@ message UpdateAdministratorRequest {
 	string nickname = 5;
 	string avatar = 6;
 	int64 status = 7;
+	string role = 8;
 }
 
 message DeleteAdministratorRequest {
@@ -73,20 +75,18 @@ message AdministratorInfoResponse {
 	string nickname = 4;
 	string avatar = 5;
 	int64 status = 6;
-	string created_at = 7;
-	string updated_at = 8;
-	string deleted_at = 9;
+	string role = 7;
+	string created_at = 8;
+	string updated_at = 9;
+	string deleted_at = 10;
 }
 
-message AdministratorCheckResponse{
-	bool is_success = 1;
-}
 
 message VerifyAdministratorPasswordRequest {
 	int64 id = 1;
 	string password = 2;
 }
 
-message VerifyAdministratorPasswordReply{
+message CheckReply {
 	bool is_success = 1;
 }

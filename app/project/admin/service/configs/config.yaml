@@ -3,6 +3,8 @@ service:
   version: v1
   administrator:
     endpoint: discovery:///kratos-base-project.administrator.service
+  authorization:
+    endpoint: discovery:///kratos-base-project.authorization.service
 trace:
   endpoint: http://127.0.0.1:14268/api/traces
 server:
@@ -12,6 +14,26 @@ server:
 auth:
   service_key: "kratos-base-project-admin-service-key"
   api_key: "kratos-base-project-admin-api-key"
+  casbin_source: root:root@tcp(127.0.0.1:3306)/kratos-base-project-authorization?parseTime=true&collation=utf8mb4_unicode_ci&loc=Asia%2FShanghai&charset=utf8mb4
+  casbin_model: "[request_definition]
+  
+  r = sub, obj, act
+  
+  [policy_definition]
+  
+  p = sub, obj, act
+  
+  [role_definition]
+  
+  g = _, _
+  
+  [policy_effect]
+  
+  e = some(where (p.eft == allow))
+  
+  [matchers]
+  
+  m = g(r.sub, p.sub) && keyMatch2(r.obj, p.obj) && regexMatch(r.act, p.act)"
 consul:
   address: 127.0.0.1:8500
   scheme: http

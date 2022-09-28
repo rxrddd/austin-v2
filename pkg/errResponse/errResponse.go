@@ -11,6 +11,7 @@ const ReasonUnknownError = "UNKNOWN_ERROR"
 const ReasonMissingParams = "MISSING_PARAMS"
 const ReasonMissingId = "MISSING_ID"
 const ReasonParamsError = "PARAMS_ERROR"
+const ReasonRecordNotFound = "RECORD_NOT_FOUND"
 
 const ReasonAdministratorNotFound = "ADMINISTRATOR_NOT_FOUND"
 const ReasonAdministratorPasswordError = "ADMINISTRATOR_PASSWORD_ERROR"
@@ -19,18 +20,30 @@ const ReasonAdministratorDeleted = "ADMINISTRATOR_DELETED"
 const ReasonAdministratorUsernameExist = "ADMINISTRATOR_USERNAME_EXIST"
 const ReasonAdministratorMobileExist = "ADMINISTRATOR_MOBILE_EXIST"
 
-const ReasonAdministratorUNAUTHORIZED = "UNAUTHORIZED"
+const ReasonUnauthorizedRole = "UNAUTHORIZED_ROLE"
+const ReasonUnauthorizedInfoMissing = "UNAUTHORIZED_INFO_MISSING"
+const ReasonAuthorizedDataMissing = "AUTHORIZATION_DATA_MISSING"
+const ReasonAuthorizationRoleExist = "AUTHORIZATION_ROLE_EXIST"
+const ReasonAuthorizationRoleNotFound = "AUTHORIZATION_ROLE_NOT_FOUND"
+const ReasonAuthorizationUserHasRoleAlready = "AUTHORIZATION_USE_HAS_ROLE_ALREADY"
+
+const ReasonAuthorizationApiNotFound = "AUTHORIZATION_API_NOT_FOUND"
+const ReasonAuthorizationApiExist = "AUTHORIZATION_API_EXIST"
+
+const ReasonAdministratorUnauthorized = "UNAUTHORIZED"
 
 const ReasonSystemError = "SYSTEM_ERROR"
 const ReasonServiceGatewayTimeout = "SERVICE_GATEWAY_TIMEOUT"
+const ReasonServiceUnavailable = "SERVICE_GATEWAY_UNAVAILABLE"
 
 var reasonMessageAll = map[string]string{
 	ReasonSuccess:      "请求成功",
 	ReasonUnknownError: "未知错误",
 
-	ReasonParamsError:   "请求参数错误",
-	ReasonMissingParams: "缺少搜索参数",
-	ReasonMissingId:     "id不得为空",
+	ReasonParamsError:    "请求参数错误",
+	ReasonMissingParams:  "缺少搜索参数",
+	ReasonMissingId:      "id不得为空",
+	ReasonRecordNotFound: "数据不存在",
 
 	ReasonAdministratorNotFound:      "管理员数据不存在",
 	ReasonAdministratorPasswordError: "管理员密码错误",
@@ -39,19 +52,31 @@ var reasonMessageAll = map[string]string{
 	ReasonAdministratorUsernameExist: "管理员用户名已存在",
 	ReasonAdministratorMobileExist:   "管理员手机号已存在",
 
-	ReasonAdministratorUNAUTHORIZED: "管理员未登陆",
+	ReasonAdministratorUnauthorized: "管理员未登陆",
+	ReasonUnauthorizedInfoMissing:   "角色授权信息不存在",
+	ReasonAuthorizedDataMissing:     "权限数据不存在",
+	ReasonUnauthorizedRole:          "角色未授权",
+
+	ReasonAuthorizationRoleExist:          "角色已存在",
+	ReasonAuthorizationRoleNotFound:       "角色不存在",
+	ReasonAuthorizationUserHasRoleAlready: "用户已经拥有角色",
+
+	ReasonAuthorizationApiNotFound: "接口不存在",
+	ReasonAuthorizationApiExist:    "接口已存在",
 
 	ReasonSystemError:           "系统繁忙,请稍后再试",
 	ReasonServiceGatewayTimeout: "服务不可达",
+	ReasonServiceUnavailable:    "服务不可达",
 }
 
 var reasonCodeAll = map[string]int{
 	ReasonSuccess:      0,
 	ReasonUnknownError: 1,
 
-	ReasonParamsError:   10000,
-	ReasonMissingParams: 10001,
-	ReasonMissingId:     10002,
+	ReasonParamsError:    10000,
+	ReasonMissingParams:  10001,
+	ReasonMissingId:      10002,
+	ReasonRecordNotFound: 10003,
 
 	ReasonAdministratorNotFound:      20001,
 	ReasonAdministratorPasswordError: 20002,
@@ -60,10 +85,20 @@ var reasonCodeAll = map[string]int{
 	ReasonAdministratorUsernameExist: 20005,
 	ReasonAdministratorMobileExist:   20006,
 
-	ReasonAdministratorUNAUTHORIZED: 4000,
+	ReasonAdministratorUnauthorized:       40000,
+	ReasonUnauthorizedRole:                40001,
+	ReasonUnauthorizedInfoMissing:         40002,
+	ReasonAuthorizedDataMissing:           40003,
+	ReasonAuthorizationRoleExist:          40200,
+	ReasonAuthorizationRoleNotFound:       40204,
+	ReasonAuthorizationUserHasRoleAlready: 40202,
+
+	ReasonAuthorizationApiExist:    40302,
+	ReasonAuthorizationApiNotFound: 40304,
 
 	ReasonSystemError:           50000,
-	ReasonServiceGatewayTimeout: 50001,
+	ReasonServiceGatewayTimeout: 50004,
+	ReasonServiceUnavailable:    50003,
 }
 
 var reasonGrpcCodeAll = map[string]int{
@@ -81,7 +116,7 @@ var reasonGrpcCodeAll = map[string]int{
 	ReasonAdministratorUsernameExist: http.StatusBadRequest,
 	ReasonAdministratorMobileExist:   http.StatusBadRequest,
 
-	ReasonAdministratorUNAUTHORIZED: http.StatusUnauthorized,
+	ReasonAdministratorUnauthorized: http.StatusUnauthorized,
 
 	ReasonSystemError:           http.StatusInternalServerError,
 	ReasonServiceGatewayTimeout: http.StatusGatewayTimeout,
@@ -94,12 +129,20 @@ func SetCustomizeErrInfo(err error) error {
 	if e.Code == http.StatusGatewayTimeout {
 		return SetCustomizeErrInfoByReason(ReasonServiceGatewayTimeout)
 	}
+	// 如果 e.Code = 503 则是服务连接被拒绝
+	if e.Code == http.StatusServiceUnavailable {
+		return SetCustomizeErrInfoByReason(ReasonServiceUnavailable)
+	}
 	reason := e.Reason
 	if reason == "" {
 		reason = ReasonUnknownError
 	}
 	if _, ok := reasonCodeAll[reason]; !ok {
 		return err
+	}
+	// 如果是参数错误， 则检查err是否有值， 有则直接参会
+	if e.Reason == ReasonParamsError && e.Message != "" {
+		return errors.New(reasonCodeAll[reason], reason, e.Message)
 	}
 	return SetCustomizeErrInfoByReason(e.Reason)
 }
@@ -115,8 +158,8 @@ func GetErrInfoByReason(reason string) string {
 	return reasonMessageAll[reason]
 }
 
-// SetGRpcErrByReason 根据err.Reason返回自定义包装错误
-func SetGRpcErrByReason(reason string) error {
+// SetErrByReason 根据err.Reason返回自定义包装错误
+func SetErrByReason(reason string) error {
 	code, message := reasonGrpcCodeAll[reason], reasonMessageAll[reason]
 	return errors.New(code, reason, message)
 }

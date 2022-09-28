@@ -58,6 +58,8 @@ message Registry {
 message Auth {
   string service_key = 1;
   string api_key = 2;
+  string casbin_model = 3;
+  string casbin_source = 4;
 }
 
 message Service {
@@ -67,5 +69,8 @@ message Service {
     string endpoint = 1;
   }
   Administrator administrator = 3;
+  message Authorization {
+    string endpoint = 1;
+  }
+  Authorization authorization = 4;
 }
-

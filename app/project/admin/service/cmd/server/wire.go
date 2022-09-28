@@ -6,7 +6,6 @@
 package main
 
 import (
-	"github.com/ZQCard/kratos-base-project/app/project/admin/service/internal/biz"
 	"github.com/ZQCard/kratos-base-project/app/project/admin/service/internal/conf"
 	"github.com/ZQCard/kratos-base-project/app/project/admin/service/internal/data"
 	"github.com/ZQCard/kratos-base-project/app/project/admin/service/internal/server"
@@ -19,5 +18,5 @@ import (
 
 // wireApp init kratos application.
 func wireApp(*conf.Server, *conf.Registry, *conf.Data, *conf.Auth, *conf.Service, log.Logger, *tracesdk.TracerProvider) (*kratos.App, func(), error) {
-	panic(wire.Build(server.ProviderSet, data.ProviderSet, biz.ProviderSet, service.ProviderSet, newApp))
+	panic(wire.Build(server.ProviderSet, data.ProviderSet, service.ProviderSet, newApp))
 }
