@@ -268,12 +268,13 @@ func (a AuthorizationRepo) DeleteMenu(ctx context.Context, id int64) error {
 	var menu entity2.Menu
 	// 查看菜单是否存在
 	err := a.data.db.Model(entity2.Menu{}).Where("id = ?", id).First(&menu).Error
-	if err != nil {
-		return kerrors.InternalServer(errResponse.ReasonSystemError, err.Error())
-	}
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return errResponse.SetErrByReason(errResponse.ReasonRecordNotFound)
 	}
+	if err != nil {
+		return kerrors.InternalServer(errResponse.ReasonSystemError, err.Error())
+	}
+
 	tx := a.data.db.Begin()
 	err = tx.Model(entity2.Menu{}).Where("id = ?", id).Delete(&menu).Error
 	if err != nil {

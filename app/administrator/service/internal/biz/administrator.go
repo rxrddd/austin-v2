@@ -14,18 +14,20 @@ import (
 )
 
 type Administrator struct {
-	Id        int64
-	Username  string `validate:"required,max=50" label:"用户名"`
-	Password  string `validate:"required,max=50" label:"密码"`
-	Salt      string
-	Mobile    string `validate:"required,max=20" label:"手机号码"`
-	Nickname  string `validate:"required,max=50" label:"昵称"`
-	Avatar    string `validate:"required,max=150" label:"头像地址"`
-	Status    int64  `validate:"required,oneof=1 2" label:"状态"`
-	Role      string
-	CreatedAt string
-	UpdatedAt string
-	DeletedAt string
+	Id            int64
+	Username      string `validate:"required,max=50" label:"用户名"`
+	Password      string `validate:"required,max=50" label:"密码"`
+	Salt          string
+	Mobile        string `validate:"required,max=20" label:"手机号码"`
+	Nickname      string `validate:"required,max=50" label:"昵称"`
+	Avatar        string `validate:"required,max=150" label:"头像地址"`
+	Status        int64  `validate:"required,oneof=1 2" label:"状态"`
+	Role          string
+	LastLoginTime string
+	LastLoginIp   string
+	CreatedAt     string
+	UpdatedAt     string
+	DeletedAt     string
 }
 
 // AdministratorRepo 模块接口
@@ -37,6 +39,7 @@ type AdministratorRepo interface {
 	DeleteAdministrator(ctx context.Context, id int64) error
 	RecoverAdministrator(ctx context.Context, id int64) error
 	VerifyAdministratorPassword(ctx context.Context, id int64, password string) (bool, error)
+	UpdateAdministratorLoginInfo(ctx context.Context, id int64, loginTime string, loginIp string) error
 }
 
 type AdministratorUseCase struct {
@@ -99,4 +102,9 @@ func (ac AdministratorUseCase) VerifyAdministratorPassword(ctx context.Context, 
 		return false, err
 	}
 	return result, nil
+}
+
+func (ac AdministratorUseCase) UpdateAdministratorLoginInfo(ctx context.Context, in *v1.AdministratorLoginSuccessRequest) error {
+	return ac.repo.UpdateAdministratorLoginInfo(ctx, in.Id, in.LastLoginTime, in.LastLoginIp)
+
 }

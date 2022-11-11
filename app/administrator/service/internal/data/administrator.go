@@ -18,8 +18,10 @@ type AdministratorRepo struct {
 	log  *log.Helper
 }
 
-// searchParam 搜索条件
-func (s AdministratorRepo) searchParam(params map[string]interface{}) *gorm.DB {
+func (s AdministratorRepo) GetAdministratorByParams(params map[string]interface{}) (record entity.AdministratorEntity, err error) {
+	if len(params) == 0 {
+		return entity.AdministratorEntity{}, errResponse.SetErrByReason(errResponse.ReasonMissingParams)
+	}
 	conn := s.data.db.Model(&entity.AdministratorEntity{})
 	if id, ok := params["id"]; ok && id != nil {
 		conn = conn.Where("id = ?", id)
@@ -28,45 +30,21 @@ func (s AdministratorRepo) searchParam(params map[string]interface{}) *gorm.DB {
 		conn = conn.Where("nickname LIKE ?", "%"+nickname.(string)+"%")
 	}
 	if nickname, ok := params["nickname"]; ok && nickname != nil && nickname.(string) != "" {
-		conn = conn.Where("nickname = ?", nickname.(string))
+		conn = conn.Where("nickname = ?", nickname)
 	}
 	if username, ok := params["username_like"]; ok && username != nil && username.(string) != "" {
 		conn = conn.Where("username LIKE ?", "%"+username.(string)+"%")
 	}
 	if username, ok := params["username"]; ok && username != nil && username.(string) != "" {
-		conn = conn.Where("username = ?", username.(string))
+		conn = conn.Where("username = ?", username)
 	}
-	if mobile, ok := params["mobile_like"]; ok && mobile != nil && mobile.(string) != "" {
-		conn = conn.Where("mobile LIKE ?", "%"+mobile.(string)+"%")
-	}
+
 	if mobile, ok := params["mobile"]; ok && mobile != nil && mobile.(string) != "" {
-		conn = conn.Where("mobile = ?", mobile.(string))
+		conn = conn.Where("mobile = ?", mobile)
 	}
-	// 开始时间
-	if start, ok := params["created_at_start"]; ok && start != nil && start.(string) != "" {
-		conn = conn.Where("created_at >= ", start.(string))
+	if status, ok := params["status"]; ok && status != nil && status.(int64) != 0 {
+		conn = conn.Where("status = ?", status)
 	}
-	// 结束时间
-	if end, ok := params["created_at_end"]; ok && end != nil && end.(string) != "" {
-		conn = conn.Where("created_at <= ", end.(string))
-	}
-	// 已删除
-	if isDeleted, ok := params["is_deleted"]; ok && isDeleted.(string) == entity.AdministratorDeleted {
-		conn = conn.Scopes(entity.HasDelete())
-	}
-	// 未删除
-	if isDeleted, ok := params["is_deleted"]; ok && isDeleted.(string) == entity.AdministratorUnDeleted {
-		conn = conn.Scopes(entity.UnDelete())
-	}
-
-	return conn
-}
-
-func (s AdministratorRepo) GetAdministratorByParams(params map[string]interface{}) (record entity.AdministratorEntity, err error) {
-	if len(params) == 0 {
-		return entity.AdministratorEntity{}, errResponse.SetErrByReason(errResponse.ReasonMissingParams)
-	}
-	conn := s.searchParam(params)
 	if err = conn.First(&record).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return entity.AdministratorEntity{}, errResponse.SetErrByReason(errResponse.ReasonAdministratorNotFound)
@@ -142,11 +120,23 @@ func (s AdministratorRepo) UpdateAdministrator(ctx context.Context, reqData *biz
 	return &response, nil
 }
 
+func (s AdministratorRepo) UpdateAdministratorLoginInfo(ctx context.Context, id int64, loginTime string, loginIp string) error {
+	// 更新登陆信息
+	err := s.data.db.Model(&entity.AdministratorEntity{}).Where("id = ?", id).UpdateColumns(map[string]interface{}{
+		"last_login_ip":   loginIp,
+		"last_login_time": loginTime,
+	}).Error
+	if err != nil {
+		return errors.New(http.StatusInternalServerError, errResponse.ReasonSystemError, err.Error())
+	}
+	return nil
+}
+
 func (s AdministratorRepo) GetAdministrator(ctx context.Context, params map[string]interface{}) (*biz.Administrator, error) {
-	// 根据id查找记录
+	// 根据查找记录
 	record, err := s.GetAdministratorByParams(params)
 	if err != nil {
-		return nil, err
+		return &biz.Administrator{}, err
 	}
 	// 返回数据
 	response := ModelToResponse(record)
@@ -155,12 +145,44 @@ func (s AdministratorRepo) GetAdministrator(ctx context.Context, params map[stri
 
 func (s AdministratorRepo) ListAdministrator(ctx context.Context, pageNum, pageSize int64, params map[string]interface{}) ([]*biz.Administrator, int64, error) {
 	list := []entity.AdministratorEntity{}
-	// 电话号码模糊搜索
-	params["mobile_like"] = params["mobile"]
-	delete(params, "mobile")
-	params["nickname_like"] = params["nickname"]
-	delete(params, "nickname")
-	conn := s.searchParam(params)
+	conn := s.data.db.Model(&entity.AdministratorEntity{})
+	if id, ok := params["id"]; ok && id != nil {
+		conn = conn.Where("id = ?", id)
+	}
+	if nickname, ok := params["nickname"]; ok && nickname != nil && nickname.(string) != "" {
+		conn = conn.Where("nickname LIKE ?", "%"+nickname.(string)+"%")
+	}
+
+	if username, ok := params["username"]; ok && username != nil && username.(string) != "" {
+		conn = conn.Where("username LIKE ?", "%"+username.(string)+"%")
+	}
+
+	if mobile, ok := params["mobile"]; ok && mobile != nil && mobile.(string) != "" {
+		conn = conn.Where("mobile LIKE ?", "%"+mobile.(string)+"%")
+	}
+
+	if status, ok := params["status"]; ok && status != nil && status.(int64) != 0 {
+		conn = conn.Where("status = ?", status)
+	}
+	// 开始时间 检查日期格式
+	if start, ok := params["created_at_start"]; ok && start != nil && start.(string) != "" {
+		tmp := start.(string)
+		if !timeHelper.CheckDateFormat(tmp) {
+			return nil, 0, errResponse.SetErrByReason(errResponse.TimeFormatError)
+		}
+		tmp = tmp + " 00:00:00"
+		conn = conn.Where("created_at >= ", tmp)
+	}
+	// 结束时间
+	if end, ok := params["created_at_end"]; ok && end != nil && end.(string) != "" {
+		tmp := end.(string)
+		if !timeHelper.CheckDateFormat(tmp) {
+			return nil, 0, errResponse.SetErrByReason(errResponse.TimeFormatError)
+		}
+		tmp = tmp + " 23:59:59"
+		conn = conn.Where("created_at <= ", end)
+	}
+
 	err := conn.Scopes(entity.Paginate(pageNum, pageSize)).Find(&list).Error
 	if err != nil {
 		return nil, 0, errors.New(http.StatusInternalServerError, errResponse.ReasonSystemError, err.Error())
@@ -212,18 +234,20 @@ func (s AdministratorRepo) VerifyAdministratorPassword(ctx context.Context, id i
 // ModelToResponse 转换 administrator 表中所有字段的值
 func ModelToResponse(administrator entity.AdministratorEntity) biz.Administrator {
 	administratorInfoRsp := biz.Administrator{
-		Id:        administrator.Id,
-		Username:  administrator.Username,
-		Salt:      administrator.Salt,
-		Password:  administrator.Password,
-		Nickname:  administrator.Nickname,
-		Mobile:    administrator.Mobile,
-		Status:    administrator.Status,
-		Avatar:    administrator.Avatar,
-		Role:      administrator.Role,
-		CreatedAt: timeHelper.FormatYMDHIS(administrator.CreatedAt),
-		UpdatedAt: timeHelper.FormatYMDHIS(administrator.UpdatedAt),
-		DeletedAt: administrator.DeletedAt,
+		Id:            administrator.Id,
+		Username:      administrator.Username,
+		Salt:          administrator.Salt,
+		Password:      administrator.Password,
+		Nickname:      administrator.Nickname,
+		Mobile:        administrator.Mobile,
+		Status:        administrator.Status,
+		Avatar:        administrator.Avatar,
+		Role:          administrator.Role,
+		LastLoginIp:   administrator.LastLoginIp,
+		LastLoginTime: administrator.LastLoginTime,
+		CreatedAt:     timeHelper.FormatYMDHIS(administrator.CreatedAt),
+		UpdatedAt:     timeHelper.FormatYMDHIS(administrator.UpdatedAt),
+		DeletedAt:     administrator.DeletedAt,
 	}
 	return administratorInfoRsp
 }

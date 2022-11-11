@@ -2,23 +2,22 @@ package data
 
 import (
 	"context"
+	"fmt"
 	administratorServiceV1 "github.com/ZQCard/kratos-base-project/api/administrator/v1"
 	v1 "github.com/ZQCard/kratos-base-project/api/project/admin/v1"
 	"github.com/ZQCard/kratos-base-project/app/project/admin/service/internal/conf"
+	"github.com/ZQCard/kratos-base-project/pkg/errResponse"
+	"github.com/ZQCard/kratos-base-project/pkg/utils/encryption"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
 	"github.com/go-kratos/kratos/v2/middleware/tracing"
 	"github.com/go-kratos/kratos/v2/registry"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
+	"github.com/golang-jwt/jwt/v4"
 	tracesdk "go.opentelemetry.io/otel/sdk/trace"
 	"golang.org/x/sync/singleflight"
+	"time"
 )
-
-var auth *conf.Auth
-
-func GetAuthApiKey() string {
-	return auth.ApiKey
-}
 
 func NewAdministratorServiceClient(ac *conf.Auth, sr *conf.Service, r registry.Discovery, tp *tracesdk.TracerProvider) administratorServiceV1.AdministratorClient {
 	// 初始化auth配置
@@ -68,6 +67,7 @@ func (rp AdministratorRepo) CreateAdministrator(ctx context.Context, req *v1.Cre
 		Nickname:  reply.Nickname,
 		Avatar:    reply.Avatar,
 		Status:    reply.Status,
+		Role:      reply.Role,
 		CreatedAt: reply.CreatedAt,
 		UpdatedAt: reply.UpdatedAt,
 		DeletedAt: reply.DeletedAt,
@@ -97,6 +97,7 @@ func (rp AdministratorRepo) UpdateAdministrator(ctx context.Context, req *v1.Upd
 		Nickname:  reply.Nickname,
 		Avatar:    reply.Avatar,
 		Status:    reply.Status,
+		Role:      reply.Role,
 		CreatedAt: reply.CreatedAt,
 		UpdatedAt: reply.UpdatedAt,
 		DeletedAt: reply.DeletedAt,
@@ -107,29 +108,21 @@ func (rp AdministratorRepo) UpdateAdministrator(ctx context.Context, req *v1.Upd
 func (rp AdministratorRepo) ListAdministrator(ctx context.Context, req *v1.ListAdministratorRequest) (*v1.ListAdministratorReply, error) {
 	list := []*v1.AdministratorInfoResponse{}
 	reply, err := rp.data.administratorClient.ListAdministrator(ctx, &administratorServiceV1.ListAdministratorRequest{
-		PageNum:  req.PageNum,
-		PageSize: req.PageSize,
-		Mobile:   req.Mobile,
-		Username: req.Username,
-		Nickname: req.Nickname,
-		Status:   req.Status,
+		PageNum:        req.PageNum,
+		PageSize:       req.PageSize,
+		Mobile:         req.Mobile,
+		Username:       req.Username,
+		Nickname:       req.Nickname,
+		Status:         req.Status,
+		CreatedAtStart: req.CreatedAtStart,
+		CreatedAtEnd:   req.CreatedAtEnd,
 	})
 	if err != nil {
 		return nil, err
 	}
 
 	for _, v := range reply.List {
-		tmp := &v1.AdministratorInfoResponse{
-			Id:        v.Id,
-			Username:  v.Username,
-			Mobile:    v.Mobile,
-			Nickname:  v.Nickname,
-			Avatar:    v.Avatar,
-			Status:    v.Status,
-			CreatedAt: v.CreatedAt,
-			UpdatedAt: v.UpdatedAt,
-			DeletedAt: v.DeletedAt,
-		}
+		tmp := administratorServiceToApi(v)
 		list = append(list, tmp)
 	}
 
@@ -140,15 +133,28 @@ func (rp AdministratorRepo) ListAdministrator(ctx context.Context, req *v1.ListA
 }
 
 func (rp AdministratorRepo) DeleteAdministrator(ctx context.Context, id int64) (*v1.CheckReply, error) {
+	administratorInfoReply, err := rp.data.administratorClient.GetAdministrator(ctx, &administratorServiceV1.GetAdministratorRequest{Id: id})
+	if err != nil {
+		return nil, err
+	}
+	if administratorInfoReply.Id != id {
+		return nil, errResponse.SetErrByReason(errResponse.ReasonAdministratorNotFound)
+	}
 	reply, err := rp.data.administratorClient.DeleteAdministrator(ctx, &administratorServiceV1.DeleteAdministratorRequest{
 		Id: id,
 	})
 	if err != nil {
 		return nil, err
 	}
+	// 删除成功 将管理员token清除
+	if reply.IsSuccess {
+		administratorInfo := administratorServiceToApi(administratorInfoReply)
+		_ = rp.DestroyAdministratorToken(ctx, administratorInfo)
+	}
 	res := &v1.CheckReply{
 		IsSuccess: reply.IsSuccess,
 	}
+
 	return res, nil
 }
 
@@ -177,18 +183,14 @@ func (rp AdministratorRepo) GetAdministrator(ctx context.Context, id int64) (*v1
 	reply, err := rp.data.administratorClient.GetAdministrator(ctx, &administratorServiceV1.GetAdministratorRequest{
 		Id: id,
 	})
-	res := &v1.AdministratorInfoResponse{
-		Id:        reply.Id,
-		Username:  reply.Username,
-		Mobile:    reply.Mobile,
-		Nickname:  reply.Nickname,
-		Avatar:    reply.Avatar,
-		Status:    reply.Status,
-		CreatedAt: reply.CreatedAt,
-		UpdatedAt: reply.UpdatedAt,
-		DeletedAt: reply.DeletedAt,
-		Role:      reply.Role,
+	res := &v1.AdministratorInfoResponse{}
+	if err != nil {
+		if reply == nil || reply.Id == 0 {
+			return res, errResponse.SetErrByReason(errResponse.ReasonAdministratorNotFound)
+		}
+		return res, err
 	}
+	res = administratorServiceToApi(reply)
 	return res, err
 }
 
@@ -196,19 +198,32 @@ func (rp AdministratorRepo) FindLoginAdministratorByUsername(ctx context.Context
 	reply, err := rp.data.administratorClient.GetAdministrator(ctx, &administratorServiceV1.GetAdministratorRequest{
 		Username: username,
 	})
-	res := &v1.AdministratorInfoResponse{
-		Id:        reply.Id,
-		Username:  reply.Username,
-		Mobile:    reply.Mobile,
-		Nickname:  reply.Nickname,
-		Avatar:    reply.Avatar,
-		Status:    reply.Status,
-		CreatedAt: reply.CreatedAt,
-		UpdatedAt: reply.UpdatedAt,
-		DeletedAt: reply.DeletedAt,
-		Role:      reply.Role,
+	res := &v1.AdministratorInfoResponse{}
+	if err != nil {
+		return res, err
 	}
+	// 如果管理员被删除   无法登陆
+	if reply.DeletedAt != "" {
+		return res, errResponse.SetErrByReason(errResponse.ReasonAdministratorDeleted)
+	}
+	res = administratorServiceToApi(reply)
 	return res, err
+}
+
+func (rp AdministratorRepo) AdministratorLoginSuccess(ctx context.Context, administrator *v1.AdministratorInfoResponse) error {
+	reply, err := rp.data.administratorClient.AdministratorLoginSuccess(ctx, &administratorServiceV1.AdministratorLoginSuccessRequest{
+		Id:            administrator.Id,
+		LastLoginTime: administrator.LastLoginTime,
+		LastLoginIp:   administrator.LastLoginIp,
+	})
+	if err != nil {
+		return err
+	}
+
+	if reply.IsSuccess == false {
+		return errResponse.SetErrByReason(errResponse.ReasonAdministratorNotFound)
+	}
+	return nil
 }
 
 func (rp AdministratorRepo) VerifyPassword(ctx context.Context, id int64, password string) error {
@@ -221,7 +236,60 @@ func (rp AdministratorRepo) VerifyPassword(ctx context.Context, id int64, passwo
 	}
 
 	if reply.IsSuccess == false {
-		return err
+		return errResponse.SetErrByReason(errResponse.ReasonAdministratorPasswordError)
 	}
 	return nil
+}
+
+func (rp AdministratorRepo) GenerateAdministratorToken(ctx context.Context, administrator *v1.AdministratorInfoResponse) (string, error) {
+	claims := jwt.NewWithClaims(
+		jwt.SigningMethodHS256,
+		jwt.MapClaims{
+			"AdministratorId":            administrator.Id,
+			"AdministratorUsername":      administrator.Username,
+			"AdministratorRole":          administrator.Role,
+			"AdministratorLastLoginTime": administrator.LastLoginTime,
+			"AdministratorLastLoginIp":   administrator.LastLoginIp,
+		})
+	signedString, _ := claims.SignedString([]byte(GetAuthApiKey()))
+	key := encryption.EncodeMD5(signedString)
+	// 生成redis
+	rp.data.redisCli.Set(key, signedString, time.Second*time.Duration(auth.ApiKeyExpire))
+	return key, nil
+}
+
+func (rp AdministratorRepo) DestroyAdministratorToken(ctx context.Context, administrator *v1.AdministratorInfoResponse) error {
+	claims := jwt.NewWithClaims(
+		jwt.SigningMethodHS256,
+		jwt.MapClaims{
+			"AdministratorId":            administrator.Id,
+			"AdministratorUsername":      administrator.Username,
+			"AdministratorRole":          administrator.Role,
+			"AdministratorLastLoginTime": administrator.LastLoginTime,
+			"AdministratorLastLoginIp":   administrator.LastLoginIp,
+		})
+	signedString, _ := claims.SignedString([]byte(GetAuthApiKey()))
+	key := encryption.EncodeMD5(signedString)
+	fmt.Println("signedString")
+	fmt.Println(key)
+	// 删除redis
+	rp.data.redisCli.Del(key)
+	return nil
+}
+
+func administratorServiceToApi(info *administratorServiceV1.AdministratorInfoResponse) *v1.AdministratorInfoResponse {
+	return &v1.AdministratorInfoResponse{
+		Id:            info.Id,
+		Username:      info.Username,
+		Nickname:      info.Nickname,
+		Mobile:        info.Mobile,
+		Status:        info.Status,
+		Avatar:        info.Avatar,
+		Role:          info.Role,
+		LastLoginTime: info.LastLoginTime,
+		LastLoginIp:   info.LastLoginIp,
+		CreatedAt:     info.CreatedAt,
+		UpdatedAt:     info.CreatedAt,
+		DeletedAt:     info.DeletedAt,
+	}
 }

@@ -52,6 +52,7 @@ service Authorization {
 
 	// Api删除
 	rpc DeleteApi (DeleteApiRequest) returns (CheckReply){};
+
 	// 所有Menu列表
 	rpc GetMenuAll (google.protobuf.Empty) returns (GetMenuTreeReply){};
 	// Menu列表

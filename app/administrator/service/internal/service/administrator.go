@@ -117,17 +117,30 @@ func (s *AdministratorService) VerifyAdministratorPassword(ctx context.Context, 
 	}, err
 }
 
+func (s *AdministratorService) AdministratorLoginSuccess(ctx context.Context, req *v1.AdministratorLoginSuccessRequest) (*v1.CheckReply, error) {
+	err := s.administratorUseCase.UpdateAdministratorLoginInfo(ctx, req)
+	isSuccess := false
+	if err == nil {
+		isSuccess = true
+	}
+	return &v1.CheckReply{
+		IsSuccess: isSuccess,
+	}, nil
+}
+
 func bizAdministratorToInfoReply(info *biz.Administrator) *v1.AdministratorInfoResponse {
 	return &v1.AdministratorInfoResponse{
-		Id:        info.Id,
-		Username:  info.Username,
-		Nickname:  info.Nickname,
-		Mobile:    info.Mobile,
-		Status:    info.Status,
-		Avatar:    info.Avatar,
-		Role:      info.Role,
-		CreatedAt: info.CreatedAt,
-		UpdatedAt: info.CreatedAt,
-		DeletedAt: info.DeletedAt,
+		Id:            info.Id,
+		Username:      info.Username,
+		Nickname:      info.Nickname,
+		Mobile:        info.Mobile,
+		Status:        info.Status,
+		Avatar:        info.Avatar,
+		Role:          info.Role,
+		LastLoginTime: info.LastLoginTime,
+		LastLoginIp:   info.LastLoginIp,
+		CreatedAt:     info.CreatedAt,
+		UpdatedAt:     info.CreatedAt,
+		DeletedAt:     info.DeletedAt,
 	}
 }

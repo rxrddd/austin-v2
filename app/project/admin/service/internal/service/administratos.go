@@ -3,8 +3,7 @@ package service
 import (
 	"context"
 	"github.com/ZQCard/kratos-base-project/api/project/admin/v1"
-	"github.com/ZQCard/kratos-base-project/app/project/admin/service/internal/data"
-	"github.com/golang-jwt/jwt/v4"
+	"github.com/ZQCard/kratos-base-project/pkg/utils/timeHelper"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
@@ -18,22 +17,43 @@ func (s *AdminInterface) Login(ctx context.Context, req *v1.LoginRequest) (*v1.L
 	if err != nil {
 		return nil, err
 	}
-	// 生成token
-	claims := jwt.NewWithClaims(
-		jwt.SigningMethodHS256,
-		jwt.MapClaims{
-			"AdministratorId":       administrator.Id,
-			"AdministratorUsername": administrator.Username,
-			"AdministratorRole":     administrator.Role,
-		})
-	// 获取jwt key
-	signedString, _ := claims.SignedString([]byte(data.GetAuthApiKey()))
+
+	// 生成token 将真正的token置于redis中 key为md5的值, 以便冻结用户时，禁止用户登陆
+	token, err := s.administratorRepo.GenerateAdministratorToken(ctx, administrator)
+	if err != nil {
+		return nil, err
+	}
+	// 更新
 	return &v1.LoginReply{
-		Token: signedString,
+		Token: token,
 	}, nil
 }
 
+func (s *AdminInterface) LoginSuccess(ctx context.Context, empty *emptypb.Empty) (*emptypb.Empty, error) {
+	administrator, err := s.administratorRepo.GetAdministrator(ctx, ctx.Value("kratos-AdministratorId").(int64))
+	if err != nil {
+		return nil, err
+	}
+	ip := ctx.Value("RemoteAddr")
+	if ip == nil {
+		return nil, nil
+	}
+	loginTime := timeHelper.CurrentTimeYMDHIS()
+	administrator.LastLoginTime = loginTime
+	administrator.LastLoginIp = ip.(string)
+	// 更新用户登陆信息
+	if err = s.administratorRepo.AdministratorLoginSuccess(ctx, administrator); err != nil {
+		return nil, err
+	}
+	return nil, nil
+}
+
 func (s *AdminInterface) Logout(ctx context.Context, empty *emptypb.Empty) (*emptypb.Empty, error) {
+	res, err := s.administratorRepo.GetAdministrator(ctx, ctx.Value("kratos-AdministratorId").(int64))
+	if err != nil {
+		return nil, err
+	}
+	_ = s.administratorRepo.DestroyAdministratorToken(ctx, res)
 	return nil, nil
 }
 
@@ -42,17 +62,15 @@ func (s *AdminInterface) GetAdministratorInfo(ctx context.Context, empty *emptyp
 	if err != nil {
 		return nil, err
 	}
-	return &v1.AdministratorInfoResponse{
-		Id:        res.Id,
-		Username:  res.Username,
-		Mobile:    res.Mobile,
-		Nickname:  res.Mobile,
-		Avatar:    res.Avatar,
-		Status:    res.Status,
-		CreatedAt: res.CreatedAt,
-		UpdatedAt: res.UpdatedAt,
-		DeletedAt: res.DeletedAt,
-	}, nil
+	return res, err
+}
+
+func (s *AdminInterface) GetAdministrator(ctx context.Context, req *v1.GetAdministratorRequest) (*v1.AdministratorInfoResponse, error) {
+	res, err := s.administratorRepo.GetAdministrator(ctx, req.Id)
+	if err != nil {
+		return nil, err
+	}
+	return res, err
 }
 
 func (s *AdminInterface) CreateAdministrator(ctx context.Context, req *v1.CreateAdministratorRequest) (*v1.AdministratorInfoResponse, error) {

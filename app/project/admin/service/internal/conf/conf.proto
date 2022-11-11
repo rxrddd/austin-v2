@@ -41,10 +41,12 @@ message Data {
   message Redis {
     string network = 1;
     string addr = 2;
-    google.protobuf.Duration read_timeout = 3;
-    google.protobuf.Duration write_timeout = 4;
+    string password = 3;
+    google.protobuf.Duration read_timeout = 4;
+    google.protobuf.Duration write_timeout = 5;
   }
   Database database = 1;
+  Redis redis = 2;
 }
 
 message Registry {
@@ -58,8 +60,9 @@ message Registry {
 message Auth {
   string service_key = 1;
   string api_key = 2;
-  string casbin_model = 3;
-  string casbin_source = 4;
+  int64 api_key_expire = 3;
+  string casbin_model = 4;
+  string casbin_source = 5;
 }
 
 message Service {

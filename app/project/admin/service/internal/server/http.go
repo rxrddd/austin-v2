@@ -3,7 +3,10 @@ package server
 import (
 	"context"
 	"encoding/json"
-	"fmt"
+	"github.com/ZQCard/kratos-base-project/api/project/admin/v1"
+	"github.com/ZQCard/kratos-base-project/app/project/admin/service/internal/conf"
+	"github.com/ZQCard/kratos-base-project/app/project/admin/service/internal/data"
+	"github.com/ZQCard/kratos-base-project/app/project/admin/service/internal/service"
 	"github.com/ZQCard/kratos-base-project/pkg/errResponse"
 	"github.com/ZQCard/kratos-base-project/pkg/middleware/casbin"
 	"github.com/casbin/casbin/v2/model"
@@ -23,11 +26,8 @@ import (
 	tracesdk "go.opentelemetry.io/otel/sdk/trace"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
-	stdhttp "net/http"
-
-	"github.com/ZQCard/kratos-base-project/api/project/admin/v1"
-	"github.com/ZQCard/kratos-base-project/app/project/admin/service/internal/conf"
-	"github.com/ZQCard/kratos-base-project/app/project/admin/service/internal/service"
+	stdHttp "net/http"
+	"strings"
 )
 
 func NewWhiteListMatcher() selector.MatchFunc {
@@ -42,22 +42,41 @@ func NewWhiteListMatcher() selector.MatchFunc {
 	}
 }
 
-// 获取当前服务operation
-func getOperation() middleware.Middleware {
+// 设置header信息
+func setHeaderInfo() middleware.Middleware {
 	return func(handler middleware.Handler) middleware.Handler {
 		return func(ctx context.Context, req interface{}) (reply interface{}, err error) {
+
 			if tr, ok := transport.FromServerContext(ctx); ok {
-				fmt.Println(tr.Operation())
+				// 将请求信息放入ctx中
+				if ht, ok := tr.(*http.Transport); ok {
+					ctx = context.WithValue(ctx, "RemoteAddr", ht.Request().RemoteAddr)
+				}
+
+				// 将md5格式的Authorization置换redis中真正的jwt值
+				auths := strings.SplitN(tr.RequestHeader().Get("Authorization"), " ", 2)
+				if len(auths) != 2 || !strings.EqualFold(auths[0], "Bearer") {
+					return nil, errResponse.SetErrByReason(errResponse.ReasonAdministratorUnauthorized)
+				}
+				jwtToken := auths[1]
+				token, _ := data.RedisCli.Get(jwtToken).Result()
+				if token == "" {
+					return nil, errResponse.SetErrByReason(errResponse.ReasonAdministratorUnauthorized)
+				}
+				// 设置 Authorization
+				tr.RequestHeader().Set("Authorization", "Bearer "+token)
+
 			}
 			return handler(ctx, req)
 		}
 	}
 }
 
-// 设置全局参数
-func setGlobalData() middleware.Middleware {
+// 设置用户信息
+func setUserInfo() middleware.Middleware {
 	return func(handler middleware.Handler) middleware.Handler {
 		return func(ctx context.Context, req interface{}) (reply interface{}, err error) {
+
 			claim, _ := jwt.FromContext(ctx)
 			if claim == nil {
 				return nil, errResponse.SetErrByReason(errResponse.ReasonUnauthorizedInfoMissing)
@@ -93,6 +112,9 @@ func NewHTTPServer(c *conf.Server, ac *conf.Auth, service *service.AdminInterfac
 			logging.Server(logger),
 			// 对于需要登录的路由进行jwt中间件验证
 			selector.Server(
+				// 设置header信息
+				setHeaderInfo(),
+				// 解析jwt
 				jwt.Server(func(token *jwt2.Token) (interface{}, error) {
 					return []byte(ac.ApiKey), nil
 				},
@@ -100,7 +122,9 @@ func NewHTTPServer(c *conf.Server, ac *conf.Auth, service *service.AdminInterfac
 					jwt.WithClaims(func() jwt2.Claims {
 						return jwt2.MapClaims{}
 					})),
-				setGlobalData(),
+				// 设置全局ctx
+				setUserInfo(),
+				// 权限中间件
 				casbin.Server(
 					casbin.WithCasbinModel(m),
 					casbin.WithCasbinPolicy(a),
@@ -110,11 +134,13 @@ func NewHTTPServer(c *conf.Server, ac *conf.Auth, service *service.AdminInterfac
 				Build(),
 		),
 		// 跨域设置
-		http.Filter(handlers.CORS(
-			handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization", "AccessToken", "X-Token", "Accept"}),
-			handlers.AllowedMethods([]string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"}),
-			handlers.AllowedOrigins([]string{"*"}),
-		)),
+		http.Filter(
+			handlers.CORS(
+				handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization", "AccessToken", "X-Token", "Accept"}),
+				handlers.AllowedMethods([]string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"}),
+				handlers.AllowedOrigins([]string{"*"}),
+			),
+		),
 	}
 	if c.Http.Network != "" {
 		opts = append(opts, http.Network(c.Http.Network))
@@ -137,11 +163,11 @@ func NewHTTPServer(c *conf.Server, ac *conf.Auth, service *service.AdminInterfac
 
 type Response struct {
 	Code    int         `json:"code"`
-	Message string      `json:"msg"`
+	Message string      `json:"message"`
 	Data    interface{} `json:"data"`
 }
 
-func responseEncoder(w stdhttp.ResponseWriter, r *stdhttp.Request, v interface{}) error {
+func responseEncoder(w stdHttp.ResponseWriter, r *stdHttp.Request, v interface{}) error {
 	reply := &Response{}
 	reply.Code = 0
 	reply.Message = "success"
@@ -158,16 +184,16 @@ func responseEncoder(w stdhttp.ResponseWriter, r *stdhttp.Request, v interface{}
 		return err
 	}
 	w.Header().Set("Content-Type", codec.Name())
-	w.WriteHeader(stdhttp.StatusOK)
+	w.WriteHeader(stdHttp.StatusOK)
 	w.Write(data)
 	return nil
 }
 
-func errorEncoder(w stdhttp.ResponseWriter, r *stdhttp.Request, err error) {
+func errorEncoder(w stdHttp.ResponseWriter, r *stdHttp.Request, err error) {
 	codec, _ := http.CodecForRequest(r, "Accept")
 	w.Header().Set("Content-Type", "application/"+codec.Name())
 	// 返回码均是200
-	w.WriteHeader(stdhttp.StatusOK)
+	w.WriteHeader(stdHttp.StatusOK)
 	// 重写errResponse
 	err = errResponse.SetCustomizeErrInfo(err)
 	se := errors.FromError(err)

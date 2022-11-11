@@ -2,7 +2,6 @@ package data
 
 import (
 	"context"
-	"fmt"
 	"github.com/ZQCard/kratos-base-project/app/authorization/service/internal/biz"
 	"github.com/ZQCard/kratos-base-project/pkg/errResponse"
 	kerrors "github.com/go-kratos/kratos/v2/errors"
@@ -58,6 +57,7 @@ func (a AuthorizationRepo) DeleteRolesForUser(ctx context.Context, username stri
 
 func (a *AuthorizationRepo) GetPolicies(ctx context.Context, role string) ([]*biz.PolicyRules, error) {
 	rules := []*biz.PolicyRules{}
+
 	// 检查角色是否存在
 	if !a.checkRoleExist([]string{role}) {
 		return rules, kerrors.BadRequest(errResponse.ReasonParamsError, "角色不存在")
@@ -65,11 +65,10 @@ func (a *AuthorizationRepo) GetPolicies(ctx context.Context, role string) ([]*bi
 
 	// 查询已有策略规则
 	policies := a.data.enforcer.GetFilteredPolicy(0, role)
-	fmt.Println(policies)
 	for _, v := range policies {
 		rules = append(rules, &biz.PolicyRules{
-			Path:   v[0],
-			Method: v[1],
+			Path:   v[1],
+			Method: v[2],
 		})
 	}
 

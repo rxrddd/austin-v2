@@ -1,10 +1,10 @@
 syntax = "proto3";
-
-package api.admin.v1;
-
 // goland 设置第三方proto ：File | Settings | Languages & Frameworks | Protobuf，添加当前项目的third_party目录，OK-Apply
+
 import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
+
+package api.admin.v1;
 
 option go_package = "github.com/ZQCard/kratos-base-project/project/admin/v1;v1";
 
@@ -14,6 +14,12 @@ service Admin {
 		option (google.api.http) = {
 			post : "/admin/v1/login"
 			body : "*"
+		};
+	};
+
+	rpc LoginSuccess(google.protobuf.Empty) returns (google.protobuf.Empty) {
+		option (google.api.http) = {
+			get : "/admin/v1/loginSuccess"
 		};
 	};
 
@@ -35,6 +41,11 @@ service Admin {
 	rpc GetAdministratorList(ListAdministratorRequest) returns(ListAdministratorReply) {
 		option (google.api.http) = {
 			get : "/admin/v1/getAdministrators"
+		};
+	}
+	rpc GetAdministrator(GetAdministratorRequest) returns(AdministratorInfoResponse) {
+		option (google.api.http) = {
+			get : "/admin/v1/getAdministrator"
 		};
 	}
 	// 管理员创建
@@ -247,16 +258,17 @@ message LoginReply {
 message AdministratorInfoResponse {
 	int64 id = 1;
 	string username = 2;
-	string mobile = 4;
-	string nickname = 5;
-	string avatar = 6;
-	int64  status = 7;
-	string  Role = 8;
-	string created_at = 9;
-	string updated_at = 10;
-	string deleted_at = 11;
+	string mobile = 3;
+	string nickname = 4;
+	string avatar = 5;
+	int64  status = 6;
+	string role = 7;
+	string last_login_time = 8;
+	string last_login_ip = 9;
+	string created_at = 10;
+	string updated_at = 11;
+	string deleted_at = 12;
 }
-
 
 message ListAdministratorRequest {
 	int64 page_num = 1;
@@ -266,6 +278,8 @@ message ListAdministratorRequest {
 	string mobile = 5;
 	string nickname = 6;
 	int64 status = 7;
+	string created_at_start = 8;
+	string created_at_end = 9;
 }
 
 message ListAdministratorReply {

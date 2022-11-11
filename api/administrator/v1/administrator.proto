@@ -14,6 +14,7 @@ service Administrator {
 	rpc DeleteAdministrator (DeleteAdministratorRequest) returns (CheckReply);
 	rpc RecoverAdministrator (RecoverAdministratorRequest) returns (CheckReply);
 	rpc VerifyAdministratorPassword(VerifyAdministratorPasswordRequest) returns (CheckReply);
+	rpc AdministratorLoginSuccess(AdministratorLoginSuccessRequest) returns (CheckReply);
 }
 
 message CreateAdministratorRequest {
@@ -76,15 +77,23 @@ message AdministratorInfoResponse {
 	string avatar = 5;
 	int64 status = 6;
 	string role = 7;
-	string created_at = 8;
-	string updated_at = 9;
-	string deleted_at = 10;
+	string last_login_time = 8;
+	string last_login_ip = 9;
+	string created_at = 10;
+	string updated_at = 11;
+	string deleted_at = 12;
 }
 
 
 message VerifyAdministratorPasswordRequest {
 	int64 id = 1;
 	string password = 2;
+}
+
+message AdministratorLoginSuccessRequest {
+	int64 id = 1;
+	string last_login_time = 2;
+	string last_login_ip = 3;
 }
 
 message CheckReply {

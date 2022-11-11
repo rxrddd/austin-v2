@@ -11,6 +11,7 @@ const ReasonUnknownError = "UNKNOWN_ERROR"
 const ReasonMissingParams = "MISSING_PARAMS"
 const ReasonMissingId = "MISSING_ID"
 const ReasonParamsError = "PARAMS_ERROR"
+const TimeFormatError = "TIME_FORMAT_ERROR"
 const ReasonRecordNotFound = "RECORD_NOT_FOUND"
 
 const ReasonAdministratorNotFound = "ADMINISTRATOR_NOT_FOUND"
@@ -42,6 +43,7 @@ var reasonMessageAll = map[string]string{
 
 	ReasonParamsError:    "请求参数错误",
 	ReasonMissingParams:  "缺少搜索参数",
+	TimeFormatError:      "时间格式错误",
 	ReasonMissingId:      "id不得为空",
 	ReasonRecordNotFound: "数据不存在",
 
@@ -77,6 +79,7 @@ var reasonCodeAll = map[string]int{
 	ReasonMissingParams:  10001,
 	ReasonMissingId:      10002,
 	ReasonRecordNotFound: 10003,
+	TimeFormatError:      10004,
 
 	ReasonAdministratorNotFound:      20001,
 	ReasonAdministratorPasswordError: 20002,

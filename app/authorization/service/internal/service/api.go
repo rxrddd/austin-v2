@@ -39,7 +39,6 @@ func (s *AuthorizationService) GetApiList(ctx context.Context, req *v1.GetApiLis
 	}
 	response := &v1.GetApiListReply{}
 	response.Total = count
-	list := []*v1.ApiInfo{}
 	for k := range res {
 		res := &v1.ApiInfo{
 			Id:        res[k].Id,
@@ -50,12 +49,9 @@ func (s *AuthorizationService) GetApiList(ctx context.Context, req *v1.GetApiLis
 			CreatedAt: res[k].CreatedAt,
 			UpdatedAt: res[k].UpdatedAt,
 		}
-		list = append(list, res)
+		response.List = append(response.List, res)
 	}
-
-	return &v1.GetApiListReply{
-		List: list,
-	}, nil
+	return response, nil
 
 }
 

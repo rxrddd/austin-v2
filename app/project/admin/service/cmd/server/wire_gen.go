@@ -20,10 +20,11 @@ import (
 
 // wireApp init kratos application.
 func wireApp(confServer *conf.Server, registry *conf.Registry, confData *conf.Data, auth *conf.Auth, confService *conf.Service, logger log.Logger, tracerProvider *trace.TracerProvider) (*kratos.App, func(), error) {
+	cmdable := data.NewRedisCmd(confData, logger)
 	discovery := data.NewDiscovery(registry)
 	administratorClient := data.NewAdministratorServiceClient(auth, confService, discovery, tracerProvider)
 	authorizationClient := data.NewAuthorizationServiceClient(auth, confService, discovery, tracerProvider)
-	dataData, err := data.NewData(logger, administratorClient, authorizationClient)
+	dataData, err := data.NewData(logger, cmdable, administratorClient, authorizationClient)
 	if err != nil {
 		return nil, nil, err
 	}

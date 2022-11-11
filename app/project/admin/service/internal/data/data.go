@@ -7,13 +7,16 @@ import (
 	consul "github.com/go-kratos/kratos/contrib/registry/consul/v2"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/registry"
+	"github.com/go-redis/redis"
 	"github.com/google/wire"
 	consulAPI "github.com/hashicorp/consul/api"
+	"time"
 )
 
 // ProviderSet is data providers.
 var ProviderSet = wire.NewSet(
 	NewData,
+	NewRedisCmd,
 	NewRegistrar,
 	NewDiscovery,
 	NewAdministratorRepo,
@@ -22,9 +25,18 @@ var ProviderSet = wire.NewSet(
 	NewAuthorizationServiceClient,
 )
 
+var auth *conf.Auth
+
+var RedisCli redis.Cmdable
+
+func GetAuthApiKey() string {
+	return auth.ApiKey
+}
+
 // Data .
 type Data struct {
 	log                 *log.Helper
+	redisCli            redis.Cmdable
 	administratorClient administratorV1.AdministratorClient
 	authorizationClient authorizationV1.AuthorizationClient
 }
@@ -32,12 +44,14 @@ type Data struct {
 // NewData .
 func NewData(
 	logger log.Logger,
+	redisCli redis.Cmdable,
 	administratorClient administratorV1.AdministratorClient,
 	authorizationClient authorizationV1.AuthorizationClient,
 ) (*Data, error) {
 	l := log.NewHelper(log.With(logger, "module", "data"))
 	return &Data{
 		log:                 l,
+		redisCli:            redisCli,
 		administratorClient: administratorClient,
 		authorizationClient: authorizationClient,
 	}, nil
@@ -65,4 +79,22 @@ func NewRegistrar(conf *conf.Registry) registry.Registrar {
 	}
 	r := consul.New(cli, consul.WithHealthCheck(false))
 	return r
+}
+
+func NewRedisCmd(conf *conf.Data, logger log.Logger) redis.Cmdable {
+	logs := log.NewHelper(log.With(logger, "module", "administrator-service/data/redis"))
+	client := redis.NewClient(&redis.Options{
+		Addr:         conf.Redis.Addr,
+		Password:     conf.Redis.Password,
+		ReadTimeout:  conf.Redis.ReadTimeout.AsDuration(),
+		WriteTimeout: conf.Redis.WriteTimeout.AsDuration(),
+		DialTimeout:  time.Second * 2,
+		PoolSize:     10,
+	})
+	err := client.Ping().Err()
+	if err != nil {
+		logs.Fatalf("redis connect error: %v", err)
+	}
+	RedisCli = client
+	return client
 }

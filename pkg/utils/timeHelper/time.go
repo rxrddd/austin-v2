@@ -37,5 +37,4 @@ func FormatTimeInt64YMGHIS(timestamp int64) string {
 		return ""
 	}
 	return time.Unix(timestamp, 0).Format("2006-01-02 15:04:05")
-
 }
