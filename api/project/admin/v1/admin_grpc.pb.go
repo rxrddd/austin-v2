@@ -41,6 +41,10 @@ type AdminClient interface {
 	DeleteAdministrator(ctx context.Context, in *DeleteAdministratorRequest, opts ...grpc.CallOption) (*CheckReply, error)
 	// 管理员恢复
 	RecoverAdministrator(ctx context.Context, in *RecoverAdministratorRequest, opts ...grpc.CallOption) (*CheckReply, error)
+	// 管理员禁用
+	ForbidAdministrator(ctx context.Context, in *ForbidAdministratorRequest, opts ...grpc.CallOption) (*CheckReply, error)
+	// 管理员解禁
+	ApproveAdministrator(ctx context.Context, in *ApproveAdministratorRequest, opts ...grpc.CallOption) (*CheckReply, error)
 	// 角色列表
 	GetRoleList(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetRoleListReply, error)
 	// 角色创建
@@ -183,6 +187,24 @@ func (c *adminClient) DeleteAdministrator(ctx context.Context, in *DeleteAdminis
 func (c *adminClient) RecoverAdministrator(ctx context.Context, in *RecoverAdministratorRequest, opts ...grpc.CallOption) (*CheckReply, error) {
 	out := new(CheckReply)
 	err := c.cc.Invoke(ctx, "/api.admin.v1.Admin/RecoverAdministrator", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *adminClient) ForbidAdministrator(ctx context.Context, in *ForbidAdministratorRequest, opts ...grpc.CallOption) (*CheckReply, error) {
+	out := new(CheckReply)
+	err := c.cc.Invoke(ctx, "/api.admin.v1.Admin/forbidAdministrator", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *adminClient) ApproveAdministrator(ctx context.Context, in *ApproveAdministratorRequest, opts ...grpc.CallOption) (*CheckReply, error) {
+	out := new(CheckReply)
+	err := c.cc.Invoke(ctx, "/api.admin.v1.Admin/approveAdministrator", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -427,6 +449,10 @@ type AdminServer interface {
 	DeleteAdministrator(context.Context, *DeleteAdministratorRequest) (*CheckReply, error)
 	// 管理员恢复
 	RecoverAdministrator(context.Context, *RecoverAdministratorRequest) (*CheckReply, error)
+	// 管理员禁用
+	ForbidAdministrator(context.Context, *ForbidAdministratorRequest) (*CheckReply, error)
+	// 管理员解禁
+	ApproveAdministrator(context.Context, *ApproveAdministratorRequest) (*CheckReply, error)
 	// 角色列表
 	GetRoleList(context.Context, *emptypb.Empty) (*GetRoleListReply, error)
 	// 角色创建
@@ -511,6 +537,12 @@ func (UnimplementedAdminServer) DeleteAdministrator(context.Context, *DeleteAdmi
 }
 func (UnimplementedAdminServer) RecoverAdministrator(context.Context, *RecoverAdministratorRequest) (*CheckReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RecoverAdministrator not implemented")
+}
+func (UnimplementedAdminServer) ForbidAdministrator(context.Context, *ForbidAdministratorRequest) (*CheckReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ForbidAdministrator not implemented")
+}
+func (UnimplementedAdminServer) ApproveAdministrator(context.Context, *ApproveAdministratorRequest) (*CheckReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ApproveAdministrator not implemented")
 }
 func (UnimplementedAdminServer) GetRoleList(context.Context, *emptypb.Empty) (*GetRoleListReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetRoleList not implemented")
@@ -773,6 +805,42 @@ func _Admin_RecoverAdministrator_Handler(srv interface{}, ctx context.Context, d
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AdminServer).RecoverAdministrator(ctx, req.(*RecoverAdministratorRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Admin_ForbidAdministrator_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ForbidAdministratorRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdminServer).ForbidAdministrator(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.admin.v1.Admin/forbidAdministrator",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdminServer).ForbidAdministrator(ctx, req.(*ForbidAdministratorRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Admin_ApproveAdministrator_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ApproveAdministratorRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdminServer).ApproveAdministrator(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.admin.v1.Admin/approveAdministrator",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdminServer).ApproveAdministrator(ctx, req.(*ApproveAdministratorRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1255,6 +1323,14 @@ var Admin_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RecoverAdministrator",
 			Handler:    _Admin_RecoverAdministrator_Handler,
+		},
+		{
+			MethodName: "forbidAdministrator",
+			Handler:    _Admin_ForbidAdministrator_Handler,
+		},
+		{
+			MethodName: "approveAdministrator",
+			Handler:    _Admin_ApproveAdministrator_Handler,
 		},
 		{
 			MethodName: "GetRoleList",

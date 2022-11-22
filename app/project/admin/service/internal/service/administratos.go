@@ -57,6 +57,10 @@ func (s *AdminInterface) Logout(ctx context.Context, empty *emptypb.Empty) (*emp
 	return nil, nil
 }
 
+func (s *AdminInterface) GetAdministratorList(ctx context.Context, req *v1.ListAdministratorRequest) (*v1.ListAdministratorReply, error) {
+	return s.administratorRepo.ListAdministrator(ctx, req)
+}
+
 func (s *AdminInterface) GetAdministratorInfo(ctx context.Context, empty *emptypb.Empty) (*v1.AdministratorInfoResponse, error) {
 	res, err := s.administratorRepo.GetAdministrator(ctx, ctx.Value("kratos-AdministratorId").(int64))
 	if err != nil {
@@ -89,6 +93,10 @@ func (s *AdminInterface) RecoverAdministrator(ctx context.Context, req *v1.Recov
 	return s.administratorRepo.RecoverAdministrator(ctx, req.Id)
 }
 
-func (s *AdminInterface) GetAdministratorList(ctx context.Context, req *v1.ListAdministratorRequest) (*v1.ListAdministratorReply, error) {
-	return s.administratorRepo.ListAdministrator(ctx, req)
+func (s *AdminInterface) ForbidAdministrator(ctx context.Context, req *v1.ForbidAdministratorRequest) (*v1.CheckReply, error) {
+	return s.administratorRepo.ForbidAdministrator(ctx, req.Id)
+}
+
+func (s *AdminInterface) ApproveAdministrator(ctx context.Context, req *v1.ApproveAdministratorRequest) (*v1.CheckReply, error) {
+	return s.administratorRepo.ApproveAdministrator(ctx, req.Id)
 }

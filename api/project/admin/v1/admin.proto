@@ -75,6 +75,20 @@ service Admin {
 			body : "*"
 		};
 	};
+	// 管理员禁用
+	rpc forbidAdministrator (ForbidAdministratorRequest) returns (CheckReply){
+		option (google.api.http) = {
+			patch : "/admin/v1/administrator/forbid"
+			body : "*"
+		};
+	};
+	// 管理员解禁
+	rpc approveAdministrator (ApproveAdministratorRequest) returns (CheckReply){
+		option (google.api.http) = {
+			patch : "/admin/v1/administrator/approve"
+			body : "*"
+		};
+	};
 
 	// 角色列表
 	rpc GetRoleList (google.protobuf.Empty) returns (GetRoleListReply){
@@ -243,7 +257,7 @@ service Admin {
 			body : "*"
 		};
 	};
-	
+
 }
 
 message LoginRequest {
@@ -320,6 +334,13 @@ message RecoverAdministratorRequest {
 	int64 id = 1;
 }
 
+message ForbidAdministratorRequest {
+	int64 id = 1;
+}
+
+message ApproveAdministratorRequest {
+	int64 id = 1;
+}
 
 message GetRoleListReply {
 	repeated RoleInfo list = 1;

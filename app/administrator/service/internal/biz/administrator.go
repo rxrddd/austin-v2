@@ -40,6 +40,7 @@ type AdministratorRepo interface {
 	RecoverAdministrator(ctx context.Context, id int64) error
 	VerifyAdministratorPassword(ctx context.Context, id int64, password string) (bool, error)
 	UpdateAdministratorLoginInfo(ctx context.Context, id int64, loginTime string, loginIp string) error
+	AdministratorStatusChange(ctx context.Context, id int64, status int64) error
 }
 
 type AdministratorUseCase struct {
@@ -73,6 +74,13 @@ func (uc *AdministratorUseCase) Recover(ctx context.Context, id int64) error {
 	return uc.repo.RecoverAdministrator(ctx, id)
 }
 
+func (uc *AdministratorUseCase) AdministratorStatusChange(ctx context.Context, id int64, status int64) error {
+	if id == 0 {
+		return errResponse.SetCustomizeErrInfoByReason(errResponse.ReasonMissingId)
+	}
+	return uc.repo.AdministratorStatusChange(ctx, id, status)
+}
+
 func (uc *AdministratorUseCase) Update(ctx context.Context, data *Administrator) (*Administrator, error) {
 	if data.Id == 0 {
 		return &Administrator{}, errResponse.SetCustomizeErrInfoByReason(errResponse.ReasonMissingId)
@@ -95,16 +103,16 @@ func (uc *AdministratorUseCase) List(ctx context.Context, pageNum, pageSize int6
 	return uc.repo.ListAdministrator(ctx, pageNum, pageSize, params)
 }
 
-func (ac AdministratorUseCase) VerifyAdministratorPassword(ctx context.Context, in *v1.VerifyAdministratorPasswordRequest) (bool, error) {
+func (uc *AdministratorUseCase) VerifyAdministratorPassword(ctx context.Context, in *v1.VerifyAdministratorPasswordRequest) (bool, error) {
 
-	result, err := ac.repo.VerifyAdministratorPassword(ctx, in.Id, in.Password)
+	result, err := uc.repo.VerifyAdministratorPassword(ctx, in.Id, in.Password)
 	if err != nil {
 		return false, err
 	}
 	return result, nil
 }
 
-func (ac AdministratorUseCase) UpdateAdministratorLoginInfo(ctx context.Context, in *v1.AdministratorLoginSuccessRequest) error {
-	return ac.repo.UpdateAdministratorLoginInfo(ctx, in.Id, in.LastLoginTime, in.LastLoginIp)
+func (uc *AdministratorUseCase) UpdateAdministratorLoginInfo(ctx context.Context, in *v1.AdministratorLoginSuccessRequest) error {
+	return uc.repo.UpdateAdministratorLoginInfo(ctx, in.Id, in.LastLoginTime, in.LastLoginIp)
 
 }

@@ -128,6 +128,17 @@ func (s *AdministratorService) AdministratorLoginSuccess(ctx context.Context, re
 	}, nil
 }
 
+func (s *AdministratorService) AdministratorStatusChange(ctx context.Context, req *v1.AdministratorStatusChangeRequest) (*v1.CheckReply, error) {
+	err := s.administratorUseCase.AdministratorStatusChange(ctx, req.Id, req.Status)
+	isSuccess := false
+	if err == nil {
+		isSuccess = true
+	}
+	return &v1.CheckReply{
+		IsSuccess: isSuccess,
+	}, nil
+}
+
 func bizAdministratorToInfoReply(info *biz.Administrator) *v1.AdministratorInfoResponse {
 	return &v1.AdministratorInfoResponse{
 		Id:            info.Id,

@@ -171,7 +171,7 @@ func (s AdministratorRepo) ListAdministrator(ctx context.Context, pageNum, pageS
 			return nil, 0, errResponse.SetErrByReason(errResponse.TimeFormatError)
 		}
 		tmp = tmp + " 00:00:00"
-		conn = conn.Where("created_at >= ", tmp)
+		conn = conn.Where("created_at >= ?", tmp)
 	}
 	// 结束时间
 	if end, ok := params["created_at_end"]; ok && end != nil && end.(string) != "" {
@@ -180,7 +180,7 @@ func (s AdministratorRepo) ListAdministrator(ctx context.Context, pageNum, pageS
 			return nil, 0, errResponse.SetErrByReason(errResponse.TimeFormatError)
 		}
 		tmp = tmp + " 23:59:59"
-		conn = conn.Where("created_at <= ", end)
+		conn = conn.Where("created_at <= ?", tmp)
 	}
 
 	err := conn.Scopes(entity.Paginate(pageNum, pageSize)).Find(&list).Error
@@ -214,6 +214,19 @@ func (s AdministratorRepo) RecoverAdministrator(ctx context.Context, id int64) e
 		return errResponse.SetErrByReason(errResponse.ReasonMissingParams)
 	}
 	err := s.data.db.Model(entity.AdministratorEntity{}).Where("id = ?", id).UpdateColumn("deleted_at", "").Error
+	if err != nil {
+		return errors.New(http.StatusInternalServerError, errResponse.ReasonSystemError, err.Error())
+	}
+	return nil
+}
+func (s AdministratorRepo) AdministratorStatusChange(ctx context.Context, id int64, status int64) error {
+	if id == 0 || status == 0 {
+		return errResponse.SetErrByReason(errResponse.ReasonMissingParams)
+	}
+	if status != entity.AdministratorStatusOK && status != entity.AdministratorStatusForbid {
+		return errResponse.SetErrByReason(errResponse.ReasonParamsError)
+	}
+	err := s.data.db.Model(entity.AdministratorEntity{}).Where("id = ?", id).UpdateColumn("status", status).Error
 	if err != nil {
 		return errors.New(http.StatusInternalServerError, errResponse.ReasonSystemError, err.Error())
 	}

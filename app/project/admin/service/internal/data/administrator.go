@@ -106,6 +106,9 @@ func (rp AdministratorRepo) UpdateAdministrator(ctx context.Context, req *v1.Upd
 }
 
 func (rp AdministratorRepo) ListAdministrator(ctx context.Context, req *v1.ListAdministratorRequest) (*v1.ListAdministratorReply, error) {
+	fmt.Println("CreatedAtStart")
+	fmt.Println(req.CreatedAtStart)
+	fmt.Println(req.CreatedAtEnd)
 	list := []*v1.AdministratorInfoResponse{}
 	reply, err := rp.data.administratorClient.ListAdministrator(ctx, &administratorServiceV1.ListAdministratorRequest{
 		PageNum:        req.PageNum,
@@ -161,6 +164,34 @@ func (rp AdministratorRepo) DeleteAdministrator(ctx context.Context, id int64) (
 func (rp AdministratorRepo) RecoverAdministrator(ctx context.Context, id int64) (*v1.CheckReply, error) {
 	reply, err := rp.data.administratorClient.RecoverAdministrator(ctx, &administratorServiceV1.RecoverAdministratorRequest{
 		Id: id,
+	})
+	if err != nil {
+		return nil, err
+	}
+	res := &v1.CheckReply{
+		IsSuccess: reply.IsSuccess,
+	}
+	return res, nil
+}
+
+func (rp AdministratorRepo) ForbidAdministrator(ctx context.Context, id int64) (*v1.CheckReply, error) {
+	reply, err := rp.data.administratorClient.AdministratorStatusChange(ctx, &administratorServiceV1.AdministratorStatusChangeRequest{
+		Id:     id,
+		Status: 2,
+	})
+	if err != nil {
+		return nil, err
+	}
+	res := &v1.CheckReply{
+		IsSuccess: reply.IsSuccess,
+	}
+	return res, nil
+}
+
+func (rp AdministratorRepo) ApproveAdministrator(ctx context.Context, id int64) (*v1.CheckReply, error) {
+	reply, err := rp.data.administratorClient.AdministratorStatusChange(ctx, &administratorServiceV1.AdministratorStatusChangeRequest{
+		Id:     id,
+		Status: 1,
 	})
 	if err != nil {
 		return nil, err

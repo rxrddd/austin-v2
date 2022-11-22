@@ -15,6 +15,7 @@ service Administrator {
 	rpc RecoverAdministrator (RecoverAdministratorRequest) returns (CheckReply);
 	rpc VerifyAdministratorPassword(VerifyAdministratorPasswordRequest) returns (CheckReply);
 	rpc AdministratorLoginSuccess(AdministratorLoginSuccessRequest) returns (CheckReply);
+	rpc AdministratorStatusChange(AdministratorStatusChangeRequest) returns (CheckReply);
 }
 
 message CreateAdministratorRequest {
@@ -94,6 +95,11 @@ message AdministratorLoginSuccessRequest {
 	int64 id = 1;
 	string last_login_time = 2;
 	string last_login_ip = 3;
+}
+
+message AdministratorStatusChangeRequest {
+	int64 id = 1;
+	int64 status = 2;
 }
 
 message CheckReply {
