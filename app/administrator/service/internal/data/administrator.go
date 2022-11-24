@@ -110,7 +110,6 @@ func (s AdministratorRepo) UpdateAdministrator(ctx context.Context, reqData *biz
 	record.Avatar = reqData.Avatar
 	record.Nickname = reqData.Nickname
 	record.Status = reqData.Status
-	record.Role = reqData.Role
 	// 更新字段
 	if err := s.data.db.Model(&record).Where("id = ?", record.Id).Save(&record).Error; err != nil {
 		return nil, errors.New(http.StatusInternalServerError, errResponse.ReasonSystemError, err.Error())

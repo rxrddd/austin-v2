@@ -2,7 +2,6 @@ package data
 
 import (
 	"context"
-	"fmt"
 	v1 "github.com/ZQCard/kratos-base-project/api/project/admin/v1"
 	"github.com/go-kratos/kratos/v2/log"
 	"golang.org/x/sync/singleflight"
@@ -424,8 +423,7 @@ func (rp AuthorizationRepo) GetMenuTree(ctx context.Context) (*v1.GetMenuTreeRep
 				UpdatedAt:   btn.UpdatedAt,
 			})
 		}
-		fmt.Println("btns")
-		fmt.Println(btns)
+
 		list = append(list, &v1.MenuInfo{
 			Id:        v.Id,
 			ParentId:  v.ParentId,

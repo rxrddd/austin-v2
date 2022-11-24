@@ -1,7 +1,6 @@
 package data
 
 import (
-	"fmt"
 	"github.com/ZQCard/kratos-base-project/app/administrator/service/internal/conf"
 	"github.com/go-redis/redis"
 
@@ -88,7 +87,6 @@ func NewRedisCmd(conf *conf.Data, logger log.Logger) redis.Cmdable {
 
 func NewMysqlCmd(conf *conf.Data, logger log.Logger) *gorm.DB {
 	logs := log.NewHelper(log.With(logger, "module", "administrator-service/data/mysql"))
-	fmt.Println(conf.Database.Source)
 	db, err := gorm.Open(mysql.Open(conf.Database.Source), &gorm.Config{})
 	if err != nil {
 		logs.Fatalf("mysql connect error: %v", err)

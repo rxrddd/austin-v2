@@ -53,9 +53,9 @@ service.interceptors.response.use(
       // 无效token
       if (res.code === 40001 || res.code === 40002 || res.code === 40003) {
         // to re-login
-        MessageBox.confirm('You have been logged out, you can cancel to stay on this page, or log in again', 'Confirm logout', {
-          confirmButtonText: 'Re-Login',
-          cancelButtonText: 'Cancel',
+        MessageBox.confirm('您已退出登录，如果需要请重新登录或稍后再试', '退出登录', {
+          confirmButtonText: '重新登录',
+          cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
           store.dispatch('user/resetToken').then(() => {

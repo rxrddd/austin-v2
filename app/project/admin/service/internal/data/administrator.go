@@ -2,7 +2,6 @@ package data
 
 import (
 	"context"
-	"fmt"
 	administratorServiceV1 "github.com/ZQCard/kratos-base-project/api/administrator/v1"
 	v1 "github.com/ZQCard/kratos-base-project/api/project/admin/v1"
 	"github.com/ZQCard/kratos-base-project/app/project/admin/service/internal/conf"
@@ -106,9 +105,6 @@ func (rp AdministratorRepo) UpdateAdministrator(ctx context.Context, req *v1.Upd
 }
 
 func (rp AdministratorRepo) ListAdministrator(ctx context.Context, req *v1.ListAdministratorRequest) (*v1.ListAdministratorReply, error) {
-	fmt.Println("CreatedAtStart")
-	fmt.Println(req.CreatedAtStart)
-	fmt.Println(req.CreatedAtEnd)
 	list := []*v1.AdministratorInfoResponse{}
 	reply, err := rp.data.administratorClient.ListAdministrator(ctx, &administratorServiceV1.ListAdministratorRequest{
 		PageNum:        req.PageNum,
@@ -301,8 +297,7 @@ func (rp AdministratorRepo) DestroyAdministratorToken(ctx context.Context, admin
 		})
 	signedString, _ := claims.SignedString([]byte(GetAuthApiKey()))
 	key := encryption.EncodeMD5(signedString)
-	fmt.Println("signedString")
-	fmt.Println(key)
+
 	// 删除redis
 	rp.data.redisCli.Del(key)
 	return nil

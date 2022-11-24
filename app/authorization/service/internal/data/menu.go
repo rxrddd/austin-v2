@@ -3,7 +3,6 @@ package data
 import (
 	"context"
 	"errors"
-	"fmt"
 	"github.com/ZQCard/kratos-base-project/app/authorization/service/internal/biz"
 	entity2 "github.com/ZQCard/kratos-base-project/app/authorization/service/internal/data/entity"
 	"github.com/ZQCard/kratos-base-project/pkg/errResponse"
@@ -87,8 +86,6 @@ func (a AuthorizationRepo) GetMenuTree(ctx context.Context) ([]*biz.Menu, error)
 	}
 	for k := range res {
 		err := a.findChildrenMenu(res[k])
-		fmt.Println("res[k].MenuBtns")
-		fmt.Println(res[k].MenuBtns)
 		if err != nil {
 			return res, kerrors.InternalServer(errResponse.ReasonSystemError, err.Error())
 		}
