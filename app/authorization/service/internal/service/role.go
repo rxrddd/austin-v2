@@ -19,6 +19,7 @@ func (s *AuthorizationService) GetRoleList(ctx context.Context, req *emptypb.Emp
 		res := &v1.RoleInfo{
 			Id:        role[k].Id,
 			ParentId:  role[k].ParentId,
+			ParentIds: role[k].ParentIds,
 			Name:      role[k].Name,
 			CreatedAt: role[k].CreatedAt,
 			UpdatedAt: role[k].UpdatedAt,
@@ -41,6 +42,7 @@ func findChildrenRole(role *biz.Role) []*v1.RoleInfo {
 				Id:        role.Children[k].Id,
 				Name:      role.Children[k].Name,
 				ParentId:  role.Children[k].ParentId,
+				ParentIds: role.Children[k].ParentIds,
 				CreatedAt: role.Children[k].CreatedAt,
 				UpdatedAt: role.Children[k].UpdatedAt,
 				Children:  findChildrenRole(&role.Children[k]),
@@ -52,8 +54,9 @@ func findChildrenRole(role *biz.Role) []*v1.RoleInfo {
 
 func (s *AuthorizationService) CreateRole(ctx context.Context, req *v1.CreateRoleRequest) (*v1.RoleInfo, error) {
 	bc := &biz.Role{
-		Name:     req.Name,
-		ParentId: req.ParentId,
+		Name:      req.Name,
+		ParentId:  req.ParentId,
+		ParentIds: req.ParentIds,
 	}
 
 	role, err := s.authorizationUsecase.CreateRole(ctx, bc)
@@ -63,6 +66,7 @@ func (s *AuthorizationService) CreateRole(ctx context.Context, req *v1.CreateRol
 	return &v1.RoleInfo{
 		Id:        role.Id,
 		ParentId:  role.ParentId,
+		ParentIds: role.ParentIds,
 		Name:      role.Name,
 		CreatedAt: role.CreatedAt,
 		UpdatedAt: role.UpdatedAt,
@@ -71,9 +75,10 @@ func (s *AuthorizationService) CreateRole(ctx context.Context, req *v1.CreateRol
 
 func (s *AuthorizationService) UpdateRole(ctx context.Context, req *v1.UpdateRoleRequest) (*v1.RoleInfo, error) {
 	bc := &biz.Role{
-		Id:       req.Id,
-		Name:     req.Name,
-		ParentId: req.ParentId,
+		Id:        req.Id,
+		Name:      req.Name,
+		ParentId:  req.ParentId,
+		ParentIds: req.ParentIds,
 	}
 
 	role, err := s.authorizationUsecase.UpdateRole(ctx, bc)
@@ -83,6 +88,7 @@ func (s *AuthorizationService) UpdateRole(ctx context.Context, req *v1.UpdateRol
 	return &v1.RoleInfo{
 		Id:        role.Id,
 		ParentId:  role.ParentId,
+		ParentIds: role.ParentIds,
 		Name:      role.Name,
 		CreatedAt: role.CreatedAt,
 		UpdatedAt: role.UpdatedAt,

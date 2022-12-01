@@ -7,7 +7,7 @@ import (
 
 func (s *AuthorizationService) GetRoleMenuTree(ctx context.Context, req *v1.GetRoleMenuRequest) (*v1.GetMenuTreeReply, error) {
 
-	menu, err := s.authorizationUsecase.GetRoleMenuTree(ctx, req.RoleId)
+	menu, err := s.authorizationUsecase.GetRoleMenuTree(ctx, req.Role)
 	if err != nil {
 		return nil, err
 	}
@@ -38,7 +38,7 @@ func (s *AuthorizationService) GetRoleMenuTree(ctx context.Context, req *v1.GetR
 }
 
 func (s *AuthorizationService) GetRoleMenu(ctx context.Context, req *v1.GetRoleMenuRequest) (*v1.GetMenuTreeReply, error) {
-	menu, err := s.authorizationUsecase.GetRoleMenu(ctx, req.RoleId)
+	menu, err := s.authorizationUsecase.GetRoleMenu(ctx, req.Role)
 	if err != nil {
 		return nil, err
 	}

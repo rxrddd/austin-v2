@@ -8,18 +8,24 @@ import (
 	kerrors "github.com/go-kratos/kratos/v2/errors"
 )
 
-func (a AuthorizationRepo) GetRoleMenuTree(ctx context.Context, roleId int64) ([]*biz.Menu, error) {
+func (a AuthorizationRepo) GetRoleMenuTree(ctx context.Context, role string) ([]*biz.Menu, error) {
 	// 查询角色拥有哪些菜单
 	var res []*biz.Menu
 	var menus []entity2.Menu
+	tmpRole, err := a.GetRole(ctx, map[string]interface{}{
+		"name": role,
+	})
+	if tmpRole.Id == 0 {
+		return res, nil
+	}
 	// 查看角色拥有菜单id
-	menuIds := a.getMenuIdsByRoleId(roleId)
+	menuIds := a.getMenuIdsByRoleId(tmpRole.Id)
 	if len(menuIds) == 0 {
 		return res, nil
 	}
 
 	// 获取所有根菜单
-	err := a.data.db.Model(entity2.Menu{}).Where("parent_id = 0 AND id IN (?)", menuIds).Preload("MenuBtns").Order("sort ASC").Find(&menus).Error
+	err = a.data.db.Model(entity2.Menu{}).Where("parent_id = 0 AND id IN (?)", menuIds).Preload("MenuBtns").Order("sort ASC").Find(&menus).Error
 	if err != nil {
 		return res, kerrors.InternalServer(errResponse.ReasonSystemError, err.Error())
 	}
@@ -86,18 +92,24 @@ func (a AuthorizationRepo) findChildrenRoleMenu(menu *biz.Menu, menuIds []int64)
 	return err
 }
 
-func (a AuthorizationRepo) GetRoleMenu(ctx context.Context, roleId int64) ([]*biz.Menu, error) {
+func (a AuthorizationRepo) GetRoleMenu(ctx context.Context, role string) ([]*biz.Menu, error) {
 	// 查询角色拥有哪些菜单
 	var res []*biz.Menu
 	var menus []entity2.Menu
+	tmpRole, err := a.GetRole(ctx, map[string]interface{}{
+		"name": role,
+	})
+	if tmpRole.Id == 0 {
+		return res, nil
+	}
 	// 查看角色拥有菜单id
-	menuIds := a.getMenuIdsByRoleId(roleId)
+	menuIds := a.getMenuIdsByRoleId(tmpRole.Id)
 	if len(menuIds) == 0 {
 		return res, nil
 	}
 
 	// 获取所有根菜单
-	err := a.data.db.Model(entity2.Menu{}).Where("id IN (?) ", menuIds).Preload("MenuBtns").Find(&menus).Error
+	err = a.data.db.Model(entity2.Menu{}).Where("id IN (?) ", menuIds).Preload("MenuBtns").Find(&menus).Error
 	if err != nil {
 		return res, kerrors.InternalServer(errResponse.ReasonSystemError, err.Error())
 	}

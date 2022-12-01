@@ -9,8 +9,9 @@ import (
 
 type Role struct {
 	Id        int64
-	Name      string `validate:"required,max=50" label:"角色名称"`
-	ParentId  int64  `validate:"gte=0" label:"父级ID"`
+	Name      string  `validate:"required,max=50" label:"角色名称"`
+	ParentId  int64   `validate:"gte=0" label:"父级ID"`
+	ParentIds []int64 `validate:"required" label:"父级ID数组"`
 	CreatedAt string
 	UpdatedAt string
 	Children  []Role

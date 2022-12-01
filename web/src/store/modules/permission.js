@@ -1,7 +1,6 @@
 import { asyncRoutes, constantRoutes } from '@/router'
-import { getAdministratorMenu } from '@/api/menu'
+import { getRoleMenu } from '@/api/auth/menu'
 import Layout from '@/layout'
-import { getToken } from '@/utils/auth'
 
 /**
  * Use meta.role to determine if the current user has permission
@@ -54,7 +53,7 @@ const actions = {
     return new Promise(resolve => {
       const loadMenuData = []
       // 先查询后台并返回左侧菜单数据并把数据添加到路由
-      getAdministratorMenu(getToken()).then(response => {
+      getRoleMenu({role:roles[0]}).then(response => {
         let data = response
         if (response.code !== 0) {
           throw new Error('菜单数据加载异常')

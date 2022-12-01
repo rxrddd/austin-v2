@@ -8,6 +8,7 @@ type Role struct {
 	Id        int64
 	Name      string
 	ParentId  int64
+	ParentIds string
 	CreatedAt *time.Time
 	UpdatedAt *time.Time
 	Children  []Role `gorm:"-"`

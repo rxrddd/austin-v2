@@ -2,6 +2,7 @@ package casbin
 
 import (
 	"context"
+	"fmt"
 	"github.com/ZQCard/kratos-base-project/pkg/errResponse"
 	"github.com/casbin/casbin/v2"
 	"github.com/casbin/casbin/v2/model"
@@ -62,7 +63,8 @@ func Server(opts ...Option) middleware.Middleware {
 				act := tr.RequestHeader().Get("Http-Method")
 				// 获取请求的PATH
 				obj := tr.Operation()
-
+				fmt.Println("tr")
+				fmt.Println(tr)
 				// 权限判断
 				allowed, err := o.enforcer.Enforce(role, obj, act)
 				if err != nil {

@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-export function listApiAll(params) {
+export function getApiAll(params) {
   return request({
     url: '/authorization/v1/apiAll',
     method: 'get',

@@ -37,8 +37,8 @@ type AuthorizationRepo interface {
 	UpdateMenu(ctx context.Context, menu *Menu) (*Menu, error)
 	DeleteMenu(ctx context.Context, id int64) error
 	SaveRoleMenu(ctx context.Context, roleId int64, menuIds []int64) error
-	GetRoleMenu(ctx context.Context, roleId int64) ([]*Menu, error)
-	GetRoleMenuTree(ctx context.Context, roleId int64) ([]*Menu, error)
+	GetRoleMenu(ctx context.Context, role string) ([]*Menu, error)
+	GetRoleMenuTree(ctx context.Context, role string) ([]*Menu, error)
 }
 
 type AuthorizationUsecase struct {

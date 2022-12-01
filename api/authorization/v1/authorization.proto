@@ -97,12 +97,14 @@ message RoleInfo {
 	string name = 3;
 	string created_at = 4;
 	string updated_at = 5;
-	repeated RoleInfo children = 6;
+	repeated int64 parent_ids = 6;
+	repeated RoleInfo children = 7;
 }
 
 message CreateRoleRequest{
 	int64 parent_id = 1;
 	string name = 2;
+	repeated int64 parent_ids = 3;
 }
 
 message DeleteRoleRequest{
@@ -113,6 +115,7 @@ message UpdateRoleRequest {
 	int64 id = 1;
 	int64 parent_id = 2;
 	string name = 3;
+	repeated int64 parent_ids = 4;
 }
 
 message AddRolesForUserRequest {
@@ -265,7 +268,7 @@ message SetRoleMenuRequest{
 }
 
 message GetRoleMenuRequest{
-	int64 role_id = 1;
+	string role = 1;
 }
 
 message GetPoliciesRequest{

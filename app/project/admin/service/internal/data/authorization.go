@@ -63,6 +63,7 @@ func (rp AuthorizationRepo) GetRoleList(ctx context.Context) (*v1.GetRoleListRep
 			Id:        v.Id,
 			ParentId:  v.ParentId,
 			Name:      v.Name,
+			ParentIds: v.ParentIds,
 			CreatedAt: v.CreatedAt,
 			UpdatedAt: v.UpdatedAt,
 			Children:  children,
@@ -82,6 +83,7 @@ func findChildrenRole(role *authorizationServiceV1.RoleInfo) []*v1.RoleInfo {
 				Id:        role.Children[k].Id,
 				Name:      role.Children[k].Name,
 				ParentId:  role.Children[k].ParentId,
+				ParentIds: role.Children[k].ParentIds,
 				CreatedAt: role.Children[k].CreatedAt,
 				UpdatedAt: role.Children[k].UpdatedAt,
 				Children:  findChildrenRole(role.Children[k]),
@@ -93,8 +95,9 @@ func findChildrenRole(role *authorizationServiceV1.RoleInfo) []*v1.RoleInfo {
 
 func (rp AuthorizationRepo) CreateRole(ctx context.Context, req *v1.CreateRoleRequest) (*v1.RoleInfo, error) {
 	reply, err := rp.data.authorizationClient.CreateRole(ctx, &authorizationServiceV1.CreateRoleRequest{
-		Name:     req.Name,
-		ParentId: req.ParentId,
+		Name:      req.Name,
+		ParentId:  req.ParentId,
+		ParentIds: req.ParentIds,
 	})
 	if err != nil {
 		return nil, err
@@ -103,6 +106,7 @@ func (rp AuthorizationRepo) CreateRole(ctx context.Context, req *v1.CreateRoleRe
 		Id:        reply.Id,
 		Name:      req.Name,
 		ParentId:  req.ParentId,
+		ParentIds: req.ParentIds,
 		CreatedAt: reply.CreatedAt,
 		UpdatedAt: reply.UpdatedAt,
 	}
@@ -111,9 +115,10 @@ func (rp AuthorizationRepo) CreateRole(ctx context.Context, req *v1.CreateRoleRe
 
 func (rp AuthorizationRepo) UpdateRole(ctx context.Context, req *v1.UpdateRoleRequest) (*v1.RoleInfo, error) {
 	reply, err := rp.data.authorizationClient.UpdateRole(ctx, &authorizationServiceV1.UpdateRoleRequest{
-		Id:       req.Id,
-		Name:     req.Name,
-		ParentId: req.ParentId,
+		Id:        req.Id,
+		Name:      req.Name,
+		ParentId:  req.ParentId,
+		ParentIds: req.ParentIds,
 	})
 	if err != nil {
 		return nil, err
@@ -122,6 +127,7 @@ func (rp AuthorizationRepo) UpdateRole(ctx context.Context, req *v1.UpdateRoleRe
 		Id:        reply.Id,
 		Name:      req.Name,
 		ParentId:  req.ParentId,
+		ParentIds: req.ParentIds,
 		CreatedAt: reply.CreatedAt,
 		UpdatedAt: reply.UpdatedAt,
 	}
@@ -603,7 +609,7 @@ func (rp AuthorizationRepo) DeleteMenu(ctx context.Context, req *v1.DeleteMenuRe
 
 func (rp AuthorizationRepo) GetRoleMenuTree(ctx context.Context, req *v1.GetRoleMenuRequest) (*v1.GetMenuTreeReply, error) {
 	reply, err := rp.data.authorizationClient.GetRoleMenuTree(ctx, &authorizationServiceV1.GetRoleMenuRequest{
-		RoleId: req.RoleId,
+		Role: req.Role,
 	})
 	if err != nil {
 		return nil, err
@@ -651,7 +657,7 @@ func (rp AuthorizationRepo) GetRoleMenuTree(ctx context.Context, req *v1.GetRole
 
 func (rp AuthorizationRepo) GetRoleMenu(ctx context.Context, req *v1.GetRoleMenuRequest) (*v1.GetMenuTreeReply, error) {
 	reply, err := rp.data.authorizationClient.GetRoleMenu(ctx, &authorizationServiceV1.GetRoleMenuRequest{
-		RoleId: req.RoleId,
+		Role: req.Role,
 	})
 	if err != nil {
 		return nil, err
@@ -659,7 +665,6 @@ func (rp AuthorizationRepo) GetRoleMenu(ctx context.Context, req *v1.GetRoleMenu
 	var list []*v1.MenuInfo
 	menu := reply.List
 	for _, v := range menu {
-
 		var btns []*v1.MenuBtn
 		for _, btn := range v.MenuBtns {
 			btns = append(btns, &v1.MenuBtn{
