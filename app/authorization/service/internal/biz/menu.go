@@ -18,14 +18,15 @@ type MenuBtn struct {
 
 type Menu struct {
 	Id        int64
-	Name      string `validate:"required,max=50" label:"路由名称"`
-	Path      string `validate:"required,max=255" label:"路由path"`
-	ParentId  int64  `validate:"gte=0" label:"父级ID"`
-	Hidden    int64  `validate:"oneof=0 1" label:"是否隐藏"`
-	Component string `validate:"required,max=255" label:"前端文件路径"`
-	Sort      int64  `validate:"gte=1" label:"菜单排序"`
-	Title     string `validate:"required,max=255" label:"名称"`
-	Icon      string `validate:"required,max=255" label:"icon图标"`
+	Name      string  `validate:"required,max=50" label:"路由名称"`
+	Path      string  `validate:"required,max=255" label:"路由path"`
+	ParentId  int64   `validate:"gte=0" label:"父级ID"`
+	ParentIds []int64 `validate:"required" label:"父级ID数组"`
+	Hidden    int64   `validate:"oneof=0 1" label:"是否隐藏"`
+	Component string  `validate:"required,max=255" label:"前端文件路径"`
+	Sort      int64   `validate:"gte=1" label:"菜单排序"`
+	Title     string  `validate:"required,max=255" label:"名称"`
+	Icon      string  `validate:"required,max=255" label:"icon图标"`
 	CreatedAt string
 	UpdatedAt string
 	MenuBtns  []MenuBtn

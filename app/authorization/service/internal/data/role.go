@@ -136,7 +136,7 @@ func (a AuthorizationRepo) UpdateRole(ctx context.Context, reqData *biz.Role) (*
 	role.Name = reqData.Name
 	role.ParentId = reqData.ParentId
 	role.ParentIds = convertHelper.Int64ArrayToString(reqData.ParentIds, "-")
-	err = a.data.db.Model(entity.Role{}).Where("id = ?", role.Id).Updates(&role).Error
+	err = a.data.db.Model(entity.Role{}).Where("id = ?", role.Id).Save(&role).Error
 	if err != nil {
 		return &biz.Role{}, kerrors.InternalServer(errResponse.ReasonSystemError, err.Error())
 	}

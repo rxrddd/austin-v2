@@ -7,6 +7,7 @@ import (
 type Menu struct {
 	Id        int64
 	ParentId  int64
+	ParentIds string
 	Name      string
 	Path      string
 	Hidden    int64

@@ -224,7 +224,6 @@ export default {
         create: '创建'
       },
       dialogPvVisible: false,
-      pvData: [],
       rules: {
         username: [{ required: true, message: '用户名不得为空', trigger: 'blur' }],
         nickname: [{ required: true, message: '昵称不得为空', trigger: 'blur' }],

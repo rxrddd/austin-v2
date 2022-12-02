@@ -122,7 +122,7 @@ func (a AuthorizationRepo) UpdateApi(ctx context.Context, reqData *biz.Api) (*bi
 	api.Name = reqData.Name
 	api.Method = reqData.Method
 	api.Path = reqData.Path
-	err = a.data.db.Model(entity2.Api{}).Where("id = ?", api.Id).Updates(&api).Error
+	err = a.data.db.Model(entity2.Api{}).Where("id = ?", api.Id).Save(&api).Error
 	if err != nil {
 		return &biz.Api{}, kerrors.InternalServer(errResponse.ReasonSystemError, err.Error())
 	}

@@ -1,13 +1,13 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-button class="filter-item" type="primary" icon="el-icon-edit" @click="handleCreate(0)">
+      <el-button class="filter-item" type="primary" icon="el-icon-plus" @click="handleCreate(0)">
         新增
       </el-button>
     </div>
     <el-table :data="list" :props="roleTreeProps" row-key="id" style="width: 100%">
       <el-table-column label="角色ID" min-width="180" prop="id" />
-      <el-table-column align="left" label="角色名称" min-width="180" prop="name" />
+      <el-table-column align="center" label="角色名称" min-width="180" prop="name" />
       <el-table-column label="创建时间" prop="createdAt" align="center">
         <template slot-scope="{row}">
           <span>{{ row.createdAt | timeToDay }}</span>
@@ -42,13 +42,13 @@
         <el-form-item label="ID" prop="id" v-if="dialogStatus === 'update'">
           <el-input v-model="temp.id" />
         </el-form-item>
-        <el-form-item label="父级角色" prop="group">
+        <el-form-item label="父级角色" prop="parentIds">
           <el-cascader v-model="temp.parentIds" :options="roleOptions" style="width:100%"
             :props="{ checkStrictly: true, label: 'name', value: 'id', emitPath: 'true' }" :show-all-levels="false"
             @change="handleChange">
           </el-cascader>
         </el-form-item>
-        <el-form-item label="角色名称" prop="group">
+        <el-form-item label="角色名称" prop="name">
           <el-input v-model="temp.name" />
         </el-form-item>
       </el-form>
@@ -157,12 +157,9 @@ export default {
         update: '编辑',
         create: '创建'
       },
-      dialogPvVisible: false,
-      pvData: [],
       rules: {
         name: [{ required: true, message: '角色名称不得为空', trigger: 'blur' }],
       },
-      downloadLoading: false
     }
   },
   created() {
@@ -290,6 +287,7 @@ export default {
       })
     },
     updateData() {
+      this.temp.parentId = this.temp.parentIds[this.temp.parentIds.length - 1]
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           const tempData = Object.assign({}, this.temp)
@@ -327,10 +325,10 @@ export default {
       ]
       this.setRoleOptions(this.list, this.roleOptions)
     },
-    setRoleOptions(AuthorityData, optionsData) {
+    setRoleOptions(dataList, optionsData) {
       this.temp.id = String(this.temp.id)
-      AuthorityData &&
-        AuthorityData.forEach(item => {
+      dataList &&
+        dataList.forEach(item => {
           if (item.children && item.children.length) {
             const option = {
               id: item.id,

@@ -4,8 +4,9 @@ import (
 	"context"
 	"errors"
 	"github.com/ZQCard/kratos-base-project/app/authorization/service/internal/biz"
-	entity2 "github.com/ZQCard/kratos-base-project/app/authorization/service/internal/data/entity"
+	"github.com/ZQCard/kratos-base-project/app/authorization/service/internal/data/entity"
 	"github.com/ZQCard/kratos-base-project/pkg/errResponse"
+	"github.com/ZQCard/kratos-base-project/pkg/utils/convertHelper"
 	"gorm.io/gorm"
 	"time"
 
@@ -14,9 +15,9 @@ import (
 
 func (a AuthorizationRepo) GetMenuAll(ctx context.Context) ([]*biz.Menu, error) {
 	var res []*biz.Menu
-	var menus []entity2.Menu
+	var menus []entity.Menu
 	// 获取所有根菜单
-	err := a.data.db.Model(entity2.Menu{}).Preload("MenuBtns").Find(&menus).Error
+	err := a.data.db.Model(entity.Menu{}).Preload("MenuBtns").Find(&menus).Error
 	if err != nil {
 		return res, kerrors.InternalServer(errResponse.ReasonSystemError, err.Error())
 	}
@@ -36,6 +37,7 @@ func (a AuthorizationRepo) GetMenuAll(ctx context.Context) ([]*biz.Menu, error) 
 			Id:        v.Id,
 			Name:      v.Name,
 			ParentId:  v.ParentId,
+			ParentIds: convertHelper.StringToInt64ArrayNoErr(v.ParentIds, "-"),
 			Hidden:    v.Hidden,
 			Component: v.Component,
 			Sort:      v.Sort,
@@ -51,9 +53,9 @@ func (a AuthorizationRepo) GetMenuAll(ctx context.Context) ([]*biz.Menu, error) 
 
 func (a AuthorizationRepo) GetMenuTree(ctx context.Context) ([]*biz.Menu, error) {
 	var res []*biz.Menu
-	var menus []entity2.Menu
+	var menus []entity.Menu
 	// 获取所有根菜单
-	err := a.data.db.Model(entity2.Menu{}).Where("parent_id = 0").Preload("MenuBtns").Order("sort ASC").Find(&menus).Error
+	err := a.data.db.Model(entity.Menu{}).Where("parent_id = 0").Preload("MenuBtns").Order("sort ASC").Find(&menus).Error
 	if err != nil {
 		return res, kerrors.InternalServer(errResponse.ReasonSystemError, err.Error())
 	}
@@ -73,6 +75,7 @@ func (a AuthorizationRepo) GetMenuTree(ctx context.Context) ([]*biz.Menu, error)
 			Id:        v.Id,
 			Name:      v.Name,
 			ParentId:  v.ParentId,
+			ParentIds: convertHelper.StringToInt64ArrayNoErr(v.ParentIds, "-"),
 			Path:      v.Path,
 			Hidden:    v.Hidden,
 			Component: v.Component,
@@ -95,8 +98,8 @@ func (a AuthorizationRepo) GetMenuTree(ctx context.Context) ([]*biz.Menu, error)
 }
 
 func (a AuthorizationRepo) findChildrenMenu(menu *biz.Menu) (err error) {
-	var tmp []entity2.Menu
-	err = a.data.db.Model(entity2.Menu{}).Where("parent_id = ?", menu.Id).Preload("MenuBtns").Find(&tmp).Error
+	var tmp []entity.Menu
+	err = a.data.db.Model(entity.Menu{}).Where("parent_id = ?", menu.Id).Preload("MenuBtns").Find(&tmp).Error
 	menu.Children = []biz.Menu{}
 	for _, v := range tmp {
 		btns := []biz.MenuBtn{}
@@ -116,6 +119,7 @@ func (a AuthorizationRepo) findChildrenMenu(menu *biz.Menu) (err error) {
 			Name:      v.Name,
 			Path:      v.Path,
 			ParentId:  v.ParentId,
+			ParentIds: convertHelper.StringToInt64ArrayNoErr(v.ParentIds, "-"),
 			Hidden:    v.Hidden,
 			Component: v.Component,
 			Sort:      v.Sort,
@@ -135,18 +139,19 @@ func (a AuthorizationRepo) findChildrenMenu(menu *biz.Menu) (err error) {
 }
 
 func (a AuthorizationRepo) CreateMenu(ctx context.Context, reqData *biz.Menu) (*biz.Menu, error) {
-	btns := []*entity2.MenuBtn{}
+	btns := []*entity.MenuBtn{}
 	for _, v := range reqData.MenuBtns {
-		btns = append(btns, &entity2.MenuBtn{
+		btns = append(btns, &entity.MenuBtn{
 			Name:        v.Name,
 			Description: v.Description,
 		})
 	}
-	var menu entity2.Menu
+	var menu entity.Menu
 	now := time.Now()
-	menu = entity2.Menu{
+	menu = entity.Menu{
 		Name:      reqData.Name,
 		ParentId:  reqData.ParentId,
+		ParentIds: convertHelper.Int64ArrayToString(reqData.ParentIds, "-"),
 		Path:      reqData.Path,
 		Hidden:    reqData.Hidden,
 		Component: reqData.Component,
@@ -157,7 +162,7 @@ func (a AuthorizationRepo) CreateMenu(ctx context.Context, reqData *biz.Menu) (*
 		UpdatedAt: &now,
 		MenuBtns:  btns,
 	}
-	err := a.data.db.Model(entity2.Menu{}).Create(&menu).Error
+	err := a.data.db.Model(entity.Menu{}).Create(&menu).Error
 	if err != nil {
 		return &biz.Menu{}, kerrors.InternalServer(errResponse.ReasonSystemError, err.Error())
 	}
@@ -177,6 +182,7 @@ func (a AuthorizationRepo) CreateMenu(ctx context.Context, reqData *biz.Menu) (*
 		Name:      menu.Name,
 		Path:      menu.Path,
 		ParentId:  menu.ParentId,
+		ParentIds: convertHelper.StringToInt64ArrayNoErr(menu.ParentIds, "-"),
 		Hidden:    menu.Hidden,
 		Component: menu.Component,
 		Sort:      menu.Sort,
@@ -190,49 +196,49 @@ func (a AuthorizationRepo) CreateMenu(ctx context.Context, reqData *biz.Menu) (*
 }
 
 func (a AuthorizationRepo) UpdateMenu(ctx context.Context, reqData *biz.Menu) (*biz.Menu, error) {
-	btns := []*entity2.MenuBtn{}
+	btns := []*entity.MenuBtn{}
 	for _, v := range reqData.MenuBtns {
-		btns = append(btns, &entity2.MenuBtn{
+		btns = append(btns, &entity.MenuBtn{
 			Id:          v.Id,
 			MenuId:      reqData.Id,
 			Name:        v.Name,
 			Description: v.Description,
 		})
 	}
-	var menu entity2.Menu
-	menu = entity2.Menu{
-		Id:        reqData.Id,
-		Name:      reqData.Name,
-		ParentId:  reqData.ParentId,
-		Path:      reqData.Path,
-		Hidden:    reqData.Hidden,
-		Component: reqData.Component,
-		Sort:      reqData.Sort,
-		Title:     reqData.Title,
-		Icon:      reqData.Icon,
-		MenuBtns:  btns,
-	}
+	var menu entity.Menu
+	a.data.db.Model(entity.Menu{}).Where("id = ?", reqData.Id).First(&menu)
+	menu.Id = reqData.Id
+	menu.Name = reqData.Name
+	menu.ParentId = reqData.ParentId
+	menu.ParentIds = convertHelper.Int64ArrayToString(reqData.ParentIds, "-")
+	menu.Path = reqData.Path
+	menu.Hidden = reqData.Hidden
+	menu.Component = reqData.Component
+	menu.Sort = reqData.Sort
+	menu.Title = reqData.Title
+	menu.Icon = reqData.Icon
+	menu.MenuBtns = btns
 	// 关联数据更新
 	tx := a.data.db.Begin()
-	err := tx.Model(entity2.Menu{}).Where("id = ?", menu.Id).Session(&gorm.Session{FullSaveAssociations: true}).Updates(&menu).Error
+	err := tx.Model(entity.Menu{}).Where("id = ?", menu.Id).Session(&gorm.Session{FullSaveAssociations: true}).Save(&menu).Error
 	if err != nil {
 		tx.Rollback()
 		return &biz.Menu{}, kerrors.InternalServer(errResponse.ReasonSystemError, err.Error())
 	}
 	// 先删除,后添加
-	if err = tx.Where("menu_id  = ?", menu.Id).Unscoped().Delete(&entity2.MenuBtn{}).Error; err != nil {
+	if err = tx.Where("menu_id  = ?", menu.Id).Unscoped().Delete(&entity.MenuBtn{}).Error; err != nil {
 		tx.Rollback()
 		return &biz.Menu{}, kerrors.InternalServer(errResponse.ReasonSystemError, err.Error())
 	}
 	// 保存按钮
 	for _, v := range menu.MenuBtns {
-		if err = tx.Model(entity2.MenuBtn{}).Where("id = ?", v.Id).Create(&v).Error; err != nil {
+		if err = tx.Model(entity.MenuBtn{}).Where("id = ?", v.Id).Create(&v).Error; err != nil {
 			tx.Rollback()
 			return &biz.Menu{}, kerrors.InternalServer(errResponse.ReasonSystemError, err.Error())
 		}
 	}
 	tx.Commit()
-	a.data.db.Model(entity2.Menu{}).Where("id = ?", menu.Id).Preload("MenuBtns").Find(&menu)
+	a.data.db.Model(entity.Menu{}).Where("id = ?", menu.Id).Preload("MenuBtns").Find(&menu)
 	btns2 := []biz.MenuBtn{}
 	for _, v := range menu.MenuBtns {
 		btns2 = append(btns2, biz.MenuBtn{
@@ -249,6 +255,7 @@ func (a AuthorizationRepo) UpdateMenu(ctx context.Context, reqData *biz.Menu) (*
 		Name:      menu.Name,
 		Path:      menu.Path,
 		ParentId:  menu.ParentId,
+		ParentIds: convertHelper.StringToInt64ArrayNoErr(menu.ParentIds, "-"),
 		Hidden:    menu.Hidden,
 		Component: menu.Component,
 		Sort:      menu.Sort,
@@ -262,9 +269,9 @@ func (a AuthorizationRepo) UpdateMenu(ctx context.Context, reqData *biz.Menu) (*
 }
 
 func (a AuthorizationRepo) DeleteMenu(ctx context.Context, id int64) error {
-	var menu entity2.Menu
+	var menu entity.Menu
 	// 查看菜单是否存在
-	err := a.data.db.Model(entity2.Menu{}).Where("id = ?", id).First(&menu).Error
+	err := a.data.db.Model(entity.Menu{}).Where("id = ?", id).First(&menu).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return errResponse.SetErrByReason(errResponse.ReasonRecordNotFound)
 	}
@@ -273,19 +280,19 @@ func (a AuthorizationRepo) DeleteMenu(ctx context.Context, id int64) error {
 	}
 
 	tx := a.data.db.Begin()
-	err = tx.Model(entity2.Menu{}).Where("id = ?", id).Delete(&menu).Error
+	err = tx.Model(entity.Menu{}).Where("id = ?", id).Delete(&menu).Error
 	if err != nil {
 		tx.Rollback()
 		return kerrors.InternalServer(errResponse.ReasonSystemError, err.Error())
 	}
 	// 删除菜单与角色的关联关系
-	err = tx.Model(entity2.RoleMenu{}).Where("menu_id = ?", id).Delete(&entity2.RoleMenu{}).Error
+	err = tx.Model(entity.RoleMenu{}).Where("menu_id = ?", id).Delete(&entity.RoleMenu{}).Error
 	if err != nil {
 		tx.Rollback()
 		return kerrors.InternalServer(errResponse.ReasonSystemError, err.Error())
 	}
 	// 删除菜单与按钮的关联关系
-	err = tx.Model(entity2.MenuBtn{}).Where("menu_id = ?", id).Delete(&entity2.RoleMenu{}).Error
+	err = tx.Model(entity.MenuBtn{}).Where("menu_id = ?", id).Delete(&entity.RoleMenu{}).Error
 	if err != nil {
 		tx.Rollback()
 		return kerrors.InternalServer(errResponse.ReasonSystemError, err.Error())

@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-button class="filter-item" type="primary" icon="el-icon-edit" @click="handleCreate">
+      <el-button class="filter-item" type="primary" icon="el-icon-plus" @click="handleCreate">
         新增
       </el-button>
 
@@ -152,15 +152,12 @@ export default {
         update: '编辑',
         create: '创建'
       },
-      dialogPvVisible: false,
-      pvData: [],
       rules: {
         group: [{ required: true, message: '分组名称不得为空', trigger: 'blur' }],
         name: [{ required: true, message: 'api名称不得为空', trigger: 'blur' }],
         method: [{ required: true, message: '请求方式不得为空', trigger: 'blur' }],
         path: [{ required: true, message: '请求路径不得为空', trigger: 'blur' }],
       },
-      downloadLoading: false
     }
   },
   created() {

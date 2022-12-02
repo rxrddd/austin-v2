@@ -482,6 +482,7 @@ message MenuInfo {
 	string updated_at = 11;
 	repeated MenuInfo children = 12;
 	repeated MenuBtn menuBtns = 13;
+	repeated int64 parent_ids = 14;
 }
 message MenuBtn {
 	int64 id = 1;
@@ -502,6 +503,7 @@ message CreateMenuRequest {
 	string title = 8;
 	string icon = 9;
 	repeated MenuBtn menuBtns = 10;
+	repeated int64 parent_ids = 11;
 }
 
 message UpdateMenuRequest {
@@ -515,6 +517,7 @@ message UpdateMenuRequest {
 	string title = 8;
 	string icon = 9;
 	repeated MenuBtn menuBtns = 10;
+	repeated int64 parent_ids = 11;
 }
 
 message DeleteMenuRequest {

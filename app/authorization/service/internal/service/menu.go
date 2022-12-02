@@ -30,6 +30,7 @@ func (s *AuthorizationService) GetMenuAll(ctx context.Context, req *emptypb.Empt
 		res := &v1.MenuInfo{
 			Id:        menu[k].Id,
 			ParentId:  menu[k].ParentId,
+			ParentIds: menu[k].ParentIds,
 			Path:      menu[k].Path,
 			Name:      menu[k].Name,
 			Hidden:    menu[k].Hidden,
@@ -74,6 +75,7 @@ func (s *AuthorizationService) GetMenuTree(ctx context.Context, req *emptypb.Emp
 		res := &v1.MenuInfo{
 			Id:        menu[k].Id,
 			ParentId:  menu[k].ParentId,
+			ParentIds: menu[k].ParentIds,
 			Path:      menu[k].Path,
 			Name:      menu[k].Name,
 			Hidden:    menu[k].Hidden,
@@ -115,6 +117,7 @@ func findChildrenMenu(menu *biz.Menu) []*v1.MenuInfo {
 				Name:      menu.Children[k].Name,
 				Path:      menu.Children[k].Path,
 				ParentId:  menu.Children[k].ParentId,
+				ParentIds: menu.Children[k].ParentIds,
 				Hidden:    menu.Children[k].Hidden,
 				Component: menu.Children[k].Component,
 				Sort:      menu.Children[k].Sort,
@@ -142,6 +145,7 @@ func (s *AuthorizationService) CreateMenu(ctx context.Context, req *v1.CreateMen
 		Name:      req.Name,
 		Path:      req.Path,
 		ParentId:  req.ParentId,
+		ParentIds: req.ParentIds,
 		Hidden:    req.Hidden,
 		Component: req.Component,
 		Sort:      req.Sort,
@@ -168,6 +172,7 @@ func (s *AuthorizationService) CreateMenu(ctx context.Context, req *v1.CreateMen
 	return &v1.MenuInfo{
 		Id:        menu.Id,
 		ParentId:  menu.ParentId,
+		ParentIds: menu.ParentIds,
 		Path:      menu.Path,
 		Name:      menu.Name,
 		Hidden:    menu.Hidden,
@@ -196,6 +201,7 @@ func (s *AuthorizationService) UpdateMenu(ctx context.Context, req *v1.UpdateMen
 		Name:      req.Name,
 		Path:      req.Path,
 		ParentId:  req.ParentId,
+		ParentIds: req.ParentIds,
 		Hidden:    req.Hidden,
 		Component: req.Component,
 		Sort:      req.Sort,
@@ -222,6 +228,7 @@ func (s *AuthorizationService) UpdateMenu(ctx context.Context, req *v1.UpdateMen
 	return &v1.MenuInfo{
 		Id:        menu.Id,
 		ParentId:  menu.ParentId,
+		ParentIds: menu.ParentIds,
 		Path:      menu.Path,
 		Name:      menu.Name,
 		Hidden:    menu.Hidden,
