@@ -36,8 +36,11 @@
           <span>{{ row.updatedAt | timeToDay }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="200" class-name="small-padding fixed-width" fixed="right">
+      <el-table-column label="操作" width="250" class-name="small-padding fixed-width" fixed="right">
         <template slot-scope="{row,$index}">
+          <el-button type="primary" size="mini" @click="handleChildMenu(row)">
+            新增子菜单
+          </el-button>
           <el-button type="primary" size="mini" @click="handleUpdate(row)">
             编辑
           </el-button>
@@ -81,7 +84,7 @@
         </el-form-item>
         <el-form-item label="图标" prop="icon">
           <el-select placeholder="请选择" v-model="temp.icon" filterable>
-            <el-option v-for=" item in elementIcons" :label="item" :value="item">
+            <el-option v-for=" item in elementIcons" :label="'el-icon-' + item" :value="'el-icon-' + item">
               <i :class="'el-icon-' + item"></i>
               {{ item }}
             </el-option>
@@ -329,7 +332,23 @@ export default {
     // 删除按钮
     deleteBtn(index) {
       this.menuBtns.splice(index, 1)
-    }
+    },
+    handleChildMenu(row) {
+      this.resetTemp()
+      this.dialogStatus = 'create'
+      this.dialogFormVisible = true
+      // 删除首个根元素
+      var tmpParentIds = row.parentIds
+      if (row.parentIds[0] == "0") {
+        tmpParentIds.pop()
+      }
+      tmpParentIds.push(row.id + '')
+      this.temp.parentIds = tmpParentIds
+      this.setOptions()
+      this.$nextTick(() => {
+        this.$refs['dataForm'].clearValidate()
+      })
+    },
   }
 }
 </script>
