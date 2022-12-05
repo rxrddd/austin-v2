@@ -53,7 +53,7 @@ const actions = {
     return new Promise(resolve => {
       const loadMenuData = []
       // 先查询后台并返回左侧菜单数据并把数据添加到路由
-      getRoleMenu({role:roles[0]}).then(response => {
+      getRoleMenu({ role: roles[0] }).then(response => {
         let data = response
         if (response.code !== 0) {
           throw new Error('菜单数据加载异常')
@@ -68,12 +68,14 @@ const actions = {
           } else {
             accessedRoutes = filterAsyncRoutes(tempAsyncRoutes, roles)
           }
+          // 设置路由
           commit('SET_ROUTES', accessedRoutes)
           resolve(accessedRoutes)
         }
       }).catch(error => {
         console.log(error)
       })
+
     })
   }
 }

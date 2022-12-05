@@ -1,5 +1,6 @@
 import { login, logout, getInfo, loginSuccess } from '@/api/user'
 import { getToken, setToken, removeToken } from '@/utils/auth'
+import { getRoleMenuBtn } from '@/api/auth/role'
 import router, { resetRouter } from '@/router'
 
 const state = {
@@ -7,7 +8,8 @@ const state = {
   name: '',
   avatar: '',
   introduction: '',
-  roles: []
+  roles: [],
+  buttons: [],
 }
 
 const mutations = {
@@ -25,6 +27,9 @@ const mutations = {
   },
   SET_ROLES: (state, roles) => {
     state.roles = roles
+  },
+  SET_BUTTONS: (state, buttons) => {
+    state.buttons = buttons
   }
 }
 
@@ -62,6 +67,21 @@ const actions = {
         }
         // 获取数据成功请求后台保存登录数据
         loginSuccess()
+
+        // 获取角色按钮权限id集合
+        getRoleMenuBtn({ role_name: roles[0] }).then(response => {
+          let data = response
+          if (response.code !== 0) {
+            throw new Error('按钮权限数据加载异常')
+          } else {
+            const menuBtnIds = response.data.menuBtnIds
+            // 设置按钮
+            commit('SET_BUTTONS', menuBtnIds)
+          }
+        }).catch(error => {
+          console.log(error)
+        })
+
         commit('SET_ROLES', roles)
         commit('SET_NAME', nickname)
         commit('SET_AVATAR', avatar)

@@ -182,11 +182,31 @@ func (a AuthorizationRepo) getMenuIdsByRoleId(roleId int64) (menuIds []int64) {
 	return menuIds
 }
 
-func (a AuthorizationRepo) GetRoleMenuBtn(ctx context.Context, roleId int64, menuId int64) (btnIds []int64, err error) {
+func (a AuthorizationRepo) GetRoleMenuBtn(ctx context.Context, roleId int64, roleName string, menuId int64) (btnIds []int64, err error) {
+	// 如果角色名称不为空， 则根据名称查找角色id
+	if roleName != "" {
+		roleInfo, err := a.GetRole(ctx, map[string]interface{}{
+			"name": roleName,
+		})
+		if err != nil {
+			return []int64{}, err
+		}
+
+		if roleId != 0 && roleInfo.Id != roleId {
+			return []int64{}, kerrors.BadRequest(errResponse.ReasonParamsError, "角色参数错误")
+		}
+		roleId = roleInfo.Id
+	}
 	// 查询角色拥有哪些菜单按钮
 	var roleMenuBtn []entity.RoleMenuBtn
-
-	err = a.data.db.Model(entity.RoleMenuBtn{}).Where("role_id = ? AND menu_id = ?", roleId, menuId).Find(&roleMenuBtn).Error
+	conn := a.data.db.Model(entity.RoleMenuBtn{})
+	if menuId != 0 {
+		conn = conn.Where("menu_id = ?", menuId)
+	}
+	if roleId != 0 {
+		conn = conn.Where("role_id = ?", roleId)
+	}
+	err = conn.Find(&roleMenuBtn).Error
 	// 查看角色拥有菜单id
 	for _, v := range roleMenuBtn {
 		btnIds = append(btnIds, v.BtnId)

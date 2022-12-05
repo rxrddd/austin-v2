@@ -88,7 +88,7 @@ func (s *AuthorizationService) SetRoleMenu(ctx context.Context, req *v1.SetRoleM
 }
 
 func (s *AuthorizationService) GetRoleMenuBtn(ctx context.Context, req *v1.GetRoleMenuBtnRequest) (*v1.GetRoleMenuBtnReply, error) {
-	menuBtnIds, err := s.authorizationUsecase.GetRoleMenuBtn(ctx, req.RoleId, req.MenuId)
+	menuBtnIds, err := s.authorizationUsecase.GetRoleMenuBtn(ctx, req.RoleId, req.RoleName, req.MenuId)
 	if err != nil {
 		return nil, err
 	}

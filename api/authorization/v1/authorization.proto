@@ -290,7 +290,8 @@ message GetPoliciesReply{
 
 message GetRoleMenuBtnRequest {
 	int64 role_id = 1;
-	int64 menu_id = 2;
+	string role_name = 2;
+	int64 menu_id = 3;
 }
 
 message GetRoleMenuBtnReply {

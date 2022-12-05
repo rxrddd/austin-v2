@@ -725,8 +725,9 @@ func (rp AuthorizationRepo) SetRoleMenu(ctx context.Context, req *v1.SetRoleMenu
 
 func (rp AuthorizationRepo) GetRoleMenuBtn(ctx context.Context, req *v1.GetRoleMenuBtnRequest) (*v1.GetRoleMenuBtnReply, error) {
 	reply, err := rp.data.authorizationClient.GetRoleMenuBtn(ctx, &authorizationServiceV1.GetRoleMenuBtnRequest{
-		RoleId: req.RoleId,
-		MenuId: req.MenuId,
+		RoleId:   req.RoleId,
+		RoleName: req.RoleName,
+		MenuId:   req.MenuId,
 	})
 	if err != nil {
 		return nil, err

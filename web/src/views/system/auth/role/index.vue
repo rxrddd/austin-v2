@@ -32,6 +32,9 @@
           <el-button size="mini" type="danger" @click="handleDelete(row, $index)">
             删除
           </el-button>
+          <el-button size="mini" type="success" v-if="checkBtnPermission('19')">
+            测试权限
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -108,6 +111,7 @@
 </template>
 
 <script>
+import checkBtnPermission from '@/utils/permission' // 按钮权限判断函数
 import { listRole, createRole, updateRole, deleteRole, saveRoleMenu, getRolePolicies, saveRolePolicies, getRoleMenuBtn, setRoleMenuBtn } from '@/api/auth/role'
 import { getBaseMenuTree, getRoleMenu } from '@/api/auth/menu'
 import { getApiAll } from '@/api/auth/api'
@@ -193,6 +197,7 @@ export default {
     this.getApiData()
   },
   methods: {
+    checkBtnPermission,
     handleChange(value) {
       this.temp.parentIds = value
     },

@@ -5,7 +5,7 @@ import store from '@/store'
  * @returns {Boolean}
  * @example see @/views/permission/directive.vue
  */
-export default function checkPermission(value) {
+export function checkPermission(value) {
   if (value && value instanceof Array && value.length > 0) {
     const roles = store.getters && store.getters.roles
     const permissionRoles = value
@@ -22,4 +22,10 @@ export default function checkPermission(value) {
     console.error(`need roles! Like v-permission="['admin','editor']"`)
     return false
   }
+}
+
+
+export default function checkBtnPermission(value) {
+  const buttons = store.getters && store.getters.buttons
+  return buttons.findIndex(item => item == value) !== -1
 }

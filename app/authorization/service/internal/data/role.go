@@ -74,7 +74,9 @@ func (a AuthorizationRepo) GetRole(ctx context.Context, params map[string]interf
 		db = db.Where("name = ?", name)
 	}
 	err := db.First(&role).Error
-
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return res, kerrors.BadRequest(errResponse.ReasonParamsError, "角色不存在")
+	}
 	if err != nil {
 		return res, err
 	}

@@ -316,7 +316,6 @@ export default {
         })
     },
     handleChange(value) {
-      console.log(value)
     },
     // 新增按钮
     addBtn() {
@@ -327,7 +326,6 @@ export default {
         name: '',
         description: '',
       })
-      console.log(this.menuBtns)
     },
     // 删除按钮
     deleteBtn(index) {
