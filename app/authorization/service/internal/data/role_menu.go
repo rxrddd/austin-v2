@@ -3,7 +3,7 @@ package data
 import (
 	"context"
 	"github.com/ZQCard/kratos-base-project/app/authorization/service/internal/biz"
-	entity2 "github.com/ZQCard/kratos-base-project/app/authorization/service/internal/data/entity"
+	"github.com/ZQCard/kratos-base-project/app/authorization/service/internal/data/entity"
 	"github.com/ZQCard/kratos-base-project/pkg/errResponse"
 	kerrors "github.com/go-kratos/kratos/v2/errors"
 )
@@ -11,7 +11,7 @@ import (
 func (a AuthorizationRepo) GetRoleMenuTree(ctx context.Context, role string) ([]*biz.Menu, error) {
 	// 查询角色拥有哪些菜单
 	var res []*biz.Menu
-	var menus []entity2.Menu
+	var menus []entity.Menu
 	tmpRole, err := a.GetRole(ctx, map[string]interface{}{
 		"name": role,
 	})
@@ -25,7 +25,7 @@ func (a AuthorizationRepo) GetRoleMenuTree(ctx context.Context, role string) ([]
 	}
 
 	// 获取所有根菜单
-	err = a.data.db.Model(entity2.Menu{}).Where("parent_id = 0 AND id IN (?)", menuIds).Preload("MenuBtns").Order("sort ASC").Find(&menus).Error
+	err = a.data.db.Model(entity.Menu{}).Where("parent_id = 0 AND id IN (?)", menuIds).Preload("MenuBtns").Order("sort ASC").Find(&menus).Error
 	if err != nil {
 		return res, kerrors.InternalServer(errResponse.ReasonSystemError, err.Error())
 	}
@@ -54,8 +54,8 @@ func (a AuthorizationRepo) GetRoleMenuTree(ctx context.Context, role string) ([]
 }
 
 func (a AuthorizationRepo) findChildrenRoleMenu(menu *biz.Menu, menuIds []int64) (err error) {
-	var tmp []entity2.Menu
-	err = a.data.db.Model(entity2.Menu{}).Where("parent_id = ? AND id IN (?)", menu.Id, menuIds).Preload("MenuBtns").Find(&tmp).Error
+	var tmp []entity.Menu
+	err = a.data.db.Model(entity.Menu{}).Where("parent_id = ? AND id IN (?)", menu.Id, menuIds).Preload("MenuBtns").Find(&tmp).Error
 	menu.Children = []biz.Menu{}
 	for _, v := range tmp {
 		btns := []biz.MenuBtn{}
@@ -95,7 +95,7 @@ func (a AuthorizationRepo) findChildrenRoleMenu(menu *biz.Menu, menuIds []int64)
 func (a AuthorizationRepo) GetRoleMenu(ctx context.Context, role string) ([]*biz.Menu, error) {
 	// 查询角色拥有哪些菜单
 	var res []*biz.Menu
-	var menus []entity2.Menu
+	var menus []entity.Menu
 	tmpRole, err := a.GetRole(ctx, map[string]interface{}{
 		"name": role,
 	})
@@ -109,7 +109,7 @@ func (a AuthorizationRepo) GetRoleMenu(ctx context.Context, role string) ([]*biz
 	}
 
 	// 获取所有根菜单
-	err = a.data.db.Model(entity2.Menu{}).Where("id IN (?) ", menuIds).Preload("MenuBtns").Find(&menus).Error
+	err = a.data.db.Model(entity.Menu{}).Where("id IN (?) ", menuIds).Preload("MenuBtns").Find(&menus).Error
 	if err != nil {
 		return res, kerrors.InternalServer(errResponse.ReasonSystemError, err.Error())
 	}
@@ -145,15 +145,19 @@ func (a AuthorizationRepo) GetRoleMenu(ctx context.Context, role string) ([]*biz
 func (a AuthorizationRepo) SaveRoleMenu(ctx context.Context, roleId int64, menuIds []int64) error {
 	tx := a.data.db.Begin()
 	// 先删除数据
-	err := tx.Where("role_id = ?", roleId).Delete(&entity2.RoleMenu{}).Error
+	err := tx.Where("role_id = ?", roleId).Delete(&entity.RoleMenu{}).Error
 	if err != nil {
 		tx.Rollback()
 		return kerrors.InternalServer(errResponse.ReasonSystemError, err.Error())
 	}
+	if len(menuIds) == 0 {
+		tx.Commit()
+		return nil
+	}
 	// 批量插入数据
-	roleMenu := []entity2.RoleMenu{}
+	roleMenu := []entity.RoleMenu{}
 	for _, v := range menuIds {
-		roleMenu = append(roleMenu, entity2.RoleMenu{
+		roleMenu = append(roleMenu, entity.RoleMenu{
 			RoleId: roleId,
 			MenuId: v,
 		})
@@ -168,12 +172,53 @@ func (a AuthorizationRepo) SaveRoleMenu(ctx context.Context, roleId int64, menuI
 
 func (a AuthorizationRepo) getMenuIdsByRoleId(roleId int64) (menuIds []int64) {
 	// 查询角色拥有哪些菜单
-	var roleMenu []entity2.RoleMenu
+	var roleMenu []entity.RoleMenu
 
-	a.data.db.Model(entity2.RoleMenu{}).Where("role_id = ?", roleId).Find(&roleMenu)
+	a.data.db.Model(entity.RoleMenu{}).Where("role_id = ?", roleId).Find(&roleMenu)
 	// 查看角色拥有菜单id
 	for _, v := range roleMenu {
 		menuIds = append(menuIds, v.MenuId)
 	}
 	return menuIds
+}
+
+func (a AuthorizationRepo) GetRoleMenuBtn(ctx context.Context, roleId int64, menuId int64) (btnIds []int64, err error) {
+	// 查询角色拥有哪些菜单按钮
+	var roleMenuBtn []entity.RoleMenuBtn
+
+	err = a.data.db.Model(entity.RoleMenuBtn{}).Where("role_id = ? AND menu_id = ?", roleId, menuId).Find(&roleMenuBtn).Error
+	// 查看角色拥有菜单id
+	for _, v := range roleMenuBtn {
+		btnIds = append(btnIds, v.BtnId)
+	}
+	return btnIds, err
+}
+
+func (a AuthorizationRepo) SetRoleMenuBtn(ctx context.Context, roleId int64, menuId int64, btnIds []int64) error {
+	tx := a.data.db.Begin()
+	// 先删除数据
+	err := tx.Where("role_id = ? AND menu_id = ?", roleId, menuId).Delete(&entity.RoleMenuBtn{}).Error
+	if err != nil {
+		tx.Rollback()
+		return kerrors.InternalServer(errResponse.ReasonSystemError, err.Error())
+	}
+	if len(btnIds) == 0 {
+		tx.Commit()
+		return nil
+	}
+	// 批量插入数据
+	roleMenuBtn := []entity.RoleMenuBtn{}
+	for _, v := range btnIds {
+		roleMenuBtn = append(roleMenuBtn, entity.RoleMenuBtn{
+			RoleId: roleId,
+			MenuId: menuId,
+			BtnId:  v,
+		})
+	}
+	if err := tx.Create(&roleMenuBtn).Error; err != nil {
+		tx.Rollback()
+		return kerrors.InternalServer(errResponse.ReasonSystemError, err.Error())
+	}
+	tx.Commit()
+	return nil
 }

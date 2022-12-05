@@ -55,7 +55,7 @@ func (a AuthorizationRepo) DeleteRolesForUser(ctx context.Context, username stri
 	return a.data.enforcer.DeleteRolesForUser(username)
 }
 
-func (a *AuthorizationRepo) GetPolicies(ctx context.Context, role string) ([]*biz.PolicyRules, error) {
+func (a AuthorizationRepo) GetPolicies(ctx context.Context, role string) ([]*biz.PolicyRules, error) {
 	rules := []*biz.PolicyRules{}
 
 	// 检查角色是否存在
@@ -75,7 +75,7 @@ func (a *AuthorizationRepo) GetPolicies(ctx context.Context, role string) ([]*bi
 	return rules, nil
 }
 
-func (a *AuthorizationRepo) UpdatePolicies(ctx context.Context, role string, rules []biz.PolicyRules) (bool, error) {
+func (a AuthorizationRepo) UpdatePolicies(ctx context.Context, role string, rules []biz.PolicyRules) (bool, error) {
 	// 检查角色是否存在
 	if !a.checkRoleExist([]string{role}) {
 		return false, kerrors.BadRequest(errResponse.ReasonParamsError, "角色不存在")

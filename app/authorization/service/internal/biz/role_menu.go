@@ -10,9 +10,6 @@ func (uc *AuthorizationUsecase) SaveRoleMenu(ctx context.Context, roleId int64, 
 	if roleId == 0 {
 		return kerrors.BadRequest(errResponse.ReasonParamsError, "角色id不得为空")
 	}
-	if len(menuIds) == 0 {
-		return kerrors.BadRequest(errResponse.ReasonParamsError, "菜单id不得为空")
-	}
 	return uc.repo.SaveRoleMenu(ctx, roleId, menuIds)
 }
 
@@ -30,4 +27,25 @@ func (uc *AuthorizationUsecase) GetRoleMenuTree(ctx context.Context, role string
 		return nil, err
 	}
 	return result, nil
+}
+
+func (uc *AuthorizationUsecase) GetRoleMenuBtn(ctx context.Context, roleId int64, menuId int64) ([]int64, error) {
+	if roleId == 0 {
+		return []int64{}, kerrors.BadRequest(errResponse.ReasonParamsError, "角色id不得为空")
+	}
+	if menuId == 0 {
+		return []int64{}, kerrors.BadRequest(errResponse.ReasonParamsError, "菜单id不得为空")
+	}
+
+	return uc.repo.GetRoleMenuBtn(ctx, roleId, menuId)
+}
+
+func (uc *AuthorizationUsecase) SetRoleMenuBtn(ctx context.Context, roleId int64, menuId int64, btnIds []int64) error {
+	if roleId == 0 {
+		return kerrors.BadRequest(errResponse.ReasonParamsError, "角色id不得为空")
+	}
+	if menuId == 0 {
+		return kerrors.BadRequest(errResponse.ReasonParamsError, "菜单id不得为空")
+	}
+	return uc.repo.SetRoleMenuBtn(ctx, roleId, menuId, btnIds)
 }

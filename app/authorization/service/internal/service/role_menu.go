@@ -86,3 +86,25 @@ func (s *AuthorizationService) SetRoleMenu(ctx context.Context, req *v1.SetRoleM
 		IsSuccess: true,
 	}, nil
 }
+
+func (s *AuthorizationService) GetRoleMenuBtn(ctx context.Context, req *v1.GetRoleMenuBtnRequest) (*v1.GetRoleMenuBtnReply, error) {
+	menuBtnIds, err := s.authorizationUsecase.GetRoleMenuBtn(ctx, req.RoleId, req.MenuId)
+	if err != nil {
+		return nil, err
+	}
+
+	return &v1.GetRoleMenuBtnReply{
+		MenuBtnIds: menuBtnIds,
+	}, nil
+
+}
+
+func (s *AuthorizationService) SetRoleMenuBtn(ctx context.Context, req *v1.SetRoleMenuBtnRequest) (*v1.CheckReply, error) {
+	err := s.authorizationUsecase.SetRoleMenuBtn(ctx, req.RoleId, req.MenuId, req.MenuBtnIds)
+	if err != nil {
+		return nil, err
+	}
+	return &v1.CheckReply{
+		IsSuccess: true,
+	}, nil
+}
