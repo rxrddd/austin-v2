@@ -67,7 +67,7 @@
           <el-input v-model="temp.title" />
         </el-form-item>
         <el-form-item label="路由路径" prop="path">
-          <el-input v-model="temp.path" />
+          <el-input v-model="temp.path" placeholder="/xxx/xxx"/>
         </el-form-item>
         <el-form-item label="路由name" prop="name">
           <el-input v-model="temp.name" />
@@ -77,7 +77,7 @@
           <el-radio v-model="temp.hidden" label="0">否</el-radio>
         </el-form-item>
         <el-form-item label="前端文件路径" prop="component">
-          <el-input v-model="temp.component" />
+          <el-input v-model="temp.component" placeholder="/xxx/xxx/index"/>
         </el-form-item>
         <el-form-item label="排序" prop="sort">
           <el-input v-model="temp.sort" />

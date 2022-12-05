@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 	"github.com/ZQCard/kratos-base-project/api/project/admin/v1"
-
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
@@ -79,4 +78,11 @@ func (s *AdminInterface) GetRoleMenu(ctx context.Context, req *v1.GetRoleMenuReq
 }
 func (s *AdminInterface) SetRoleMenu(ctx context.Context, req *v1.SetRoleMenuRequest) (*v1.CheckReply, error) {
 	return s.authorizationRepo.SetRoleMenu(ctx, req)
+}
+
+func (s *AdminInterface) GetRoleMenuBtn(ctx context.Context, req *v1.GetRoleMenuBtnRequest) (*v1.GetRoleMenuBtnReply, error) {
+	return s.authorizationRepo.GetRoleMenuBtn(ctx, req)
+}
+func (s *AdminInterface) SetRoleMenuBtn(ctx context.Context, req *v1.SetRoleMenuBtnRequest) (*v1.CheckReply, error) {
+	return s.authorizationRepo.SetRoleMenuBtn(ctx, req)
 }

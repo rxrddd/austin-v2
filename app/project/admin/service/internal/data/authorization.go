@@ -722,3 +722,32 @@ func (rp AuthorizationRepo) SetRoleMenu(ctx context.Context, req *v1.SetRoleMenu
 	}
 	return res, nil
 }
+
+func (rp AuthorizationRepo) GetRoleMenuBtn(ctx context.Context, req *v1.GetRoleMenuBtnRequest) (*v1.GetRoleMenuBtnReply, error) {
+	reply, err := rp.data.authorizationClient.GetRoleMenuBtn(ctx, &authorizationServiceV1.GetRoleMenuBtnRequest{
+		RoleId: req.RoleId,
+		MenuId: req.MenuId,
+	})
+	if err != nil {
+		return nil, err
+	}
+	res := &v1.GetRoleMenuBtnReply{
+		MenuBtnIds: reply.MenuBtnIds,
+	}
+	return res, nil
+}
+
+func (rp AuthorizationRepo) SetRoleMenuBtn(ctx context.Context, req *v1.SetRoleMenuBtnRequest) (*v1.CheckReply, error) {
+	reply, err := rp.data.authorizationClient.SetRoleMenuBtn(ctx, &authorizationServiceV1.SetRoleMenuBtnRequest{
+		RoleId:     req.RoleId,
+		MenuId:     req.MenuId,
+		MenuBtnIds: req.MenuBtnIds,
+	})
+	if err != nil {
+		return nil, err
+	}
+	res := &v1.CheckReply{
+		IsSuccess: reply.IsSuccess,
+	}
+	return res, nil
+}

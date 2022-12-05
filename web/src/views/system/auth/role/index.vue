@@ -70,6 +70,13 @@
           </div>
           <el-tree :data="menuData" show-checkbox node-key="id" default-expand-all highlight-current ref="menuData"
             :default-checked-keys="menuCheckedIds" :props="menuDataProps" :filter-node-method="filterMenuNode">
+            <span class="custom-tree-node" slot-scope="{ node, menuData }">
+              <span>{{ node.label }}</span>
+              <el-button type="text" style="margin-left:10px" v-if="(node.data.menuBtns.length > 0)" size="small"
+                @click="() => assignBtn(node)">
+                分配按钮
+              </el-button>
+            </span>
           </el-tree>
         </el-tab-pane>
         <el-tab-pane label="角色api">
@@ -83,11 +90,25 @@
         </el-tab-pane>
       </el-tabs>
     </el-drawer>
+
+    <el-dialog :visible.sync="btnVisible" title="分配按钮" destroy-on-close>
+      <el-table ref="multipleTable" :data="btnData" row-key="ID" @selection-change="handleSelectChange">
+        <el-table-column type="selection" />
+        <el-table-column label="按钮名称" prop="name" />
+        <el-table-column label="按钮描述" prop="description" />
+      </el-table>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button size="small" @click="closeDialog">取 消</el-button>
+          <el-button size="small" type="primary" @click="saveBtn">确 定</el-button>
+        </div>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { listRole, createRole, updateRole, deleteRole, saveRoleMenu, getRolePolicies, saveRolePolicies } from '@/api/auth/role'
+import { listRole, createRole, updateRole, deleteRole, saveRoleMenu, getRolePolicies, saveRolePolicies, getRoleMenuBtn, setRoleMenuBtn } from '@/api/auth/role'
 import { getBaseMenuTree, getRoleMenu } from '@/api/auth/menu'
 import { getApiAll } from '@/api/auth/api'
 import waves from '@/directive/waves' // waves directive
@@ -110,7 +131,10 @@ export default {
   },
   data() {
     return {
+      btnVisible: false,
+      btnData: [],
       currentRow: {},
+      currentMenuId: undefined,
       filterMenuText: '',
       tmpMenuCheckedIds: [],
       menuCheckedIds: [],
@@ -157,6 +181,7 @@ export default {
         update: '编辑',
         create: '创建'
       },
+      selectedBtnIds: [],
       rules: {
         name: [{ required: true, message: '角色名称不得为空', trigger: 'blur' }],
       },
@@ -192,7 +217,7 @@ export default {
       const apiObj = {}
       apis &&
         apis.forEach(item => {
-          item.id = 'path:' + item.path +'-'+ 'method:' + item.method
+          item.id = 'path:' + item.path + '-' + 'method:' + item.method
           if (Object.prototype.hasOwnProperty.call(apiObj, item.group)) {
             apiObj[item.group].push(item)
           } else {
@@ -363,7 +388,7 @@ export default {
         this.tmpApiCheckedIds = [];
         this.$refs.apiData.setCheckedKeys([]);
         apis.forEach(item => {
-          this.tmpApiCheckedIds.push('path:' + item.path +'-'+ 'method:' + item.method)
+          this.tmpApiCheckedIds.push('path:' + item.path + '-' + 'method:' + item.method)
         })
         this.apiCheckedIds = this.tmpApiCheckedIds
         return
@@ -406,14 +431,14 @@ export default {
     },
     saveApi() {
       const checkArr = this.$refs.apiData.getCheckedNodes(false, true)
-      
+
       const policyRules = [];
       checkArr.forEach(item => {
         // 只获取有效api，不获取分组名称
-        if(item.createdAt != undefined){
+        if (item.createdAt != undefined) {
           policyRules.push({
-            "path" : item.path,
-            "method" : item.method,
+            "path": item.path,
+            "method": item.method,
           })
         }
       })
@@ -428,8 +453,49 @@ export default {
           duration: 1000
         })
       })
-    }
+    },
+    assignBtn(node) {
+      this.currentMenuId = node.data.id
+      this.btnVisible = true
+      this.btnData = []
 
+      node.data.menuBtns.forEach(menuBtn => {
+        this.btnData.push(menuBtn)
+      });
+      // 获取当前角色拥有的菜单按钮
+      getRoleMenuBtn({ role_id: this.currentRow.id, menu_id: node.data.id }).then(response => {
+        this.btnData.forEach(item => {
+          response.data.menuBtnIds.some(btnId => {
+            this.$nextTick(() => {
+              if (item.id === btnId) {
+                this.$refs.multipleTable.toggleRowSelection(item, true)
+              }
+            })
+          })
+        })
+      })
+    },
+    saveBtn() {
+      setRoleMenuBtn({ role_id: this.currentRow.id, menu_id: this.currentMenuId, menu_btn_ids: this.selectedBtnIds}).then(() => {
+        this.$notify({
+          title: 'Success',
+          message: '保存成功',
+          type: 'success',
+          duration: 1000
+        })
+        this.btnVisible = false
+      })
+    },
+    closeDialog() {
+      this.btnVisible = false
+      this.btnData = []
+    },
+    handleSelectChange(val) {
+      this.selectedBtnIds = [];
+      val.forEach(element => {
+        this.selectedBtnIds.push(element.id)
+      });
+    }
   }
 }
 </script>

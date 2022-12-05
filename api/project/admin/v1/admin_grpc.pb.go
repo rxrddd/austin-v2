@@ -93,6 +93,10 @@ type AdminClient interface {
 	GetRoleMenu(ctx context.Context, in *GetRoleMenuRequest, opts ...grpc.CallOption) (*GetMenuTreeReply, error)
 	// 角色菜单更新
 	SetRoleMenu(ctx context.Context, in *SetRoleMenuRequest, opts ...grpc.CallOption) (*CheckReply, error)
+	// 角色菜单按钮列表
+	GetRoleMenuBtn(ctx context.Context, in *GetRoleMenuBtnRequest, opts ...grpc.CallOption) (*GetRoleMenuBtnReply, error)
+	// 角色菜单按钮更新
+	SetRoleMenuBtn(ctx context.Context, in *SetRoleMenuBtnRequest, opts ...grpc.CallOption) (*CheckReply, error)
 }
 
 type adminClient struct {
@@ -427,6 +431,24 @@ func (c *adminClient) SetRoleMenu(ctx context.Context, in *SetRoleMenuRequest, o
 	return out, nil
 }
 
+func (c *adminClient) GetRoleMenuBtn(ctx context.Context, in *GetRoleMenuBtnRequest, opts ...grpc.CallOption) (*GetRoleMenuBtnReply, error) {
+	out := new(GetRoleMenuBtnReply)
+	err := c.cc.Invoke(ctx, "/api.admin.v1.Admin/GetRoleMenuBtn", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *adminClient) SetRoleMenuBtn(ctx context.Context, in *SetRoleMenuBtnRequest, opts ...grpc.CallOption) (*CheckReply, error) {
+	out := new(CheckReply)
+	err := c.cc.Invoke(ctx, "/api.admin.v1.Admin/SetRoleMenuBtn", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AdminServer is the server API for Admin service.
 // All implementations must embed UnimplementedAdminServer
 // for forward compatibility
@@ -501,6 +523,10 @@ type AdminServer interface {
 	GetRoleMenu(context.Context, *GetRoleMenuRequest) (*GetMenuTreeReply, error)
 	// 角色菜单更新
 	SetRoleMenu(context.Context, *SetRoleMenuRequest) (*CheckReply, error)
+	// 角色菜单按钮列表
+	GetRoleMenuBtn(context.Context, *GetRoleMenuBtnRequest) (*GetRoleMenuBtnReply, error)
+	// 角色菜单按钮更新
+	SetRoleMenuBtn(context.Context, *SetRoleMenuBtnRequest) (*CheckReply, error)
 	mustEmbedUnimplementedAdminServer()
 }
 
@@ -615,6 +641,12 @@ func (UnimplementedAdminServer) GetRoleMenu(context.Context, *GetRoleMenuRequest
 }
 func (UnimplementedAdminServer) SetRoleMenu(context.Context, *SetRoleMenuRequest) (*CheckReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SetRoleMenu not implemented")
+}
+func (UnimplementedAdminServer) GetRoleMenuBtn(context.Context, *GetRoleMenuBtnRequest) (*GetRoleMenuBtnReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetRoleMenuBtn not implemented")
+}
+func (UnimplementedAdminServer) SetRoleMenuBtn(context.Context, *SetRoleMenuBtnRequest) (*CheckReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SetRoleMenuBtn not implemented")
 }
 func (UnimplementedAdminServer) mustEmbedUnimplementedAdminServer() {}
 
@@ -1277,6 +1309,42 @@ func _Admin_SetRoleMenu_Handler(srv interface{}, ctx context.Context, dec func(i
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Admin_GetRoleMenuBtn_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetRoleMenuBtnRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdminServer).GetRoleMenuBtn(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.admin.v1.Admin/GetRoleMenuBtn",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdminServer).GetRoleMenuBtn(ctx, req.(*GetRoleMenuBtnRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Admin_SetRoleMenuBtn_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SetRoleMenuBtnRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdminServer).SetRoleMenuBtn(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.admin.v1.Admin/SetRoleMenuBtn",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdminServer).SetRoleMenuBtn(ctx, req.(*SetRoleMenuBtnRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Admin_ServiceDesc is the grpc.ServiceDesc for Admin service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -1427,6 +1495,14 @@ var Admin_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SetRoleMenu",
 			Handler:    _Admin_SetRoleMenu_Handler,
+		},
+		{
+			MethodName: "GetRoleMenuBtn",
+			Handler:    _Admin_GetRoleMenuBtn_Handler,
+		},
+		{
+			MethodName: "SetRoleMenuBtn",
+			Handler:    _Admin_SetRoleMenuBtn_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

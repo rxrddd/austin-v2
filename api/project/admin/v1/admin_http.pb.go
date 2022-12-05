@@ -43,6 +43,7 @@ const OperationAdminGetMenuTree = "/api.admin.v1.Admin/GetMenuTree"
 const OperationAdminGetPolicies = "/api.admin.v1.Admin/GetPolicies"
 const OperationAdminGetRoleList = "/api.admin.v1.Admin/GetRoleList"
 const OperationAdminGetRoleMenu = "/api.admin.v1.Admin/GetRoleMenu"
+const OperationAdminGetRoleMenuBtn = "/api.admin.v1.Admin/GetRoleMenuBtn"
 const OperationAdminGetRoleMenuTree = "/api.admin.v1.Admin/GetRoleMenuTree"
 const OperationAdminGetRolesForUser = "/api.admin.v1.Admin/GetRolesForUser"
 const OperationAdminGetUsersForRole = "/api.admin.v1.Admin/GetUsersForRole"
@@ -51,6 +52,7 @@ const OperationAdminLoginSuccess = "/api.admin.v1.Admin/LoginSuccess"
 const OperationAdminLogout = "/api.admin.v1.Admin/Logout"
 const OperationAdminRecoverAdministrator = "/api.admin.v1.Admin/RecoverAdministrator"
 const OperationAdminSetRoleMenu = "/api.admin.v1.Admin/SetRoleMenu"
+const OperationAdminSetRoleMenuBtn = "/api.admin.v1.Admin/SetRoleMenuBtn"
 const OperationAdminUpdateAdministrator = "/api.admin.v1.Admin/UpdateAdministrator"
 const OperationAdminUpdateApi = "/api.admin.v1.Admin/UpdateApi"
 const OperationAdminUpdateMenu = "/api.admin.v1.Admin/UpdateMenu"
@@ -81,6 +83,7 @@ type AdminHTTPServer interface {
 	GetPolicies(context.Context, *GetPoliciesRequest) (*GetPoliciesReply, error)
 	GetRoleList(context.Context, *emptypb.Empty) (*GetRoleListReply, error)
 	GetRoleMenu(context.Context, *GetRoleMenuRequest) (*GetMenuTreeReply, error)
+	GetRoleMenuBtn(context.Context, *GetRoleMenuBtnRequest) (*GetRoleMenuBtnReply, error)
 	GetRoleMenuTree(context.Context, *GetRoleMenuRequest) (*GetMenuTreeReply, error)
 	GetRolesForUser(context.Context, *GetRolesForUserRequest) (*GetRolesForUserReply, error)
 	GetUsersForRole(context.Context, *GetUsersForRoleRequest) (*GetUsersForRoleReply, error)
@@ -89,6 +92,7 @@ type AdminHTTPServer interface {
 	Logout(context.Context, *emptypb.Empty) (*emptypb.Empty, error)
 	RecoverAdministrator(context.Context, *RecoverAdministratorRequest) (*CheckReply, error)
 	SetRoleMenu(context.Context, *SetRoleMenuRequest) (*CheckReply, error)
+	SetRoleMenuBtn(context.Context, *SetRoleMenuBtnRequest) (*CheckReply, error)
 	UpdateAdministrator(context.Context, *UpdateAdministratorRequest) (*AdministratorInfoResponse, error)
 	UpdateApi(context.Context, *UpdateApiRequest) (*ApiInfo, error)
 	UpdateMenu(context.Context, *UpdateMenuRequest) (*MenuInfo, error)
@@ -134,6 +138,8 @@ func RegisterAdminHTTPServer(s *http.Server, srv AdminHTTPServer) {
 	r.GET("/authorization/v1/roleMenuTree", _Admin_GetRoleMenuTree0_HTTP_Handler(srv))
 	r.GET("/authorization/v1/roleMenu", _Admin_GetRoleMenu0_HTTP_Handler(srv))
 	r.POST("/authorization/v1/roleMenu", _Admin_SetRoleMenu0_HTTP_Handler(srv))
+	r.GET("/authorization/v1/roleMenuBtn", _Admin_GetRoleMenuBtn0_HTTP_Handler(srv))
+	r.POST("/authorization/v1/roleMenuBtn", _Admin_SetRoleMenuBtn0_HTTP_Handler(srv))
 }
 
 func _Admin_Login0_HTTP_Handler(srv AdminHTTPServer) func(ctx http.Context) error {
@@ -820,6 +826,44 @@ func _Admin_SetRoleMenu0_HTTP_Handler(srv AdminHTTPServer) func(ctx http.Context
 	}
 }
 
+func _Admin_GetRoleMenuBtn0_HTTP_Handler(srv AdminHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in GetRoleMenuBtnRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationAdminGetRoleMenuBtn)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.GetRoleMenuBtn(ctx, req.(*GetRoleMenuBtnRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*GetRoleMenuBtnReply)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _Admin_SetRoleMenuBtn0_HTTP_Handler(srv AdminHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in SetRoleMenuBtnRequest
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationAdminSetRoleMenuBtn)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.SetRoleMenuBtn(ctx, req.(*SetRoleMenuBtnRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*CheckReply)
+		return ctx.Result(200, reply)
+	}
+}
+
 type AdminHTTPClient interface {
 	AddRolesForUser(ctx context.Context, req *AddRolesForUserRequest, opts ...http.CallOption) (rsp *CheckReply, err error)
 	ApproveAdministrator(ctx context.Context, req *ApproveAdministratorRequest, opts ...http.CallOption) (rsp *CheckReply, err error)
@@ -844,6 +888,7 @@ type AdminHTTPClient interface {
 	GetPolicies(ctx context.Context, req *GetPoliciesRequest, opts ...http.CallOption) (rsp *GetPoliciesReply, err error)
 	GetRoleList(ctx context.Context, req *emptypb.Empty, opts ...http.CallOption) (rsp *GetRoleListReply, err error)
 	GetRoleMenu(ctx context.Context, req *GetRoleMenuRequest, opts ...http.CallOption) (rsp *GetMenuTreeReply, err error)
+	GetRoleMenuBtn(ctx context.Context, req *GetRoleMenuBtnRequest, opts ...http.CallOption) (rsp *GetRoleMenuBtnReply, err error)
 	GetRoleMenuTree(ctx context.Context, req *GetRoleMenuRequest, opts ...http.CallOption) (rsp *GetMenuTreeReply, err error)
 	GetRolesForUser(ctx context.Context, req *GetRolesForUserRequest, opts ...http.CallOption) (rsp *GetRolesForUserReply, err error)
 	GetUsersForRole(ctx context.Context, req *GetUsersForRoleRequest, opts ...http.CallOption) (rsp *GetUsersForRoleReply, err error)
@@ -852,6 +897,7 @@ type AdminHTTPClient interface {
 	Logout(ctx context.Context, req *emptypb.Empty, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	RecoverAdministrator(ctx context.Context, req *RecoverAdministratorRequest, opts ...http.CallOption) (rsp *CheckReply, err error)
 	SetRoleMenu(ctx context.Context, req *SetRoleMenuRequest, opts ...http.CallOption) (rsp *CheckReply, err error)
+	SetRoleMenuBtn(ctx context.Context, req *SetRoleMenuBtnRequest, opts ...http.CallOption) (rsp *CheckReply, err error)
 	UpdateAdministrator(ctx context.Context, req *UpdateAdministratorRequest, opts ...http.CallOption) (rsp *AdministratorInfoResponse, err error)
 	UpdateApi(ctx context.Context, req *UpdateApiRequest, opts ...http.CallOption) (rsp *ApiInfo, err error)
 	UpdateMenu(ctx context.Context, req *UpdateMenuRequest, opts ...http.CallOption) (rsp *MenuInfo, err error)
@@ -1166,6 +1212,19 @@ func (c *AdminHTTPClientImpl) GetRoleMenu(ctx context.Context, in *GetRoleMenuRe
 	return &out, err
 }
 
+func (c *AdminHTTPClientImpl) GetRoleMenuBtn(ctx context.Context, in *GetRoleMenuBtnRequest, opts ...http.CallOption) (*GetRoleMenuBtnReply, error) {
+	var out GetRoleMenuBtnReply
+	pattern := "/authorization/v1/roleMenuBtn"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationAdminGetRoleMenuBtn))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
 func (c *AdminHTTPClientImpl) GetRoleMenuTree(ctx context.Context, in *GetRoleMenuRequest, opts ...http.CallOption) (*GetMenuTreeReply, error) {
 	var out GetMenuTreeReply
 	pattern := "/authorization/v1/roleMenuTree"
@@ -1262,6 +1321,19 @@ func (c *AdminHTTPClientImpl) SetRoleMenu(ctx context.Context, in *SetRoleMenuRe
 	pattern := "/authorization/v1/roleMenu"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationAdminSetRoleMenu))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
+func (c *AdminHTTPClientImpl) SetRoleMenuBtn(ctx context.Context, in *SetRoleMenuBtnRequest, opts ...http.CallOption) (*CheckReply, error) {
+	var out CheckReply
+	pattern := "/authorization/v1/roleMenuBtn"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationAdminSetRoleMenuBtn))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
 	if err != nil {

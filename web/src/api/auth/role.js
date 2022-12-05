@@ -63,3 +63,19 @@ export function saveRolePolicies(data) {
     data
   })
 }
+
+export function getRoleMenuBtn(params) {
+  return request({
+    url: '/authorization/v1/roleMenuBtn',
+    method: 'get',
+    params
+  })
+}
+
+export function setRoleMenuBtn(data) {
+  return request({
+    url: '/authorization/v1/roleMenuBtn',
+    method: 'post',
+    data
+  })
+}

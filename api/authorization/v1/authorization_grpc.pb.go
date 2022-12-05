@@ -73,6 +73,10 @@ type AuthorizationClient interface {
 	GetRoleMenu(ctx context.Context, in *GetRoleMenuRequest, opts ...grpc.CallOption) (*GetMenuTreeReply, error)
 	// 角色菜单更新
 	SetRoleMenu(ctx context.Context, in *SetRoleMenuRequest, opts ...grpc.CallOption) (*CheckReply, error)
+	// 获取角色菜单按钮列表
+	GetRoleMenuBtn(ctx context.Context, in *GetRoleMenuBtnRequest, opts ...grpc.CallOption) (*GetRoleMenuBtnReply, error)
+	// 保存角色菜单按钮列表
+	SetRoleMenuBtn(ctx context.Context, in *SetRoleMenuBtnRequest, opts ...grpc.CallOption) (*CheckReply, error)
 }
 
 type authorizationClient struct {
@@ -308,6 +312,24 @@ func (c *authorizationClient) SetRoleMenu(ctx context.Context, in *SetRoleMenuRe
 	return out, nil
 }
 
+func (c *authorizationClient) GetRoleMenuBtn(ctx context.Context, in *GetRoleMenuBtnRequest, opts ...grpc.CallOption) (*GetRoleMenuBtnReply, error) {
+	out := new(GetRoleMenuBtnReply)
+	err := c.cc.Invoke(ctx, "/api.authorization.v1.Authorization/GetRoleMenuBtn", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authorizationClient) SetRoleMenuBtn(ctx context.Context, in *SetRoleMenuBtnRequest, opts ...grpc.CallOption) (*CheckReply, error) {
+	out := new(CheckReply)
+	err := c.cc.Invoke(ctx, "/api.authorization.v1.Authorization/SetRoleMenuBtn", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AuthorizationServer is the server API for Authorization service.
 // All implementations must embed UnimplementedAuthorizationServer
 // for forward compatibility
@@ -362,6 +384,10 @@ type AuthorizationServer interface {
 	GetRoleMenu(context.Context, *GetRoleMenuRequest) (*GetMenuTreeReply, error)
 	// 角色菜单更新
 	SetRoleMenu(context.Context, *SetRoleMenuRequest) (*CheckReply, error)
+	// 获取角色菜单按钮列表
+	GetRoleMenuBtn(context.Context, *GetRoleMenuBtnRequest) (*GetRoleMenuBtnReply, error)
+	// 保存角色菜单按钮列表
+	SetRoleMenuBtn(context.Context, *SetRoleMenuBtnRequest) (*CheckReply, error)
 	mustEmbedUnimplementedAuthorizationServer()
 }
 
@@ -443,6 +469,12 @@ func (UnimplementedAuthorizationServer) GetRoleMenu(context.Context, *GetRoleMen
 }
 func (UnimplementedAuthorizationServer) SetRoleMenu(context.Context, *SetRoleMenuRequest) (*CheckReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SetRoleMenu not implemented")
+}
+func (UnimplementedAuthorizationServer) GetRoleMenuBtn(context.Context, *GetRoleMenuBtnRequest) (*GetRoleMenuBtnReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetRoleMenuBtn not implemented")
+}
+func (UnimplementedAuthorizationServer) SetRoleMenuBtn(context.Context, *SetRoleMenuBtnRequest) (*CheckReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SetRoleMenuBtn not implemented")
 }
 func (UnimplementedAuthorizationServer) mustEmbedUnimplementedAuthorizationServer() {}
 
@@ -907,6 +939,42 @@ func _Authorization_SetRoleMenu_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Authorization_GetRoleMenuBtn_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetRoleMenuBtnRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthorizationServer).GetRoleMenuBtn(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.authorization.v1.Authorization/GetRoleMenuBtn",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthorizationServer).GetRoleMenuBtn(ctx, req.(*GetRoleMenuBtnRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Authorization_SetRoleMenuBtn_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SetRoleMenuBtnRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthorizationServer).SetRoleMenuBtn(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.authorization.v1.Authorization/SetRoleMenuBtn",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthorizationServer).SetRoleMenuBtn(ctx, req.(*SetRoleMenuBtnRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Authorization_ServiceDesc is the grpc.ServiceDesc for Authorization service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -1013,6 +1081,14 @@ var Authorization_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SetRoleMenu",
 			Handler:    _Authorization_SetRoleMenu_Handler,
+		},
+		{
+			MethodName: "GetRoleMenuBtn",
+			Handler:    _Authorization_GetRoleMenuBtn_Handler,
+		},
+		{
+			MethodName: "SetRoleMenuBtn",
+			Handler:    _Authorization_SetRoleMenuBtn_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

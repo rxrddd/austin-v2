@@ -258,6 +258,21 @@ service Admin {
 		};
 	};
 
+	// 角色菜单按钮列表
+	rpc GetRoleMenuBtn (GetRoleMenuBtnRequest) returns (GetRoleMenuBtnReply){
+		option (google.api.http) = {
+			get : "/authorization/v1/roleMenuBtn"
+		};
+	};
+
+	// 角色菜单按钮更新
+	rpc SetRoleMenuBtn (SetRoleMenuBtnRequest) returns (CheckReply){
+		option (google.api.http) = {
+			post : "/authorization/v1/roleMenuBtn"
+			body : "*"
+		};
+	};
+
 }
 
 message LoginRequest {
@@ -539,4 +554,19 @@ message GetPoliciesRequest{
 
 message GetPoliciesReply{
 	repeated PolicyRules policyRules = 1;
+}
+
+message GetRoleMenuBtnRequest {
+	int64 role_id = 1;
+	int64 menu_id = 2;
+}
+
+message GetRoleMenuBtnReply {
+	repeated int64 menu_btn_ids = 1;
+}
+
+message SetRoleMenuBtnRequest {
+	int64 role_id = 1;
+	int64 menu_id = 2;
+	repeated int64 menu_btn_ids = 3;
 }
