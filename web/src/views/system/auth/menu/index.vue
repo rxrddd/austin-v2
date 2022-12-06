@@ -248,6 +248,7 @@ export default {
         this.temp.parentIds = [0]
       }
       this.setOptions()
+      this.menuBtns = row.menuBtns
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
       })

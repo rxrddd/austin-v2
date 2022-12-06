@@ -54,11 +54,10 @@ message Data {
 }
 
 message Registry {
-  message Consul {
+  message Etcd {
     string address = 1;
-    string scheme = 2;
   }
-  Consul consul = 1;
+  Etcd etcd = 1;
 }
 
 message Auth {

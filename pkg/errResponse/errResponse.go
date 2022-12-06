@@ -63,8 +63,8 @@ var reasonMessageAll = map[string]string{
 	ReasonAuthorizationRoleNotFound:       "角色不存在",
 	ReasonAuthorizationUserHasRoleAlready: "用户已经拥有角色",
 
-	ReasonAuthorizationApiNotFound: "接口不存在",
-	ReasonAuthorizationApiExist:    "接口已存在",
+	ReasonAuthorizationApiNotFound: "API不存在",
+	ReasonAuthorizationApiExist:    "API已存在",
 
 	ReasonSystemError:           "系统繁忙,请稍后再试",
 	ReasonServiceGatewayTimeout: "服务不可达",

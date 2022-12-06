@@ -71,25 +71,30 @@
             <el-input v-model="filterMenuText" style="width: 60%;" placeholder="筛选" />
             <el-button style="float: right;" size="small" type="primary" @click="saveMenu">确 定</el-button>
           </div>
-          <el-tree :data="menuData" show-checkbox node-key="id" default-expand-all highlight-current ref="menuData"
-            :default-checked-keys="menuCheckedIds" :props="menuDataProps" :filter-node-method="filterMenuNode">
-            <span class="custom-tree-node" slot-scope="{ node, menuData }">
-              <span>{{ node.label }}</span>
-              <el-button type="text" style="margin-left:10px" v-if="(node.data.menuBtns.length > 0)" size="small"
-                @click="() => assignBtn(node)">
-                分配按钮
-              </el-button>
-            </span>
-          </el-tree>
+          <div class="tree-content">
+            <el-tree :data="menuData" show-checkbox node-key="id" default-expand-all highlight-current ref="menuData"
+              :default-checked-keys="menuCheckedIds" :props="menuDataProps" :filter-node-method="filterMenuNode">
+              <span class="custom-tree-node" slot-scope="{ node, menuData }">
+                <span>{{ node.label }}</span>
+                <el-button type="text" style="margin-left:10px" v-if="(node.data.menuBtns.length > 0)" size="small"
+                  @click="() => assignBtn(node)">
+                  分配按钮
+                </el-button>
+              </span>
+            </el-tree>
+          </div>
         </el-tab-pane>
         <el-tab-pane label="角色api">
           <div>
             <el-input v-model="filterApiText" style="width: 60%;" placeholder="筛选" />
             <el-button style="float: right;" size="small" type="primary" @click="saveApi">确 定</el-button>
           </div>
-          <el-tree :data="apiData" show-checkbox node-key="id" default-expand-all highlight-current ref="apiData"
-            :default-checked-keys="apiCheckedIds" :props="apiDataProps" :filter-node-method="filterApiNode">
-          </el-tree>
+          <div class="tree-content">
+            <el-tree :data="apiData" show-checkbox node-key="id" default-expand-all highlight-current ref="apiData"
+              :default-checked-keys="apiCheckedIds" :props="apiDataProps" :filter-node-method="filterApiNode">
+            </el-tree>
+          </div>
+
         </el-tab-pane>
       </el-tabs>
     </el-drawer>
@@ -481,7 +486,7 @@ export default {
       })
     },
     saveBtn() {
-      setRoleMenuBtn({ role_id: this.currentRow.id, menu_id: this.currentMenuId, menu_btn_ids: this.selectedBtnIds}).then(() => {
+      setRoleMenuBtn({ role_id: this.currentRow.id, menu_id: this.currentMenuId, menu_btn_ids: this.selectedBtnIds }).then(() => {
         this.$notify({
           title: 'Success',
           message: '保存成功',
@@ -504,3 +509,10 @@ export default {
   }
 }
 </script>
+<style lang="scss">
+.tree-content {
+  overflow: auto;
+  height: calc(100vh - 100px);
+  margin-top: 10px;
+}
+</style>

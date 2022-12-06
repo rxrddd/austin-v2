@@ -16,6 +16,7 @@ func NewGRPCServer(c *conf.Server, service *service.AdministratorService, logger
 			recovery.Recovery(),
 		),
 	}
+
 	if c.Grpc.Network != "" {
 		opts = append(opts, grpc.Network(c.Grpc.Network))
 	}

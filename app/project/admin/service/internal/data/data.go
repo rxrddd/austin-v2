@@ -4,12 +4,12 @@ import (
 	administratorV1 "github.com/ZQCard/kratos-base-project/api/administrator/v1"
 	authorizationV1 "github.com/ZQCard/kratos-base-project/api/authorization/v1"
 	"github.com/ZQCard/kratos-base-project/app/project/admin/service/internal/conf"
-	consul "github.com/go-kratos/kratos/contrib/registry/consul/v2"
+	"github.com/go-kratos/kratos/contrib/registry/etcd/v2"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/registry"
 	"github.com/go-redis/redis"
 	"github.com/google/wire"
-	consulAPI "github.com/hashicorp/consul/api"
+	etcdclient "go.etcd.io/etcd/client/v3"
 	"time"
 )
 
@@ -58,26 +58,26 @@ func NewData(
 }
 
 func NewDiscovery(conf *conf.Registry) registry.Discovery {
-	c := consulAPI.DefaultConfig()
-	c.Address = conf.Consul.Address
-	c.Scheme = conf.Consul.Scheme
-	cli, err := consulAPI.NewClient(c)
+	point := conf.Etcd.Address
+	client, err := etcdclient.New(etcdclient.Config{
+		Endpoints: []string{point},
+	})
 	if err != nil {
 		panic(err)
 	}
-	r := consul.New(cli, consul.WithHealthCheck(false))
+	r := etcd.New(client)
 	return r
 }
 
 func NewRegistrar(conf *conf.Registry) registry.Registrar {
-	c := consulAPI.DefaultConfig()
-	c.Address = conf.Consul.Address
-	c.Scheme = conf.Consul.Scheme
-	cli, err := consulAPI.NewClient(c)
+	point := conf.Etcd.Address
+	client, err := etcdclient.New(etcdclient.Config{
+		Endpoints: []string{point},
+	})
 	if err != nil {
 		panic(err)
 	}
-	r := consul.New(cli, consul.WithHealthCheck(false))
+	r := etcd.New(client)
 	return r
 }
 

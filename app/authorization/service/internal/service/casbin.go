@@ -6,6 +6,16 @@ import (
 	"github.com/ZQCard/kratos-base-project/app/authorization/service/internal/biz"
 )
 
+func (s *AuthorizationService) SetRolesForUser(ctx context.Context, req *v1.SetRolesForUserRequest) (*v1.CheckReply, error) {
+	success, err := s.authorizationUsecase.SetRolesForUser(ctx, req.Username, req.Roles)
+	if err != nil {
+		return nil, err
+	}
+	return &v1.CheckReply{
+		IsSuccess: success,
+	}, nil
+}
+
 func (s *AuthorizationService) AddRolesForUser(ctx context.Context, req *v1.AddRolesForUserRequest) (*v1.CheckReply, error) {
 	success, err := s.authorizationUsecase.AddRolesForUser(ctx, req.Username, req.Roles)
 	if err != nil {

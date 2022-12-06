@@ -3,6 +3,7 @@ package data
 import (
 	"context"
 	"errors"
+	"fmt"
 	"github.com/ZQCard/kratos-base-project/app/authorization/service/internal/biz"
 	entity2 "github.com/ZQCard/kratos-base-project/app/authorization/service/internal/data/entity"
 	"github.com/ZQCard/kratos-base-project/pkg/errResponse"
@@ -34,6 +35,8 @@ func (a AuthorizationRepo) GetApiAll(ctx context.Context) ([]*biz.Api, error) {
 }
 
 func (a AuthorizationRepo) GetApiList(ctx context.Context, page int64, pageSize int64, group, name, method, path string) ([]*biz.Api, int64, error) {
+	fmt.Println("pageSize")
+	fmt.Println(pageSize)
 	var res []*biz.Api
 	var list []entity2.Api
 	conn := a.data.db.Model(&entity2.Api{})
@@ -50,7 +53,7 @@ func (a AuthorizationRepo) GetApiList(ctx context.Context, page int64, pageSize 
 	if group != "" {
 		conn = conn.Where("group LIKE ?", "%"+group+"%")
 	}
-	err := conn.Scopes(entity2.Paginate(page, pageSize)).Order("`group` ASC").Find(&list).Error
+	err := conn.Scopes(entity2.Paginate(page, pageSize)).Order("id ASC").Find(&list).Error
 	if err != nil {
 		return nil, 0, errResponse.SetErrByReason(errResponse.ReasonSystemError)
 	}

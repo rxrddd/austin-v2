@@ -54,15 +54,9 @@ type AdminClient interface {
 	// 角色删除
 	DeleteRole(ctx context.Context, in *DeleteRoleRequest, opts ...grpc.CallOption) (*CheckReply, error)
 	// 设置用户角色关系
-	AddRolesForUser(ctx context.Context, in *AddRolesForUserRequest, opts ...grpc.CallOption) (*CheckReply, error)
+	SetRolesForUser(ctx context.Context, in *SetRolesForUserRequest, opts ...grpc.CallOption) (*CheckReply, error)
 	// 获取用户角色列表
 	GetRolesForUser(ctx context.Context, in *GetRolesForUserRequest, opts ...grpc.CallOption) (*GetRolesForUserReply, error)
-	// 获取角色用户列表
-	GetUsersForRole(ctx context.Context, in *GetUsersForRoleRequest, opts ...grpc.CallOption) (*GetUsersForRoleReply, error)
-	// 删除用户某个角色
-	DeleteRoleForUser(ctx context.Context, in *DeleteRoleForUserRequest, opts ...grpc.CallOption) (*CheckReply, error)
-	// 删除用户所有角色
-	DeleteRolesForUser(ctx context.Context, in *DeleteRolesForUserRequest, opts ...grpc.CallOption) (*CheckReply, error)
 	// 策略授权规则列表
 	GetPolicies(ctx context.Context, in *GetPoliciesRequest, opts ...grpc.CallOption) (*GetPoliciesReply, error)
 	// 策略添加授权规则
@@ -251,9 +245,9 @@ func (c *adminClient) DeleteRole(ctx context.Context, in *DeleteRoleRequest, opt
 	return out, nil
 }
 
-func (c *adminClient) AddRolesForUser(ctx context.Context, in *AddRolesForUserRequest, opts ...grpc.CallOption) (*CheckReply, error) {
+func (c *adminClient) SetRolesForUser(ctx context.Context, in *SetRolesForUserRequest, opts ...grpc.CallOption) (*CheckReply, error) {
 	out := new(CheckReply)
-	err := c.cc.Invoke(ctx, "/api.admin.v1.Admin/AddRolesForUser", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/api.admin.v1.Admin/SetRolesForUser", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -263,33 +257,6 @@ func (c *adminClient) AddRolesForUser(ctx context.Context, in *AddRolesForUserRe
 func (c *adminClient) GetRolesForUser(ctx context.Context, in *GetRolesForUserRequest, opts ...grpc.CallOption) (*GetRolesForUserReply, error) {
 	out := new(GetRolesForUserReply)
 	err := c.cc.Invoke(ctx, "/api.admin.v1.Admin/GetRolesForUser", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *adminClient) GetUsersForRole(ctx context.Context, in *GetUsersForRoleRequest, opts ...grpc.CallOption) (*GetUsersForRoleReply, error) {
-	out := new(GetUsersForRoleReply)
-	err := c.cc.Invoke(ctx, "/api.admin.v1.Admin/GetUsersForRole", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *adminClient) DeleteRoleForUser(ctx context.Context, in *DeleteRoleForUserRequest, opts ...grpc.CallOption) (*CheckReply, error) {
-	out := new(CheckReply)
-	err := c.cc.Invoke(ctx, "/api.admin.v1.Admin/DeleteRoleForUser", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *adminClient) DeleteRolesForUser(ctx context.Context, in *DeleteRolesForUserRequest, opts ...grpc.CallOption) (*CheckReply, error) {
-	out := new(CheckReply)
-	err := c.cc.Invoke(ctx, "/api.admin.v1.Admin/DeleteRolesForUser", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -484,15 +451,9 @@ type AdminServer interface {
 	// 角色删除
 	DeleteRole(context.Context, *DeleteRoleRequest) (*CheckReply, error)
 	// 设置用户角色关系
-	AddRolesForUser(context.Context, *AddRolesForUserRequest) (*CheckReply, error)
+	SetRolesForUser(context.Context, *SetRolesForUserRequest) (*CheckReply, error)
 	// 获取用户角色列表
 	GetRolesForUser(context.Context, *GetRolesForUserRequest) (*GetRolesForUserReply, error)
-	// 获取角色用户列表
-	GetUsersForRole(context.Context, *GetUsersForRoleRequest) (*GetUsersForRoleReply, error)
-	// 删除用户某个角色
-	DeleteRoleForUser(context.Context, *DeleteRoleForUserRequest) (*CheckReply, error)
-	// 删除用户所有角色
-	DeleteRolesForUser(context.Context, *DeleteRolesForUserRequest) (*CheckReply, error)
 	// 策略授权规则列表
 	GetPolicies(context.Context, *GetPoliciesRequest) (*GetPoliciesReply, error)
 	// 策略添加授权规则
@@ -582,20 +543,11 @@ func (UnimplementedAdminServer) UpdateRole(context.Context, *UpdateRoleRequest) 
 func (UnimplementedAdminServer) DeleteRole(context.Context, *DeleteRoleRequest) (*CheckReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteRole not implemented")
 }
-func (UnimplementedAdminServer) AddRolesForUser(context.Context, *AddRolesForUserRequest) (*CheckReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method AddRolesForUser not implemented")
+func (UnimplementedAdminServer) SetRolesForUser(context.Context, *SetRolesForUserRequest) (*CheckReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SetRolesForUser not implemented")
 }
 func (UnimplementedAdminServer) GetRolesForUser(context.Context, *GetRolesForUserRequest) (*GetRolesForUserReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetRolesForUser not implemented")
-}
-func (UnimplementedAdminServer) GetUsersForRole(context.Context, *GetUsersForRoleRequest) (*GetUsersForRoleReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetUsersForRole not implemented")
-}
-func (UnimplementedAdminServer) DeleteRoleForUser(context.Context, *DeleteRoleForUserRequest) (*CheckReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DeleteRoleForUser not implemented")
-}
-func (UnimplementedAdminServer) DeleteRolesForUser(context.Context, *DeleteRolesForUserRequest) (*CheckReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DeleteRolesForUser not implemented")
 }
 func (UnimplementedAdminServer) GetPolicies(context.Context, *GetPoliciesRequest) (*GetPoliciesReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetPolicies not implemented")
@@ -949,20 +901,20 @@ func _Admin_DeleteRole_Handler(srv interface{}, ctx context.Context, dec func(in
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Admin_AddRolesForUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(AddRolesForUserRequest)
+func _Admin_SetRolesForUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SetRolesForUserRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AdminServer).AddRolesForUser(ctx, in)
+		return srv.(AdminServer).SetRolesForUser(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.admin.v1.Admin/AddRolesForUser",
+		FullMethod: "/api.admin.v1.Admin/SetRolesForUser",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AdminServer).AddRolesForUser(ctx, req.(*AddRolesForUserRequest))
+		return srv.(AdminServer).SetRolesForUser(ctx, req.(*SetRolesForUserRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -981,60 +933,6 @@ func _Admin_GetRolesForUser_Handler(srv interface{}, ctx context.Context, dec fu
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AdminServer).GetRolesForUser(ctx, req.(*GetRolesForUserRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Admin_GetUsersForRole_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetUsersForRoleRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AdminServer).GetUsersForRole(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/api.admin.v1.Admin/GetUsersForRole",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AdminServer).GetUsersForRole(ctx, req.(*GetUsersForRoleRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Admin_DeleteRoleForUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DeleteRoleForUserRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AdminServer).DeleteRoleForUser(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/api.admin.v1.Admin/DeleteRoleForUser",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AdminServer).DeleteRoleForUser(ctx, req.(*DeleteRoleForUserRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Admin_DeleteRolesForUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DeleteRolesForUserRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AdminServer).DeleteRolesForUser(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/api.admin.v1.Admin/DeleteRolesForUser",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AdminServer).DeleteRolesForUser(ctx, req.(*DeleteRolesForUserRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1417,24 +1315,12 @@ var Admin_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Admin_DeleteRole_Handler,
 		},
 		{
-			MethodName: "AddRolesForUser",
-			Handler:    _Admin_AddRolesForUser_Handler,
+			MethodName: "SetRolesForUser",
+			Handler:    _Admin_SetRolesForUser_Handler,
 		},
 		{
 			MethodName: "GetRolesForUser",
 			Handler:    _Admin_GetRolesForUser_Handler,
-		},
-		{
-			MethodName: "GetUsersForRole",
-			Handler:    _Admin_GetUsersForRole_Handler,
-		},
-		{
-			MethodName: "DeleteRoleForUser",
-			Handler:    _Admin_DeleteRoleForUser_Handler,
-		},
-		{
-			MethodName: "DeleteRolesForUser",
-			Handler:    _Admin_DeleteRolesForUser_Handler,
 		},
 		{
 			MethodName: "GetPolicies",

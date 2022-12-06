@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 	"github.com/ZQCard/kratos-base-project/app/authorization/service/internal/conf"
-	"github.com/bwmarrin/snowflake"
+	"github.com/ZQCard/kratos-base-project/pkg/utils/stringHelper"
 	"github.com/go-kratos/kratos/v2/encoding/json"
 	"github.com/go-kratos/kratos/v2/registry"
 	"go.opentelemetry.io/otel/exporters/jaeger"
@@ -83,12 +83,9 @@ func main() {
 	}
 	Name = bc.Service.Name
 	Version = bc.Service.Version
-	// 应用id 生成雪花随机数
-	node, _ := snowflake.NewNode(1)
-	// 生成雪花id 读取其中的9位
-	snowflakeId := node.Generate().String()
+
 	hostname, _ := os.Hostname()
-	id = hostname + "." + bc.Service.Name + "." + Version + "." + snowflakeId
+	id = hostname + "." + bc.Service.Name + "." + Version + "." + stringHelper.GenerateUUID()
 
 	var rc conf.Registry
 	if err := c.Scan(&rc); err != nil {

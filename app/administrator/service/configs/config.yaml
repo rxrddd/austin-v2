@@ -19,6 +19,5 @@ data:
 auth:
   service_key: "administrator-service-key"
   api_key: "administrator-api-key"
-consul:
-  address: 127.0.0.1:8500
-  scheme: http
+etcd:
+  address: 127.0.0.1:2379

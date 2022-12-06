@@ -121,34 +121,17 @@ service Admin {
 	};
 
 	// 设置用户角色关系
-	rpc AddRolesForUser (AddRolesForUserRequest) returns (CheckReply){
+	rpc SetRolesForUser (SetRolesForUserRequest) returns (CheckReply){
 		option (google.api.http) = {
-			post : "/authorization/v1/addRolesForUser"
+			post : "/authorization/v1/setRolesForUser"
 			body : "*"
 		};
 	};
+
 	// 获取用户角色列表
 	rpc GetRolesForUser (GetRolesForUserRequest) returns (GetRolesForUserReply){
 		option (google.api.http) = {
 			get : "/authorization/v1/getRolesForUser"
-		};
-	};
-	// 获取角色用户列表
-	rpc GetUsersForRole (GetUsersForRoleRequest) returns (GetUsersForRoleReply){
-		option (google.api.http) = {
-			get : "/authorization/v1/getUsersForRole"
-		};
-	};
-	// 删除用户某个角色
-	rpc DeleteRoleForUser (DeleteRoleForUserRequest) returns (CheckReply){
-		option (google.api.http) = {
-			delete : "/authorization/v1/deleteRoleForUser"
-		};
-	};
-	// 删除用户所有角色
-	rpc DeleteRolesForUser (DeleteRolesForUserRequest) returns (CheckReply){
-		option (google.api.http) = {
-			delete : "/authorization/v1/deleteRolesForUser"
 		};
 	};
 
@@ -324,7 +307,7 @@ message CreateAdministratorRequest {
 	string nickname = 5;
 	string avatar = 6;
 	int64 status = 7;
-
+	string role = 8;
 }
 
 message UpdateAdministratorRequest {
@@ -335,6 +318,7 @@ message UpdateAdministratorRequest {
 	string nickname = 5;
 	string avatar = 6;
 	int64 status = 7;
+	string role = 8;
 }
 
 message DeleteAdministratorRequest {
@@ -392,7 +376,7 @@ message UpdateRoleRequest {
 	repeated int64 parent_ids = 4;
 }
 
-message AddRolesForUserRequest {
+message SetRolesForUserRequest {
 	string username = 1;
 	repeated string roles = 2;
 }
@@ -403,23 +387,6 @@ message GetRolesForUserRequest {
 
 message GetRolesForUserReply {
 	repeated string roles = 1;
-}
-
-message GetUsersForRoleRequest {
-	string role = 1;
-}
-
-message GetUsersForRoleReply {
-	repeated string users = 1;
-}
-
-message DeleteRoleForUserRequest{
-	string username = 1;
-	string role = 2;
-}
-
-message DeleteRolesForUserRequest{
-	string username = 1;
 }
 
 message PolicyRules {

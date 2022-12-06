@@ -48,6 +48,7 @@ type AdministratorRepo struct {
 }
 
 func (rp AdministratorRepo) CreateAdministrator(ctx context.Context, req *v1.CreateAdministratorRequest) (*v1.AdministratorInfoResponse, error) {
+
 	reply, err := rp.data.administratorClient.CreateAdministrator(ctx, &administratorServiceV1.CreateAdministratorRequest{
 		Username: req.Username,
 		Password: req.Password,
@@ -55,6 +56,7 @@ func (rp AdministratorRepo) CreateAdministrator(ctx context.Context, req *v1.Cre
 		Nickname: req.Nickname,
 		Avatar:   req.Avatar,
 		Status:   req.Status,
+		Role:     req.Role,
 	})
 	if err != nil {
 		return nil, err
@@ -84,6 +86,7 @@ func (rp AdministratorRepo) UpdateAdministrator(ctx context.Context, req *v1.Upd
 		Nickname: req.Nickname,
 		Avatar:   req.Avatar,
 		Status:   req.Status,
+		Role:     req.Role,
 	})
 
 	if err != nil {

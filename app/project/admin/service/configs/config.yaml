@@ -42,6 +42,5 @@ auth:
   [matchers]
   
   m = g(r.sub, p.sub) && keyMatch2(r.obj, p.obj) && regexMatch(r.act, p.act)"
-consul:
-  address: 127.0.0.1:8500
-  scheme: http
+etcd:
+  address: 127.0.0.1:2379

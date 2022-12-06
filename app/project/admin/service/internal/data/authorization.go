@@ -147,8 +147,8 @@ func (rp AuthorizationRepo) DeleteRole(ctx context.Context, req *v1.DeleteRoleRe
 	return res, nil
 }
 
-func (rp AuthorizationRepo) AddRolesForUser(ctx context.Context, req *v1.AddRolesForUserRequest) (*v1.CheckReply, error) {
-	reply, err := rp.data.authorizationClient.AddRolesForUser(ctx, &authorizationServiceV1.AddRolesForUserRequest{
+func (rp AuthorizationRepo) SetRolesForUser(ctx context.Context, req *v1.SetRolesForUserRequest) (*v1.CheckReply, error) {
+	reply, err := rp.data.authorizationClient.SetRolesForUser(ctx, &authorizationServiceV1.SetRolesForUserRequest{
 		Username: req.Username,
 		Roles:    req.Roles,
 	})
@@ -170,46 +170,6 @@ func (rp AuthorizationRepo) GetRolesForUser(ctx context.Context, req *v1.GetRole
 	}
 	res := &v1.GetRolesForUserReply{
 		Roles: reply.Roles,
-	}
-	return res, nil
-}
-
-func (rp AuthorizationRepo) GetUsersForRole(ctx context.Context, req *v1.GetUsersForRoleRequest) (*v1.GetUsersForRoleReply, error) {
-	reply, err := rp.data.authorizationClient.GetUsersForRole(ctx, &authorizationServiceV1.GetUsersForRoleRequest{
-		Role: req.Role,
-	})
-	if err != nil {
-		return nil, err
-	}
-	res := &v1.GetUsersForRoleReply{
-		Users: reply.Users,
-	}
-	return res, nil
-}
-
-func (rp AuthorizationRepo) DeleteRoleForUser(ctx context.Context, req *v1.DeleteRoleForUserRequest) (*v1.CheckReply, error) {
-	reply, err := rp.data.authorizationClient.DeleteRoleForUser(ctx, &authorizationServiceV1.DeleteRoleForUserRequest{
-		Username: req.Username,
-		Role:     req.Role,
-	})
-	if err != nil {
-		return nil, err
-	}
-	res := &v1.CheckReply{
-		IsSuccess: reply.IsSuccess,
-	}
-	return res, nil
-}
-
-func (rp AuthorizationRepo) DeleteRolesForUser(ctx context.Context, req *v1.DeleteRolesForUserRequest) (*v1.CheckReply, error) {
-	reply, err := rp.data.authorizationClient.DeleteRolesForUser(ctx, &authorizationServiceV1.DeleteRolesForUserRequest{
-		Username: req.Username,
-	})
-	if err != nil {
-		return nil, err
-	}
-	res := &v1.CheckReply{
-		IsSuccess: reply.IsSuccess,
 	}
 	return res, nil
 }

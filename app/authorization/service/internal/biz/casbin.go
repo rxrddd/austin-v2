@@ -6,6 +6,10 @@ import (
 	kerrors "github.com/go-kratos/kratos/v2/errors"
 )
 
+func (uc *AuthorizationUsecase) SetRolesForUser(ctx context.Context, username string, roles []string) (bool, error) {
+	return uc.repo.SetRolesForUser(ctx, username, roles)
+}
+
 func (uc *AuthorizationUsecase) AddRolesForUser(ctx context.Context, username string, roles []string) (bool, error) {
 	return uc.repo.AddRolesForUser(ctx, username, roles)
 }

@@ -8,6 +8,25 @@ import (
 	"strings"
 )
 
+func (a AuthorizationRepo) SetRolesForUser(ctx context.Context, username string, roles []string) (bool, error) {
+	// 检查角色是否存在
+	if !a.checkRoleExist(roles) {
+		return false, kerrors.BadRequest(errResponse.ReasonParamsError, "角色不存在")
+	}
+
+	// 删除用户所有角色
+	success, err := a.data.enforcer.DeleteRolesForUser(username)
+	if err != nil {
+		return false, kerrors.InternalServer(errResponse.ReasonSystemError, err.Error())
+	}
+	// 添加用户角色
+	success, err = a.data.enforcer.AddRolesForUser(username, roles)
+	if err != nil {
+		return false, kerrors.InternalServer(errResponse.ReasonSystemError, err.Error())
+	}
+	return success, nil
+}
+
 func (a AuthorizationRepo) AddRolesForUser(ctx context.Context, username string, roles []string) (bool, error) {
 	// 检查角色是否存在
 	if !a.checkRoleExist(roles) {

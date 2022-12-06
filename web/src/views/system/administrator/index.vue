@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-button class="filter-item" type="primary" icon="el-icon-edit" @click="handleCreate">
+      <el-button class="filter-item" type="primary" icon="el-icon-plus" @click="handleCreate">
         新增
       </el-button>
 
@@ -111,11 +111,11 @@
       </el-table-column>
     </el-table>
 
-    <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
+    <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :pageSize.sync="listQuery.pageSize" @pagination="getList" />
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
-        <el-form-item label="ID" prop="id" v-if="temp.id != undefined">
+        <el-form-item label="ID" prop="id" v-if="dialogStatus!=='create'">
           <el-input v-model="temp.id"/>
         </el-form-item>
         <el-form-item label="用户名" prop="username">
@@ -138,6 +138,12 @@
             <el-option v-for="item in statusOptions" :key="item.key" :label="item.display_name" :value="item.key" />
           </el-select>
         </el-form-item>
+        <el-form-item label="角色" prop="roles">
+          <el-cascader v-model="selectedRoles" :options="roleOptions" style="width:100%"
+            :props="{ multiple: true, checkStrictly: true, label: 'name', value: 'name', emitPath: 'true' }" :show-all-levels="false"
+            @change="handleChange">
+          </el-cascader>
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">
@@ -153,6 +159,7 @@
 
 <script>
 import { listAdministrator, createAdministrator, updateAdministrator, deleteAdministrator, recoverAdministrator, forbidAdministrator, approveAdministrator} from '@/api/administrator'
+import { listRole, saveAdministratorRole, getAdministratorRole} from '@/api/auth/role'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import { getDate, parseTime } from '@/utils/index.js'
@@ -192,6 +199,11 @@ export default {
   },
   data() {
     return {
+      selectedRoles:[],
+      roleList: [],
+      roleOptions: [
+        
+      ],
       isDisabled:false,
       createdSearch:'',
       statusOptions,
@@ -200,7 +212,7 @@ export default {
       listLoading: true,
       listQuery: {
         page: 1,
-        limit: 20,
+        pageSize: 20,
         mobile: undefined,
         username: undefined,
         status: undefined,
@@ -216,6 +228,7 @@ export default {
         nickname: undefined,
         avatar: undefined,
         status: undefined,
+        roles: undefined,
       },
       dialogFormVisible: false,
       dialogStatus: '',
@@ -236,8 +249,16 @@ export default {
   },
   created() {
     this.getList()
+    this.getRoleList()
   },
   methods: {
+    getRoleList() {
+      this.listLoading = true
+      listRole(this.listQuery).then(response => {
+        this.roleList = response.data.list
+        this.listLoading = false
+      })
+    },
     getList() {
       this.listLoading = true
       listAdministrator(this.listQuery).then(response => {
@@ -275,12 +296,14 @@ export default {
         nickname: undefined,
         avatar: undefined,
         status: undefined,
+        roles: undefined,
       }
     },
     handleCreate() {
       this.resetTemp()
       this.dialogStatus = 'create'
       this.dialogFormVisible = true
+      this.setOptions()
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
       })
@@ -288,6 +311,11 @@ export default {
     createData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
+          this.temp.id = 0
+          this.temp.role = ""
+          if (this.temp.roles.length != 0) {
+            this.temp.role = this.temp.roles[0]
+          }
           createAdministrator(this.temp).then(response => {
             this.list.push(response.data)
             this.dialogFormVisible = false
@@ -297,15 +325,29 @@ export default {
               type: 'success',
               duration: 2000
             })
+            this.saveAdministratorRole(this.temp.username, this.temp.roles)
           })
         }
       })
     },
     handleUpdate(row) {
       this.temp = Object.assign({}, row) // copy obj
+      // 获取当前管理员的角色列表
+      getAdministratorRole({username:row.username}).then(response => {
+        const temp = [];
+        response.data.roles.forEach(element => {
+          console.log(element)
+          temp.push([element])
+        });
+        this.temp.roles = response.data.roles
+        this.selectedRoles = temp
+        console.log(this.selectedRoles)
+      })
+
       this.isDisabled = true;
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
+      this.setOptions()
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
       })
@@ -314,6 +356,10 @@ export default {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           const tempData = Object.assign({}, this.temp)
+          tempData.role = ""
+          if (tempData.roles.length != 0) {
+            tempData.role = tempData.roles[0]
+          }
           updateAdministrator(tempData).then(() => {
             const index = this.list.findIndex(v => v.id === this.temp.id)
             this.list.splice(index, 1, this.temp)
@@ -324,11 +370,14 @@ export default {
               type: 'success',
               duration: 2000
             })
+            this.saveAdministratorRole(tempData.username, tempData.roles)
           })
         }
       })
     },
-   
+    saveAdministratorRole(username, roles){
+      saveAdministratorRole({username:username, roles:roles})
+    },
     handleDelete(row, index) {
       deleteAdministrator({id:row.id}).then(() => {
         this.list[index].deletedAt = getDate()
@@ -372,6 +421,42 @@ export default {
           duration: 2000
         })
       })
+    },
+    handleChange(value) {
+      this.temp.roles = [];
+      value.forEach(element => {
+        this.temp.roles.push(element[0])
+      });
+    },
+    setOptions() {
+      this.roleOptions = [
+        
+      ]
+      this.setRoleOptions(this.roleList, this.roleOptions)
+    },
+    setRoleOptions(dataList, optionsData) {
+      this.temp.id = String(this.temp.id)
+      dataList &&
+        dataList.forEach(item => {
+          if (item.children && item.children.length) {
+            const option = {
+              id: item.id,
+              name: item.name,
+              children: []
+            }
+            this.setRoleOptions(
+              item.children,
+              option.children,
+            )
+            optionsData.push(option)
+          } else {
+            const option = {
+              id: item.id,
+              name: item.name,
+            }
+            optionsData.push(option)
+          }
+        })
     },
   }
 }

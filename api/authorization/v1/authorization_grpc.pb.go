@@ -34,6 +34,8 @@ type AuthorizationClient interface {
 	// 角色删除
 	DeleteRole(ctx context.Context, in *DeleteRoleRequest, opts ...grpc.CallOption) (*CheckReply, error)
 	// 设置用户角色关系
+	SetRolesForUser(ctx context.Context, in *SetRolesForUserRequest, opts ...grpc.CallOption) (*CheckReply, error)
+	// 添加用户角色关系
 	AddRolesForUser(ctx context.Context, in *AddRolesForUserRequest, opts ...grpc.CallOption) (*CheckReply, error)
 	// 获取用户角色列表
 	GetRolesForUser(ctx context.Context, in *GetRolesForUserRequest, opts ...grpc.CallOption) (*GetRolesForUserReply, error)
@@ -126,6 +128,15 @@ func (c *authorizationClient) UpdateRole(ctx context.Context, in *UpdateRoleRequ
 func (c *authorizationClient) DeleteRole(ctx context.Context, in *DeleteRoleRequest, opts ...grpc.CallOption) (*CheckReply, error) {
 	out := new(CheckReply)
 	err := c.cc.Invoke(ctx, "/api.authorization.v1.Authorization/DeleteRole", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authorizationClient) SetRolesForUser(ctx context.Context, in *SetRolesForUserRequest, opts ...grpc.CallOption) (*CheckReply, error) {
+	out := new(CheckReply)
+	err := c.cc.Invoke(ctx, "/api.authorization.v1.Authorization/SetRolesForUser", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -345,6 +356,8 @@ type AuthorizationServer interface {
 	// 角色删除
 	DeleteRole(context.Context, *DeleteRoleRequest) (*CheckReply, error)
 	// 设置用户角色关系
+	SetRolesForUser(context.Context, *SetRolesForUserRequest) (*CheckReply, error)
+	// 添加用户角色关系
 	AddRolesForUser(context.Context, *AddRolesForUserRequest) (*CheckReply, error)
 	// 获取用户角色列表
 	GetRolesForUser(context.Context, *GetRolesForUserRequest) (*GetRolesForUserReply, error)
@@ -409,6 +422,9 @@ func (UnimplementedAuthorizationServer) UpdateRole(context.Context, *UpdateRoleR
 }
 func (UnimplementedAuthorizationServer) DeleteRole(context.Context, *DeleteRoleRequest) (*CheckReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteRole not implemented")
+}
+func (UnimplementedAuthorizationServer) SetRolesForUser(context.Context, *SetRolesForUserRequest) (*CheckReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SetRolesForUser not implemented")
 }
 func (UnimplementedAuthorizationServer) AddRolesForUser(context.Context, *AddRolesForUserRequest) (*CheckReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddRolesForUser not implemented")
@@ -575,6 +591,24 @@ func _Authorization_DeleteRole_Handler(srv interface{}, ctx context.Context, dec
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AuthorizationServer).DeleteRole(ctx, req.(*DeleteRoleRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Authorization_SetRolesForUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SetRolesForUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthorizationServer).SetRolesForUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.authorization.v1.Authorization/SetRolesForUser",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthorizationServer).SetRolesForUser(ctx, req.(*SetRolesForUserRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1001,6 +1035,10 @@ var Authorization_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteRole",
 			Handler:    _Authorization_DeleteRole_Handler,
+		},
+		{
+			MethodName: "SetRolesForUser",
+			Handler:    _Authorization_SetRolesForUser_Handler,
 		},
 		{
 			MethodName: "AddRolesForUser",

@@ -23,8 +23,9 @@ service Authorization {
 
 	// 角色删除
 	rpc DeleteRole (DeleteRoleRequest) returns (CheckReply){};
-
 	// 设置用户角色关系
+	rpc SetRolesForUser (SetRolesForUserRequest) returns (CheckReply){};
+	// 添加用户角色关系
 	rpc AddRolesForUser (AddRolesForUserRequest) returns (CheckReply){};
 	// 获取用户角色列表
 	rpc GetRolesForUser (GetRolesForUserRequest) returns (GetRolesForUserReply){};
@@ -122,6 +123,11 @@ message UpdateRoleRequest {
 	int64 parent_id = 2;
 	string name = 3;
 	repeated int64 parent_ids = 4;
+}
+
+message SetRolesForUserRequest {
+	string username = 1;
+	repeated string roles = 2;
 }
 
 message AddRolesForUserRequest {

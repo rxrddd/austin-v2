@@ -19,6 +19,7 @@ type AuthorizationRepo interface {
 	CreateRole(ctx context.Context, role *Role) (*Role, error)
 	UpdateRole(ctx context.Context, role *Role) (*Role, error)
 	DeleteRole(ctx context.Context, id int64) error
+	SetRolesForUser(ctx context.Context, username string, roles []string) (bool, error)
 	AddRolesForUser(ctx context.Context, username string, roles []string) (bool, error)
 	GetRolesForUser(ctx context.Context, username string) ([]string, error)
 	GetUsersForRole(ctx context.Context, user string) ([]string, error)

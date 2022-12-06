@@ -79,3 +79,20 @@ export function setRoleMenuBtn(data) {
     data
   })
 }
+
+export function saveAdministratorRole(data) {
+  return request({
+    url: '/authorization/v1/setRolesForUser',
+    method: 'post',
+    data
+  })
+}
+
+export function getAdministratorRole(params) {
+  return request({
+    url: '/authorization/v1/getRolesForUser',
+    method: 'get',
+    params
+  })
+}
+
