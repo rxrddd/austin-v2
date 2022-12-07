@@ -241,7 +241,7 @@ func (rp AuthorizationRepo) GetApiAll(ctx context.Context) (*v1.GetApiAllReply, 
 
 func (rp AuthorizationRepo) GetApiList(ctx context.Context, req *v1.GetApiListRequest) (*v1.GetApiListReply, error) {
 	reply, err := rp.data.authorizationClient.GetApiList(ctx, &authorizationServiceV1.GetApiListRequest{
-		PageNum:  req.PageNum,
+		Page:     req.Page,
 		PageSize: req.PageSize,
 		Group:    req.Group,
 		Name:     req.Name,

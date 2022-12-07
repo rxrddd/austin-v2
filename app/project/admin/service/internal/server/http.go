@@ -65,7 +65,6 @@ func setHeaderInfo() middleware.Middleware {
 				}
 				// 设置 Authorization
 				tr.RequestHeader().Set("Authorization", "Bearer "+token)
-
 			}
 			return handler(ctx, req)
 		}
@@ -110,6 +109,7 @@ func NewHTTPServer(c *conf.Server, ac *conf.Auth, service *service.AdminInterfac
 			tracing.Client(),
 			// 日志记录
 			logging.Server(logger),
+
 			// 对于需要登录的路由进行jwt中间件验证
 			selector.Server(
 				// 设置header信息

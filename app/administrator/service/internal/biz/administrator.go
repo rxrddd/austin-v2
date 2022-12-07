@@ -35,7 +35,7 @@ type AdministratorRepo interface {
 	CreateAdministrator(ctx context.Context, reqData *Administrator) (*Administrator, error)
 	UpdateAdministrator(ctx context.Context, reqData *Administrator) (*Administrator, error)
 	GetAdministrator(ctx context.Context, params map[string]interface{}) (*Administrator, error)
-	ListAdministrator(ctx context.Context, pageNum, pageSize int64, params map[string]interface{}) ([]*Administrator, int64, error)
+	ListAdministrator(ctx context.Context, page, pageSize int64, params map[string]interface{}) ([]*Administrator, int64, error)
 	DeleteAdministrator(ctx context.Context, id int64) error
 	RecoverAdministrator(ctx context.Context, id int64) error
 	VerifyAdministratorPassword(ctx context.Context, id int64, password string) (bool, error)
@@ -98,9 +98,9 @@ func (uc *AdministratorUseCase) Get(ctx context.Context, params map[string]inter
 	return uc.repo.GetAdministrator(ctx, params)
 }
 
-func (uc *AdministratorUseCase) List(ctx context.Context, pageNum, pageSize int64, params map[string]interface{}) ([]*Administrator, int64, error) {
+func (uc *AdministratorUseCase) List(ctx context.Context, page, pageSize int64, params map[string]interface{}) ([]*Administrator, int64, error) {
 	params = typeConvert.ClearMapZeroValue(params)
-	return uc.repo.ListAdministrator(ctx, pageNum, pageSize, params)
+	return uc.repo.ListAdministrator(ctx, page, pageSize, params)
 }
 
 func (uc *AdministratorUseCase) VerifyAdministratorPassword(ctx context.Context, in *v1.VerifyAdministratorPasswordRequest) (bool, error) {

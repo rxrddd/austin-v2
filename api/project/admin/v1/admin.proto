@@ -283,7 +283,7 @@ message AdministratorInfoResponse {
 }
 
 message ListAdministratorRequest {
-	int64 page_num = 1;
+	int64 page = 1;
 	int64 page_size = 2;
 	int64 id = 3;
 	string username = 4;
@@ -410,7 +410,7 @@ message ApiInfo {
 }
 
 message GetApiListRequest{
-	int64 page_num = 1;
+	int64 page = 1;
 	int64 page_size = 2;
 	string group = 3;
 	string name = 4;

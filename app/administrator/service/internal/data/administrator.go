@@ -38,12 +38,14 @@ func (s AdministratorRepo) GetAdministratorByParams(params map[string]interface{
 	if username, ok := params["username"]; ok && username != nil && username.(string) != "" {
 		conn = conn.Where("username = ?", username)
 	}
-
 	if mobile, ok := params["mobile"]; ok && mobile != nil && mobile.(string) != "" {
 		conn = conn.Where("mobile = ?", mobile)
 	}
 	if status, ok := params["status"]; ok && status != nil && status.(int64) != 0 {
 		conn = conn.Where("status = ?", status)
+	}
+	if role, ok := params["role"]; ok && role != nil && role.(string) != "" {
+		conn = conn.Where("role = ?", role)
 	}
 	if err = conn.First(&record).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -142,7 +144,7 @@ func (s AdministratorRepo) GetAdministrator(ctx context.Context, params map[stri
 	return &response, nil
 }
 
-func (s AdministratorRepo) ListAdministrator(ctx context.Context, pageNum, pageSize int64, params map[string]interface{}) ([]*biz.Administrator, int64, error) {
+func (s AdministratorRepo) ListAdministrator(ctx context.Context, page, pageSize int64, params map[string]interface{}) ([]*biz.Administrator, int64, error) {
 	list := []entity.AdministratorEntity{}
 	conn := s.data.db.Model(&entity.AdministratorEntity{})
 	if id, ok := params["id"]; ok && id != nil {
@@ -182,7 +184,7 @@ func (s AdministratorRepo) ListAdministrator(ctx context.Context, pageNum, pageS
 		conn = conn.Where("created_at <= ?", tmp)
 	}
 
-	err := conn.Scopes(entity.Paginate(pageNum, pageSize)).Find(&list).Error
+	err := conn.Scopes(entity.Paginate(page, pageSize)).Find(&list).Error
 	if err != nil {
 		return nil, 0, errors.New(http.StatusInternalServerError, errResponse.ReasonSystemError, err.Error())
 	}

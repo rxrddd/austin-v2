@@ -203,7 +203,7 @@ paths:
             description: 管理员列表
             operationId: Admin_GetAdministratorList
             parameters:
-                - name: pageNum
+                - name: page
                   in: query
                   schema:
                     type: integer
@@ -323,7 +323,7 @@ paths:
             description: Api列表
             operationId: Admin_GetApiList
             parameters:
-                - name: pageNum
+                - name: page
                   in: query
                   schema:
                     type: integer

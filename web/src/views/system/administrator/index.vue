@@ -111,7 +111,7 @@
       </el-table-column>
     </el-table>
 
-    <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :pageSize.sync="listQuery.pageSize" @pagination="getList" />
+    <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.pageSize" @pagination="getList" />
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
@@ -303,6 +303,7 @@ export default {
       this.resetTemp()
       this.dialogStatus = 'create'
       this.dialogFormVisible = true
+      this.selectedRoles = []
       this.setOptions()
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
@@ -341,7 +342,6 @@ export default {
         });
         this.temp.roles = response.data.roles
         this.selectedRoles = temp
-        console.log(this.selectedRoles)
       })
 
       this.isDisabled = true;

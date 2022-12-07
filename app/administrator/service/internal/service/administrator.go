@@ -82,6 +82,8 @@ func (s *AdministratorService) GetAdministrator(ctx context.Context, req *v1.Get
 	params["id"] = req.Id
 	params["username"] = req.Username
 	params["mobile"] = req.Mobile
+	params["role"] = req.Role
+	params["status"] = req.Status
 	administratorInfo, err := s.administratorUseCase.Get(ctx, params)
 	if err != nil {
 		return nil, err
@@ -98,7 +100,7 @@ func (s *AdministratorService) ListAdministrator(ctx context.Context, req *v1.Li
 	params["mobile"] = req.Mobile
 	params["created_at_start"] = req.CreatedAtStart
 	params["created_at_end"] = req.CreatedAtEnd
-	AdministratorInfoList, count, err := s.administratorUseCase.List(ctx, req.PageNum, req.PageSize, params)
+	AdministratorInfoList, count, err := s.administratorUseCase.List(ctx, req.Page, req.PageSize, params)
 	if err != nil {
 		return nil, err
 	}

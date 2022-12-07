@@ -110,7 +110,7 @@ func (rp AdministratorRepo) UpdateAdministrator(ctx context.Context, req *v1.Upd
 func (rp AdministratorRepo) ListAdministrator(ctx context.Context, req *v1.ListAdministratorRequest) (*v1.ListAdministratorReply, error) {
 	list := []*v1.AdministratorInfoResponse{}
 	reply, err := rp.data.administratorClient.ListAdministrator(ctx, &administratorServiceV1.ListAdministratorRequest{
-		PageNum:        req.PageNum,
+		Page:           req.Page,
 		PageSize:       req.PageSize,
 		Mobile:         req.Mobile,
 		Username:       req.Username,

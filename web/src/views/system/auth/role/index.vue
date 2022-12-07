@@ -32,9 +32,7 @@
           <el-button size="mini" type="danger" @click="handleDelete(row, $index)">
             删除
           </el-button>
-          <el-button size="mini" type="success" v-if="checkBtnPermission('19')">
-            测试权限
-          </el-button>
+          
         </template>
       </el-table-column>
     </el-table>

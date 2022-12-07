@@ -3,9 +3,8 @@ package data
 import (
 	"context"
 	"errors"
-	"fmt"
 	"github.com/ZQCard/kratos-base-project/app/authorization/service/internal/biz"
-	entity2 "github.com/ZQCard/kratos-base-project/app/authorization/service/internal/data/entity"
+	"github.com/ZQCard/kratos-base-project/app/authorization/service/internal/data/entity"
 	"github.com/ZQCard/kratos-base-project/pkg/errResponse"
 	"gorm.io/gorm"
 	"time"
@@ -15,8 +14,8 @@ import (
 
 func (a AuthorizationRepo) GetApiAll(ctx context.Context) ([]*biz.Api, error) {
 	var res []*biz.Api
-	var list []entity2.Api
-	err := a.data.db.Model(&entity2.Api{}).Order("`group` ASC").Find(&list).Error
+	var list []entity.Api
+	err := a.data.db.Model(&entity.Api{}).Order("`group` ASC").Find(&list).Error
 	if err != nil {
 		return nil, errResponse.SetErrByReason(errResponse.ReasonSystemError)
 	}
@@ -35,11 +34,9 @@ func (a AuthorizationRepo) GetApiAll(ctx context.Context) ([]*biz.Api, error) {
 }
 
 func (a AuthorizationRepo) GetApiList(ctx context.Context, page int64, pageSize int64, group, name, method, path string) ([]*biz.Api, int64, error) {
-	fmt.Println("pageSize")
-	fmt.Println(pageSize)
 	var res []*biz.Api
-	var list []entity2.Api
-	conn := a.data.db.Model(&entity2.Api{})
+	var list []entity.Api
+	conn := a.data.db.Model(&entity.Api{})
 
 	if name != "" {
 		conn = conn.Where("name LIKE ?", "%"+name+"%")
@@ -53,7 +50,7 @@ func (a AuthorizationRepo) GetApiList(ctx context.Context, page int64, pageSize 
 	if group != "" {
 		conn = conn.Where("group LIKE ?", "%"+group+"%")
 	}
-	err := conn.Scopes(entity2.Paginate(page, pageSize)).Order("id ASC").Find(&list).Error
+	err := conn.Scopes(entity.Paginate(page, pageSize)).Order("id ASC").Find(&list).Error
 	if err != nil {
 		return nil, 0, errResponse.SetErrByReason(errResponse.ReasonSystemError)
 	}
@@ -74,15 +71,15 @@ func (a AuthorizationRepo) GetApiList(ctx context.Context, page int64, pageSize 
 }
 
 func (a AuthorizationRepo) CreateApi(ctx context.Context, reqData *biz.Api) (*biz.Api, error) {
-	var api entity2.Api
-	// 查看Api名是否存在
-	err := a.data.db.Model(entity2.Api{}).Where("`group` = ? AND name = ? AND path = ? AND method = ?", reqData.Group, reqData.Name, reqData.Path, reqData.Method).First(&api).Error
+	var api entity.Api
+	// 查看Api是否存在
+	err := a.data.db.Model(entity.Api{}).Where("path = ? AND method = ?", reqData.Path, reqData.Method).First(&api).Error
 
 	if !errors.Is(err, gorm.ErrRecordNotFound) {
 		return &biz.Api{}, errResponse.SetErrByReason(errResponse.ReasonAuthorizationApiExist)
 	}
 	now := time.Now()
-	api = entity2.Api{
+	api = entity.Api{
 		Group:     reqData.Group,
 		Name:      reqData.Name,
 		Path:      reqData.Path,
@@ -90,7 +87,7 @@ func (a AuthorizationRepo) CreateApi(ctx context.Context, reqData *biz.Api) (*bi
 		CreatedAt: &now,
 		UpdatedAt: &now,
 	}
-	err = a.data.db.Model(entity2.Api{}).Create(&api).Error
+	err = a.data.db.Model(entity.Api{}).Create(&api).Error
 	if err != nil {
 		return &biz.Api{}, err
 	}
@@ -107,14 +104,14 @@ func (a AuthorizationRepo) CreateApi(ctx context.Context, reqData *biz.Api) (*bi
 }
 
 func (a AuthorizationRepo) UpdateApi(ctx context.Context, reqData *biz.Api) (*biz.Api, error) {
-	var api entity2.Api
+	var api entity.Api
 	// 查看Api名是否存在
-	err := a.data.db.Model(entity2.Api{}).Where("`group` = ? AND name = ? AND path = ? AND method = ? AND id != ?", reqData.Group, reqData.Name, reqData.Path, reqData.Method, reqData.Id).First(&api).Error
+	err := a.data.db.Model(entity.Api{}).Where("path = ? AND method = ? AND id != ?", reqData.Path, reqData.Method, reqData.Id).First(&api).Error
 	if !errors.Is(err, gorm.ErrRecordNotFound) {
 		return &biz.Api{}, errResponse.SetErrByReason(errResponse.ReasonAuthorizationApiExist)
 	}
 
-	err = a.data.db.Model(entity2.Api{}).Where("id = ?", reqData.Id).First(&api).Error
+	err = a.data.db.Model(entity.Api{}).Where("id = ?", reqData.Id).First(&api).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return &biz.Api{}, errResponse.SetErrByReason(errResponse.ReasonAuthorizationApiNotFound)
 	}
@@ -125,11 +122,11 @@ func (a AuthorizationRepo) UpdateApi(ctx context.Context, reqData *biz.Api) (*bi
 	api.Name = reqData.Name
 	api.Method = reqData.Method
 	api.Path = reqData.Path
-	err = a.data.db.Model(entity2.Api{}).Where("id = ?", api.Id).Save(&api).Error
+	err = a.data.db.Model(entity.Api{}).Where("id = ?", api.Id).Save(&api).Error
 	if err != nil {
 		return &biz.Api{}, kerrors.InternalServer(errResponse.ReasonSystemError, err.Error())
 	}
-	a.data.db.Model(entity2.Api{}).Where("id = ?", api.Id).Find(&api)
+	a.data.db.Model(entity.Api{}).Where("id = ?", api.Id).Find(&api)
 	res := &biz.Api{
 		Id:        api.Id,
 		Group:     api.Group,
@@ -143,23 +140,24 @@ func (a AuthorizationRepo) UpdateApi(ctx context.Context, reqData *biz.Api) (*bi
 }
 
 func (a AuthorizationRepo) DeleteApi(ctx context.Context, id int64) error {
-	var api entity2.Api
+	var api entity.Api
 	// 查看Api是否存在
-	err := a.data.db.Model(entity2.Api{}).Where("id = ?", id).First(&api).Error
+	err := a.data.db.Model(entity.Api{}).Where("id = ?", id).First(&api).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return errResponse.SetErrByReason(errResponse.ReasonAuthorizationApiNotFound)
 	}
 	if err != nil {
 		return kerrors.InternalServer(errResponse.ReasonSystemError, err.Error())
 	}
-	tx := a.data.db.Begin()
-	err = tx.Model(entity2.Api{}).Where("id = ?", id).Delete(&api).Error
+	// 检查api是否被使用，使用中无法删除
+	policies := a.data.enforcer.GetFilteredPolicy(0, "", api.Name, api.Method)
+	if len(policies) != 0 {
+		return kerrors.BadRequest(errResponse.ReasonParamsError, "API已被使用,无法删除")
+	}
+	err = a.data.db.Model(entity.Api{}).Where("id = ?", id).Delete(&api).Error
 	if err != nil {
-		tx.Rollback()
 		return kerrors.InternalServer(errResponse.ReasonSystemError, err.Error())
 	}
-	// 删除casbin接口
-	tx.Commit()
 	a.data.enforcer.RemoveFilteredPolicy(0, "", api.Name, api.Method)
 
 	return nil

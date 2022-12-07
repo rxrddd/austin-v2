@@ -33,7 +33,7 @@ func (s *AuthorizationService) GetApiAll(ctx context.Context, empty *emptypb.Emp
 }
 
 func (s *AuthorizationService) GetApiList(ctx context.Context, req *v1.GetApiListRequest) (*v1.GetApiListReply, error) {
-	res, count, err := s.authorizationUsecase.GetApiList(ctx, req.PageNum, req.PageSize, req.Group, req.Name, req.Path, req.Method)
+	res, count, err := s.authorizationUsecase.GetApiList(ctx, req.Page, req.PageSize, req.Group, req.Name, req.Path, req.Method)
 	if err != nil {
 		return nil, err
 	}

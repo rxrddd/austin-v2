@@ -279,18 +279,20 @@ func (a AuthorizationRepo) DeleteMenu(ctx context.Context, id int64) error {
 		return kerrors.InternalServer(errResponse.ReasonSystemError, err.Error())
 	}
 
+	// 如果有角色使用菜单无法删除
+	roleMenu := entity.RoleMenu{}
+	a.data.db.Model(entity.RoleMenu{}).Where("menu_id = ?", id).First(&roleMenu)
+	if roleMenu.Id != 0 {
+		return kerrors.BadRequest(errResponse.ReasonParamsError, "菜单已被使用,无法删除")
+	}
+
 	tx := a.data.db.Begin()
 	err = tx.Model(entity.Menu{}).Where("id = ?", id).Delete(&menu).Error
 	if err != nil {
 		tx.Rollback()
 		return kerrors.InternalServer(errResponse.ReasonSystemError, err.Error())
 	}
-	// 删除菜单与角色的关联关系
-	err = tx.Model(entity.RoleMenu{}).Where("menu_id = ?", id).Delete(&entity.RoleMenu{}).Error
-	if err != nil {
-		tx.Rollback()
-		return kerrors.InternalServer(errResponse.ReasonSystemError, err.Error())
-	}
+
 	// 删除菜单与按钮的关联关系
 	err = tx.Model(entity.MenuBtn{}).Where("menu_id = ?", id).Delete(&entity.RoleMenu{}).Error
 	if err != nil {

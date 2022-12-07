@@ -10,7 +10,9 @@ import (
 	"github.com/go-kratos/kratos/v2/middleware"
 	"github.com/go-kratos/kratos/v2/middleware/auth/jwt"
 	"github.com/go-kratos/kratos/v2/transport"
+	"github.com/go-kratos/kratos/v2/transport/http"
 	jwt2 "github.com/golang-jwt/jwt/v4"
+	"time"
 )
 
 type Option func(*options)
@@ -56,15 +58,17 @@ func Server(opts ...Option) middleware.Middleware {
 				return nil, errResponse.SetErrByReason(errResponse.ReasonUnauthorizedInfoMissing)
 			}
 			role := claimInfo[CabinObj].(string)
-
 			// 获取当前服务operation，验证策略为 operation + method + role(超级管理员不做判断)
 			if tr, ok := transport.FromServerContext(ctx); ok && role != "超级管理员" {
 				// 获取请求方法
-				act := tr.RequestHeader().Get("Http-Method")
+				act := ""
+				if ht, ok := tr.(*http.Transport); ok {
+					act = ht.Request().Method
+				}
+				fmt.Println("aaaa")
+				fmt.Println(time.Now().Add(-2 * time.Hour).Format("2006-01-02 15:04:05"))
 				// 获取请求的PATH
 				obj := tr.Operation()
-				fmt.Println("tr")
-				fmt.Println(tr)
 				// 权限判断
 				allowed, err := o.enforcer.Enforce(role, obj, act)
 				if err != nil {

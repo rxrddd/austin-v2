@@ -294,7 +294,7 @@ GET {{host}}/admin/v1/getAdministrators
 
 | 参数               | 类型     | 必须    | 说明           |
 |------------------|--------|-------|--------------|
-| pageNum          | int | false | 页码           |
+| page          | int | false | 页码           |
 | pageSize         | int | false | 页记录数         |
 | mobile           | string | false | 手机号          |
 | username         | string | false | 用户名          |
@@ -910,7 +910,7 @@ API列表 分页
 
 | 参数               | 类型     | 必须    | 说明    |
 |------------------|--------|-------|-------|
-| pageNum          | int | false | 页码    |
+| page          | int | false | 页码    |
 | pageSize         | int | false | 页记录数  |
 | group           | string | false | 分组名称  |
 | name           | string | false | api名称 |
