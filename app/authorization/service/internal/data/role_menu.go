@@ -2,35 +2,52 @@ package data
 
 import (
 	"context"
+	"encoding/json"
 	"github.com/ZQCard/kratos-base-project/app/authorization/service/internal/biz"
 	"github.com/ZQCard/kratos-base-project/app/authorization/service/internal/data/entity"
 	"github.com/ZQCard/kratos-base-project/pkg/errResponse"
 	kerrors "github.com/go-kratos/kratos/v2/errors"
 )
 
+const childModuleRoleMenu = "RoleMenu"
+
 func (a AuthorizationRepo) GetRoleMenuTree(ctx context.Context, role string) ([]*biz.Menu, error) {
 	// 查询角色拥有哪些菜单
-	var res []*biz.Menu
+	var response []*biz.Menu
+	// 缓存key
+	cacheParams := map[string]interface{}{
+		"role": role,
+	}
+	cacheKey := a.GetRedisCacheKey(childModuleRoleMenu, cacheParams)
+	// 查看缓存
+	if cache := a.GetRedisCache(cacheKey); cache != "" {
+		if err := json.Unmarshal([]byte(cache), &response); err == nil {
+			return response, nil
+		} else {
+			a.log.Error("GetRoleMenuTree()", err)
+		}
+	}
+
 	var menus []entity.Menu
 	tmpRole, err := a.GetRole(ctx, map[string]interface{}{
 		"name": role,
 	})
 	if tmpRole.Id == 0 {
-		return res, nil
+		return response, nil
 	}
 	// 查看角色拥有菜单id
 	menuIds := a.getMenuIdsByRoleId(tmpRole.Id)
 	if len(menuIds) == 0 {
-		return res, nil
+		return response, nil
 	}
 
 	// 获取所有根菜单
 	err = a.data.db.Model(entity.Menu{}).Where("parent_id = 0 AND id IN (?)", menuIds).Preload("MenuBtns").Order("sort ASC").Find(&menus).Error
 	if err != nil {
-		return res, kerrors.InternalServer(errResponse.ReasonSystemError, err.Error())
+		return response, kerrors.InternalServer(errResponse.ReasonSystemError, err.Error())
 	}
 	for _, v := range menus {
-		res = append(res, &biz.Menu{
+		response = append(response, &biz.Menu{
 			Id:        v.Id,
 			Name:      v.Name,
 			ParentId:  v.ParentId,
@@ -44,13 +61,17 @@ func (a AuthorizationRepo) GetRoleMenuTree(ctx context.Context, role string) ([]
 			UpdatedAt: v.UpdatedAt.Format("2006-01-02 15:04:05"),
 		})
 	}
-	for k := range res {
-		err := a.findChildrenRoleMenu(res[k], menuIds)
+	for k := range response {
+		err := a.findChildrenRoleMenu(response[k], menuIds)
 		if err != nil {
-			return res, kerrors.InternalServer(errResponse.ReasonSystemError, err.Error())
+			return response, kerrors.InternalServer(errResponse.ReasonSystemError, err.Error())
 		}
 	}
-	return res, nil
+	// 返回数据
+	jsonResponse, _ := json.Marshal(response)
+	responseStr := string(jsonResponse)
+	_ = a.SaveRedisCache(cacheKey, responseStr)
+	return response, nil
 }
 
 func (a AuthorizationRepo) findChildrenRoleMenu(menu *biz.Menu, menuIds []int64) (err error) {
@@ -94,24 +115,39 @@ func (a AuthorizationRepo) findChildrenRoleMenu(menu *biz.Menu, menuIds []int64)
 
 func (a AuthorizationRepo) GetRoleMenu(ctx context.Context, role string) ([]*biz.Menu, error) {
 	// 查询角色拥有哪些菜单
-	var res []*biz.Menu
+	var response []*biz.Menu
+	// 缓存key
+	cacheParams := map[string]interface{}{
+		"type": "GetRoleMenu",
+		"role": role,
+	}
+	cacheKey := a.GetRedisCacheKey(childModuleRoleMenu, cacheParams)
+	// 查看缓存
+	if cache := a.GetRedisCache(cacheKey); cache != "" {
+		if err := json.Unmarshal([]byte(cache), &response); err == nil {
+			return response, nil
+		} else {
+			a.log.Error("GetRoleMenuTree()", err)
+		}
+	}
+
 	var menus []entity.Menu
 	tmpRole, err := a.GetRole(ctx, map[string]interface{}{
 		"name": role,
 	})
 	if tmpRole.Id == 0 {
-		return res, nil
+		return response, nil
 	}
 	// 查看角色拥有菜单id
 	menuIds := a.getMenuIdsByRoleId(tmpRole.Id)
 	if len(menuIds) == 0 {
-		return res, nil
+		return response, nil
 	}
 
 	// 获取所有根菜单
 	err = a.data.db.Model(entity.Menu{}).Where("id IN (?) ", menuIds).Preload("MenuBtns").Find(&menus).Error
 	if err != nil {
-		return res, kerrors.InternalServer(errResponse.ReasonSystemError, err.Error())
+		return response, kerrors.InternalServer(errResponse.ReasonSystemError, err.Error())
 	}
 	for _, v := range menus {
 		btns := []biz.MenuBtn{}
@@ -125,7 +161,7 @@ func (a AuthorizationRepo) GetRoleMenu(ctx context.Context, role string) ([]*biz
 				UpdatedAt:   btn.UpdatedAt.Format("2006-01-02 15:04:05"),
 			})
 		}
-		res = append(res, &biz.Menu{
+		response = append(response, &biz.Menu{
 			Id:        v.Id,
 			Name:      v.Name,
 			ParentId:  v.ParentId,
@@ -139,7 +175,11 @@ func (a AuthorizationRepo) GetRoleMenu(ctx context.Context, role string) ([]*biz
 			MenuBtns:  btns,
 		})
 	}
-	return res, nil
+	// 返回数据
+	jsonResponse, _ := json.Marshal(response)
+	responseStr := string(jsonResponse)
+	_ = a.SaveRedisCache(cacheKey, responseStr)
+	return response, nil
 }
 
 func (a AuthorizationRepo) SaveRoleMenu(ctx context.Context, roleId int64, menuIds []int64) error {
@@ -167,6 +207,7 @@ func (a AuthorizationRepo) SaveRoleMenu(ctx context.Context, roleId int64, menuI
 		return kerrors.InternalServer(errResponse.ReasonSystemError, err.Error())
 	}
 	tx.Commit()
+	a.DeleteRedisCache(childModuleRoleMenu)
 	return nil
 }
 
@@ -182,7 +223,7 @@ func (a AuthorizationRepo) getMenuIdsByRoleId(roleId int64) (menuIds []int64) {
 	return menuIds
 }
 
-func (a AuthorizationRepo) GetRoleMenuBtn(ctx context.Context, roleId int64, roleName string, menuId int64) (list []*biz.MenuBtn, err error) {
+func (a AuthorizationRepo) GetRoleMenuBtn(ctx context.Context, roleId int64, roleName string, menuId int64) (response []*biz.MenuBtn, err error) {
 	// 如果角色名称不为空， 则根据名称查找角色id
 	if roleName != "" {
 		roleInfo, err := a.GetRole(ctx, map[string]interface{}{
@@ -197,6 +238,23 @@ func (a AuthorizationRepo) GetRoleMenuBtn(ctx context.Context, roleId int64, rol
 		}
 		roleId = roleInfo.Id
 	}
+	// 查询角色拥有哪些菜单
+	// 缓存key
+	cacheParams := map[string]interface{}{
+		"roleId":   roleId,
+		"roleName": roleName,
+		"menuId":   menuId,
+	}
+	cacheKey := a.GetRedisCacheKey(childModuleRoleMenu, cacheParams)
+	// 查看缓存
+	if cache := a.GetRedisCache(cacheKey); cache != "" {
+		if err := json.Unmarshal([]byte(cache), &response); err == nil {
+			return response, nil
+		} else {
+			a.log.Error("GetRoleMenuTree()", err)
+		}
+	}
+
 	// 查询角色拥有哪些菜单按钮
 	var roleMenuBtn []entity.RoleMenuBtn
 	conn := a.data.db.Model(entity.RoleMenuBtn{})
@@ -213,13 +271,13 @@ func (a AuthorizationRepo) GetRoleMenuBtn(ctx context.Context, roleId int64, rol
 		btnIds = append(btnIds, v.BtnId)
 	}
 
-	btnList := []*entity.MenuBtn{}
+	btnresponse := []*entity.MenuBtn{}
 	if len(btnIds) == 0 {
 		return []*biz.MenuBtn{}, nil
 	}
-	a.data.db.Model(&entity.MenuBtn{}).Where("id IN (?)", btnIds).Find(&btnList)
-	for _, v := range btnList {
-		list = append(list, &biz.MenuBtn{
+	a.data.db.Model(&entity.MenuBtn{}).Where("id IN (?)", btnIds).Find(&btnresponse)
+	for _, v := range btnresponse {
+		response = append(response, &biz.MenuBtn{
 			Id:          v.Id,
 			MenuId:      v.MenuId,
 			Name:        v.Name,
@@ -229,7 +287,11 @@ func (a AuthorizationRepo) GetRoleMenuBtn(ctx context.Context, roleId int64, rol
 			UpdatedAt:   v.UpdatedAt.Format("2006-01-02 15:04:05"),
 		})
 	}
-	return list, err
+	// 返回数据
+	jsonResponse, _ := json.Marshal(response)
+	responseStr := string(jsonResponse)
+	_ = a.SaveRedisCache(cacheKey, responseStr)
+	return response, err
 }
 
 func (a AuthorizationRepo) SetRoleMenuBtn(ctx context.Context, roleId int64, menuId int64, btnIds []int64) error {
@@ -258,5 +320,6 @@ func (a AuthorizationRepo) SetRoleMenuBtn(ctx context.Context, roleId int64, men
 		return kerrors.InternalServer(errResponse.ReasonSystemError, err.Error())
 	}
 	tx.Commit()
+	a.DeleteRedisCache(childModuleRoleMenu)
 	return nil
 }

@@ -2,25 +2,44 @@ package data
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"github.com/ZQCard/kratos-base-project/app/authorization/service/internal/biz"
 	"github.com/ZQCard/kratos-base-project/app/authorization/service/internal/data/entity"
 	"github.com/ZQCard/kratos-base-project/pkg/errResponse"
 	"gorm.io/gorm"
+	"strconv"
 	"time"
 
 	kerrors "github.com/go-kratos/kratos/v2/errors"
 )
 
+const childModuleAPI = "API"
+
 func (a AuthorizationRepo) GetApiAll(ctx context.Context) ([]*biz.Api, error) {
-	var res []*biz.Api
+	// 缓存key
+	cacheParams := map[string]interface{}{
+		"type": "all",
+	}
+	cacheKey := a.GetRedisCacheKey(childModuleAPI, cacheParams)
+	// 查看缓存
+	if cache := a.GetRedisCache(cacheKey); cache != "" {
+		res := []*biz.Api{}
+		if err := json.Unmarshal([]byte(cache), &res); err == nil {
+			return res, nil
+		} else {
+			a.log.Error("GetApiAll()", err)
+		}
+	}
+
+	var response []*biz.Api
 	var list []entity.Api
-	err := a.data.db.Model(&entity.Api{}).Order("`group` ASC").Find(&list).Error
+	err := a.data.db.Model(&entity.Api{}).Order("`id` ASC").Find(&list).Error
 	if err != nil {
 		return nil, errResponse.SetErrByReason(errResponse.ReasonSystemError)
 	}
 	for _, v := range list {
-		res = append(res, &biz.Api{
+		response = append(response, &biz.Api{
 			Id:        v.Id,
 			Group:     v.Group,
 			Name:      v.Name,
@@ -30,26 +49,53 @@ func (a AuthorizationRepo) GetApiAll(ctx context.Context) ([]*biz.Api, error) {
 			UpdatedAt: v.UpdatedAt.Format("2006-01-02 15:04:05"),
 		})
 	}
-	return res, nil
+	// 返回数据
+	jsonResponse, _ := json.Marshal(response)
+	responseStr := string(jsonResponse)
+	_ = a.SaveRedisCache(cacheKey, responseStr)
+	return response, nil
 }
 
-func (a AuthorizationRepo) GetApiList(ctx context.Context, page int64, pageSize int64, group, name, method, path string) ([]*biz.Api, int64, error) {
-	var res []*biz.Api
+func (a AuthorizationRepo) GetApiList(ctx context.Context, page int64, pageSize int64, params map[string]interface{}) ([]*biz.Api, int64, error) {
+	// 缓存key
+	cacheParams := params
+	cacheParams["page"] = page
+	cacheParams["pageSize"] = pageSize
+	cacheKey := a.GetRedisCacheKey(childModuleAPI, cacheParams)
+	countCacheKey := cacheKey + ":count"
+
+	var response []*biz.Api
 	var list []entity.Api
+
+	// 查看缓存
+	if cache := a.GetRedisCache(cacheKey); cache != "" {
+		countStr := a.GetRedisCache(countCacheKey)
+		count, _ := strconv.ParseInt(countStr, 10, 64)
+		if err := json.Unmarshal([]byte(cache), &response); err == nil {
+			return response, count, nil
+		} else {
+			a.log.Error("ListAdministrator()", err)
+		}
+	}
+
 	conn := a.data.db.Model(&entity.Api{})
 
-	if name != "" {
-		conn = conn.Where("name LIKE ?", "%"+name+"%")
+	if name, ok := params["name"]; ok && name != nil && name.(string) != "" {
+		conn = conn.Where("name LIKE ?", "%"+name.(string)+"%")
 	}
-	if method != "" {
-		conn = conn.Where("method LIKE ?", "%"+method+"%")
+
+	if method, ok := params["method"]; ok && method != nil && method.(string) != "" {
+		conn = conn.Where("method LIKE ?", "%"+method.(string)+"%")
 	}
-	if path != "" {
-		conn = conn.Where("path LIKE ?", "%"+path+"%")
+
+	if path, ok := params["path"]; ok && path != nil && path.(string) != "" {
+		conn = conn.Where("path LIKE ?", "%"+path.(string)+"%")
 	}
-	if group != "" {
-		conn = conn.Where("group LIKE ?", "%"+group+"%")
+
+	if group, ok := params["group"]; ok && group != nil && group.(string) != "" {
+		conn = conn.Where("group LIKE ?", "%"+group.(string)+"%")
 	}
+
 	err := conn.Scopes(entity.Paginate(page, pageSize)).Order("id ASC").Find(&list).Error
 	if err != nil {
 		return nil, 0, errResponse.SetErrByReason(errResponse.ReasonSystemError)
@@ -57,7 +103,7 @@ func (a AuthorizationRepo) GetApiList(ctx context.Context, page int64, pageSize 
 	count := int64(0)
 	conn.Count(&count)
 	for _, v := range list {
-		res = append(res, &biz.Api{
+		response = append(response, &biz.Api{
 			Id:        v.Id,
 			Group:     v.Group,
 			Name:      v.Name,
@@ -67,7 +113,12 @@ func (a AuthorizationRepo) GetApiList(ctx context.Context, page int64, pageSize 
 			UpdatedAt: v.UpdatedAt.Format("2006-01-02 15:04:05"),
 		})
 	}
-	return res, count, nil
+	// 返回数据
+	jsonResponse, _ := json.Marshal(response)
+	responseStr := string(jsonResponse)
+	_ = a.SaveRedisCache(cacheKey, responseStr)
+	_ = a.SaveRedisCache(countCacheKey, strconv.FormatInt(count, 10))
+	return response, count, nil
 }
 
 func (a AuthorizationRepo) CreateApi(ctx context.Context, reqData *biz.Api) (*biz.Api, error) {
@@ -100,6 +151,7 @@ func (a AuthorizationRepo) CreateApi(ctx context.Context, reqData *biz.Api) (*bi
 		CreatedAt: api.CreatedAt.Format("2006-01-02 15:04:05"),
 		UpdatedAt: api.UpdatedAt.Format("2006-01-02 15:04:05"),
 	}
+	a.DeleteRedisCache(childModuleAPI)
 	return res, nil
 }
 
@@ -136,6 +188,7 @@ func (a AuthorizationRepo) UpdateApi(ctx context.Context, reqData *biz.Api) (*bi
 		CreatedAt: api.CreatedAt.Format("2006-01-02 15:04:05"),
 		UpdatedAt: api.UpdatedAt.Format("2006-01-02 15:04:05"),
 	}
+	a.DeleteRedisCache(childModuleAPI)
 	return res, nil
 }
 
@@ -159,6 +212,6 @@ func (a AuthorizationRepo) DeleteApi(ctx context.Context, id int64) error {
 		return kerrors.InternalServer(errResponse.ReasonSystemError, err.Error())
 	}
 	a.data.enforcer.RemoveFilteredPolicy(0, "", api.Name, api.Method)
-
+	a.DeleteRedisCache(childModuleAPI)
 	return nil
 }

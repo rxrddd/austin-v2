@@ -2,6 +2,7 @@ package data
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"github.com/ZQCard/kratos-base-project/app/authorization/service/internal/biz"
 	"github.com/ZQCard/kratos-base-project/app/authorization/service/internal/data/entity"
@@ -13,16 +14,32 @@ import (
 	kerrors "github.com/go-kratos/kratos/v2/errors"
 )
 
+const childModuleRole = "Role"
+
 func (a AuthorizationRepo) GetRoleList(ctx context.Context) ([]*biz.Role, error) {
-	var res []*biz.Role
+	var response []*biz.Role
+	// 缓存key
+	cacheParams := map[string]interface{}{
+		"type": "all",
+	}
+	cacheKey := a.GetRedisCacheKey(childModuleRole, cacheParams)
+	// 查看缓存
+	if cache := a.GetRedisCache(cacheKey); cache != "" {
+		if err := json.Unmarshal([]byte(cache), &response); err == nil {
+			return response, nil
+		} else {
+			a.log.Error("GetRoleList()", err)
+		}
+	}
+
 	var roles []entity.Role
 	// 获取所有根角色
 	err := a.data.db.Model(entity.Role{}).Where("parent_id = 0").Find(&roles).Error
 	if err != nil {
-		return res, err
+		return response, err
 	}
 	for _, v := range roles {
-		res = append(res, &biz.Role{
+		response = append(response, &biz.Role{
 			Id:        v.Id,
 			Name:      v.Name,
 			ParentId:  v.ParentId,
@@ -31,13 +48,17 @@ func (a AuthorizationRepo) GetRoleList(ctx context.Context) ([]*biz.Role, error)
 			UpdatedAt: v.UpdatedAt.Format("2006-01-02 15:04:05"),
 		})
 	}
-	for k := range res {
-		err := a.findChildrenRole(res[k])
+	for k := range response {
+		err := a.findChildrenRole(response[k])
 		if err != nil {
-			return res, err
+			return response, err
 		}
 	}
-	return res, nil
+	// 返回数据
+	jsonResponse, _ := json.Marshal(response)
+	responseStr := string(jsonResponse)
+	_ = a.SaveRedisCache(cacheKey, responseStr)
+	return response, nil
 }
 
 func (a AuthorizationRepo) findChildrenRole(role *biz.Role) (err error) {
@@ -63,7 +84,18 @@ func (a AuthorizationRepo) findChildrenRole(role *biz.Role) (err error) {
 }
 
 func (a AuthorizationRepo) GetRole(ctx context.Context, params map[string]interface{}) (*biz.Role, error) {
-	var res *biz.Role
+	var response *biz.Role
+	// 缓存key
+	cacheKey := a.GetRedisCacheKey(childModuleRole, params)
+	// 查看缓存
+	if cache := a.GetRedisCache(cacheKey); cache != "" {
+		if err := json.Unmarshal([]byte(cache), response); err == nil {
+			return response, nil
+		} else {
+			a.log.Error("GetRole()", err)
+		}
+	}
+
 	var role entity.Role
 
 	db := a.data.db.Model(entity.Role{})
@@ -75,12 +107,12 @@ func (a AuthorizationRepo) GetRole(ctx context.Context, params map[string]interf
 	}
 	err := db.First(&role).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
-		return res, kerrors.BadRequest(errResponse.ReasonParamsError, "角色不存在")
+		return response, kerrors.BadRequest(errResponse.ReasonParamsError, "角色不存在")
 	}
 	if err != nil {
-		return res, err
+		return response, err
 	}
-	res = &biz.Role{
+	response = &biz.Role{
 		Id:        role.Id,
 		Name:      role.Name,
 		ParentId:  role.ParentId,
@@ -88,7 +120,10 @@ func (a AuthorizationRepo) GetRole(ctx context.Context, params map[string]interf
 		CreatedAt: role.CreatedAt.Format("2006-01-02 15:04:05"),
 		UpdatedAt: role.UpdatedAt.Format("2006-01-02 15:04:05"),
 	}
-	return res, nil
+	// 返回数据
+	jsonResponse, _ := json.Marshal(response)
+	_ = a.SaveRedisCache(cacheKey, string(jsonResponse))
+	return response, nil
 }
 
 func (a AuthorizationRepo) CreateRole(ctx context.Context, reqData *biz.Role) (*biz.Role, error) {
@@ -120,6 +155,7 @@ func (a AuthorizationRepo) CreateRole(ctx context.Context, reqData *biz.Role) (*
 		CreatedAt: role.CreatedAt.Format("2006-01-02 15:04:05"),
 		UpdatedAt: role.CreatedAt.Format("2006-01-02 15:04:05"),
 	}
+	a.DeleteRedisCache(childModuleRole)
 	return res, nil
 }
 
@@ -151,6 +187,7 @@ func (a AuthorizationRepo) UpdateRole(ctx context.Context, reqData *biz.Role) (*
 		CreatedAt: role.CreatedAt.Format("2006-01-02 15:04:05"),
 		UpdatedAt: role.UpdatedAt.Format("2006-01-02 15:04:05"),
 	}
+	a.DeleteRedisCache(childModuleRole)
 	return res, nil
 }
 
@@ -203,5 +240,6 @@ func (a AuthorizationRepo) DeleteRole(ctx context.Context, id int64) error {
 	tx.Commit()
 	// 删除策略
 	a.data.enforcer.RemoveFilteredPolicy(0, role.Name)
+	a.DeleteRedisCache(childModuleRole)
 	return nil
 }

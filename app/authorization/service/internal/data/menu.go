@@ -2,6 +2,7 @@ package data
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"github.com/ZQCard/kratos-base-project/app/authorization/service/internal/biz"
 	"github.com/ZQCard/kratos-base-project/app/authorization/service/internal/data/entity"
@@ -13,13 +14,29 @@ import (
 	kerrors "github.com/go-kratos/kratos/v2/errors"
 )
 
+const childModuleMenu = "Menu"
+
 func (a AuthorizationRepo) GetMenuAll(ctx context.Context) ([]*biz.Menu, error) {
-	var res []*biz.Menu
+	var response []*biz.Menu
+	// 缓存key
+	cacheParams := map[string]interface{}{
+		"type": "all",
+	}
+	cacheKey := a.GetRedisCacheKey(childModuleMenu, cacheParams)
+	// 查看缓存
+	if cache := a.GetRedisCache(cacheKey); cache != "" {
+		if err := json.Unmarshal([]byte(cache), &response); err == nil {
+			return response, nil
+		} else {
+			a.log.Error("GetMenuAll()", err)
+		}
+	}
+
 	var menus []entity.Menu
 	// 获取所有根菜单
 	err := a.data.db.Model(entity.Menu{}).Preload("MenuBtns").Find(&menus).Error
 	if err != nil {
-		return res, kerrors.InternalServer(errResponse.ReasonSystemError, err.Error())
+		return response, kerrors.InternalServer(errResponse.ReasonSystemError, err.Error())
 	}
 	for _, v := range menus {
 		btns := []biz.MenuBtn{}
@@ -34,7 +51,7 @@ func (a AuthorizationRepo) GetMenuAll(ctx context.Context) ([]*biz.Menu, error) 
 				UpdatedAt:   btn.UpdatedAt.Format("2006-01-02 15:04:05"),
 			})
 		}
-		res = append(res, &biz.Menu{
+		response = append(response, &biz.Menu{
 			Id:        v.Id,
 			Name:      v.Name,
 			ParentId:  v.ParentId,
@@ -49,16 +66,34 @@ func (a AuthorizationRepo) GetMenuAll(ctx context.Context) ([]*biz.Menu, error) 
 			MenuBtns:  btns,
 		})
 	}
-	return res, nil
+	// 返回数据
+	jsonResponse, _ := json.Marshal(response)
+	responseStr := string(jsonResponse)
+	_ = a.SaveRedisCache(cacheKey, responseStr)
+	return response, nil
 }
 
 func (a AuthorizationRepo) GetMenuTree(ctx context.Context) ([]*biz.Menu, error) {
-	var res []*biz.Menu
+	var response []*biz.Menu
+	// 缓存key
+	cacheParams := map[string]interface{}{
+		"type": "tree",
+	}
+	cacheKey := a.GetRedisCacheKey(childModuleMenu, cacheParams)
+	// 查看缓存
+	if cache := a.GetRedisCache(cacheKey); cache != "" {
+		if err := json.Unmarshal([]byte(cache), &response); err == nil {
+			return response, nil
+		} else {
+			a.log.Error("GetMenuTree()", err)
+		}
+	}
+
 	var menus []entity.Menu
 	// 获取所有根菜单
 	err := a.data.db.Model(entity.Menu{}).Where("parent_id = 0").Preload("MenuBtns").Order("sort ASC").Find(&menus).Error
 	if err != nil {
-		return res, kerrors.InternalServer(errResponse.ReasonSystemError, err.Error())
+		return response, kerrors.InternalServer(errResponse.ReasonSystemError, err.Error())
 	}
 	for _, v := range menus {
 		btns := []biz.MenuBtn{}
@@ -73,7 +108,7 @@ func (a AuthorizationRepo) GetMenuTree(ctx context.Context) ([]*biz.Menu, error)
 				UpdatedAt:   btn.UpdatedAt.Format("2006-01-02 15:04:05"),
 			})
 		}
-		res = append(res, &biz.Menu{
+		response = append(response, &biz.Menu{
 			Id:        v.Id,
 			Name:      v.Name,
 			ParentId:  v.ParentId,
@@ -89,14 +124,14 @@ func (a AuthorizationRepo) GetMenuTree(ctx context.Context) ([]*biz.Menu, error)
 			MenuBtns:  btns,
 		})
 	}
-	for k := range res {
-		err := a.findChildrenMenu(res[k])
+	for k := range response {
+		err := a.findChildrenMenu(response[k])
 		if err != nil {
-			return res, kerrors.InternalServer(errResponse.ReasonSystemError, err.Error())
+			return response, kerrors.InternalServer(errResponse.ReasonSystemError, err.Error())
 		}
 	}
-
-	return res, nil
+	a.DeleteRedisCache(childModuleMenu)
+	return response, nil
 }
 
 func (a AuthorizationRepo) findChildrenMenu(menu *biz.Menu) (err error) {
@@ -197,6 +232,7 @@ func (a AuthorizationRepo) CreateMenu(ctx context.Context, reqData *biz.Menu) (*
 		UpdatedAt: menu.UpdatedAt.Format("2006-01-02 15:04:05"),
 		MenuBtns:  btns2,
 	}
+	a.DeleteRedisCache(childModuleMenu)
 	return res, nil
 }
 
@@ -272,6 +308,7 @@ func (a AuthorizationRepo) UpdateMenu(ctx context.Context, reqData *biz.Menu) (*
 		CreatedAt: menu.CreatedAt.Format("2006-01-02 15:04:05"),
 		UpdatedAt: menu.UpdatedAt.Format("2006-01-02 15:04:05"),
 	}
+	a.DeleteRedisCache(childModuleMenu)
 	return res, nil
 }
 
@@ -307,5 +344,6 @@ func (a AuthorizationRepo) DeleteMenu(ctx context.Context, id int64) error {
 		return kerrors.InternalServer(errResponse.ReasonSystemError, err.Error())
 	}
 	tx.Commit()
+	a.DeleteRedisCache(childModuleMenu)
 	return nil
 }

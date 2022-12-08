@@ -27,7 +27,7 @@ type AuthorizationRepo interface {
 	DeleteRolesForUser(ctx context.Context, username string) (bool, error)
 	GetPolicies(ctx context.Context, role string) ([]*PolicyRules, error)
 	UpdatePolicies(ctx context.Context, username string, rules []PolicyRules) (bool, error)
-	GetApiList(ctx context.Context, page int64, pageSize int64, group, name, method, path string) ([]*Api, int64, error)
+	GetApiList(ctx context.Context, page int64, pageSize int64, params map[string]interface{}) ([]*Api, int64, error)
 	GetApiAll(ctx context.Context) ([]*Api, error)
 	CreateApi(ctx context.Context, api *Api) (*Api, error)
 	UpdateApi(ctx context.Context, api *Api) (*Api, error)

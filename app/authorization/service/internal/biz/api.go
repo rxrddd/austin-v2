@@ -51,8 +51,8 @@ func (uc *AuthorizationUsecase) UpdateApi(ctx context.Context, data *Api) (*Api,
 	return result, nil
 }
 
-func (uc *AuthorizationUsecase) GetApiList(ctx context.Context, page int64, pageSize int64, group, name, method, path string) ([]*Api, int64, error) {
-	result, count, err := uc.repo.GetApiList(ctx, page, pageSize, group, name, method, path)
+func (uc *AuthorizationUsecase) GetApiList(ctx context.Context, page int64, pageSize int64, params map[string]interface{}) ([]*Api, int64, error) {
+	result, count, err := uc.repo.GetApiList(ctx, page, pageSize, params)
 	if err != nil {
 		return nil, 0, err
 	}

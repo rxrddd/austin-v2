@@ -27,6 +27,7 @@ var ProviderSet = wire.NewSet(
 
 // Data .
 type Data struct {
+	Module   string
 	db       *gorm.DB
 	redisCli redis.Cmdable
 	log      *log.Helper
@@ -36,8 +37,9 @@ type Data struct {
 // NewData .
 func NewData(db *gorm.DB, redisCmd redis.Cmdable, logger log.Logger) (*Data, func(), error) {
 	logs := log.NewHelper(log.With(logger, "module", "authorization-service/data"))
-
+	module := "kratos-base-project/administrator-service/data"
 	d := &Data{
+		Module:   module,
 		db:       db.Debug(),
 		redisCli: redisCmd,
 	}
