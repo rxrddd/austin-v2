@@ -2,6 +2,7 @@ package data
 
 import (
 	"context"
+	"encoding/json"
 	"github.com/ZQCard/kratos-base-project/app/administrator/service/internal/biz"
 	"github.com/ZQCard/kratos-base-project/app/administrator/service/internal/data/entity"
 	"github.com/ZQCard/kratos-base-project/pkg/errResponse"
@@ -10,6 +11,7 @@ import (
 	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/log"
 	"gorm.io/gorm"
+	"math"
 	"net/http"
 )
 
@@ -92,6 +94,7 @@ func (s AdministratorRepo) CreateAdministrator(ctx context.Context, reqData *biz
 
 	}
 	response := ModelToResponse(modelTable)
+	s.DeleteAdministratorCache()
 	return &response, nil
 }
 
@@ -118,6 +121,7 @@ func (s AdministratorRepo) UpdateAdministrator(ctx context.Context, reqData *biz
 	}
 	// 返回数据
 	response := ModelToResponse(record)
+	s.DeleteAdministratorCache()
 	return &response, nil
 }
 
@@ -130,21 +134,48 @@ func (s AdministratorRepo) UpdateAdministratorLoginInfo(ctx context.Context, id 
 	if err != nil {
 		return errors.New(http.StatusInternalServerError, errResponse.ReasonSystemError, err.Error())
 	}
+	s.DeleteAdministratorCache()
 	return nil
 }
 
 func (s AdministratorRepo) GetAdministrator(ctx context.Context, params map[string]interface{}) (*biz.Administrator, error) {
-	// 根据查找记录
+	// 缓存key
+	cacheKey := s.GetAdministratorCacheKey(params)
+	// 查看缓存
+	if cache := s.GetAdministratorCache(cacheKey); cache != "" {
+		res := &biz.Administrator{}
+		if err := json.Unmarshal([]byte(cache), res); err == nil {
+			return res, nil
+		} else {
+			s.log.Error("GetAdministrator()", err)
+		}
+	}
 	record, err := s.GetAdministratorByParams(params)
 	if err != nil {
 		return &biz.Administrator{}, err
 	}
 	// 返回数据
 	response := ModelToResponse(record)
+	jsonResponse, _ := json.Marshal(response)
+	_ = s.SaveAdministratorCache(cacheKey, string(jsonResponse))
 	return &response, nil
 }
 
 func (s AdministratorRepo) ListAdministrator(ctx context.Context, page, pageSize int64, params map[string]interface{}) ([]*biz.Administrator, int64, error) {
+	// 缓存key
+	cacheParams := params
+	cacheParams["page"] = page
+	cacheParams["pageSize"] = pageSize
+	cacheKey := s.GetAdministratorCacheKey(cacheParams)
+	// 查看缓存
+	if cache := s.GetAdministratorCache(cacheKey); cache != "" {
+		res := []*biz.Administrator{}
+		if err := json.Unmarshal([]byte(cache), &res); err == nil {
+			return res, 0, nil
+		} else {
+			s.log.Error("ListAdministrator()", err)
+		}
+	}
 	list := []entity.AdministratorEntity{}
 	conn := s.data.db.Model(&entity.AdministratorEntity{})
 	if id, ok := params["id"]; ok && id != nil {
@@ -191,12 +222,17 @@ func (s AdministratorRepo) ListAdministrator(ctx context.Context, page, pageSize
 
 	count := int64(0)
 	conn.Count(&count)
-	rv := make([]*biz.Administrator, 0, len(list))
+	response := make([]*biz.Administrator, 0, len(list))
 	for _, record := range list {
 		administrator := ModelToResponse(record)
-		rv = append(rv, &administrator)
+		response = append(response, &administrator)
 	}
-	return rv, count, nil
+
+	// 返回数据
+	jsonResponse, _ := json.Marshal(response)
+	responseStr := string(jsonResponse)
+	_ = s.SaveAdministratorCache(cacheKey, responseStr)
+	return response, count, nil
 }
 
 func (s AdministratorRepo) DeleteAdministrator(ctx context.Context, id int64) error {
@@ -207,7 +243,11 @@ func (s AdministratorRepo) DeleteAdministrator(ctx context.Context, id int64) er
 	if err != nil {
 		return err
 	}
-	return s.data.db.Model(&record).Where("id = ?", id).UpdateColumn("deleted_at", timeHelper.GetCurrentYMDHIS()).Error
+	if err := s.data.db.Model(&record).Where("id = ?", id).UpdateColumn("deleted_at", timeHelper.GetCurrentYMDHIS()).Error; err != nil {
+		return err
+	}
+	s.DeleteAdministratorCache()
+	return nil
 }
 
 func (s AdministratorRepo) RecoverAdministrator(ctx context.Context, id int64) error {
@@ -218,6 +258,7 @@ func (s AdministratorRepo) RecoverAdministrator(ctx context.Context, id int64) e
 	if err != nil {
 		return errors.New(http.StatusInternalServerError, errResponse.ReasonSystemError, err.Error())
 	}
+	s.DeleteAdministratorCache()
 	return nil
 }
 func (s AdministratorRepo) AdministratorStatusChange(ctx context.Context, id int64, status int64) error {
@@ -231,6 +272,7 @@ func (s AdministratorRepo) AdministratorStatusChange(ctx context.Context, id int
 	if err != nil {
 		return errors.New(http.StatusInternalServerError, errResponse.ReasonSystemError, err.Error())
 	}
+	s.DeleteAdministratorCache()
 	return nil
 }
 
@@ -271,4 +313,32 @@ func NewAdministratorRepo(data *Data, logger log.Logger) biz.AdministratorRepo {
 		data: data,
 		log:  log.NewHelper(log.With(logger, "module", "data/administrator-service")),
 	}
+}
+
+// SaveAdministratorCache 缓存管理员信息
+func (s AdministratorRepo) SaveAdministratorCache(key, value string) error {
+	return s.data.redisCli.Set(key, value, 0).Err()
+}
+
+// GetAdministratorCache 换取管理员信息缓存
+func (s AdministratorRepo) GetAdministratorCache(key string) string {
+	return s.data.redisCli.Get(key).Val()
+}
+
+// DeleteAdministratorCache 批量删除管理员信息缓存
+func (s AdministratorRepo) DeleteAdministratorCache() {
+	keys, _ := s.data.redisCli.Scan(0, s.GetAdministratorCacheKey(map[string]interface{}{})+"*", math.MaxInt64).Val()
+	s.data.redisCli.Del(keys...)
+}
+
+// GetAdministratorCacheKey 根据参数获取redis key
+func (s AdministratorRepo) GetAdministratorCacheKey(params map[string]interface{}) string {
+	cacheKey := s.data.Module + ":Administrator:"
+	if len(params) == 0 {
+		return cacheKey
+	}
+	jsonParams, _ := json.Marshal(params)
+	paramsStr := string(jsonParams)
+	cacheKey += paramsStr
+	return cacheKey
 }
