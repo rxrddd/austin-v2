@@ -135,6 +135,20 @@ service Admin {
 		};
 	};
 
+	// 获取角色用户列表
+	rpc GetUsersForRole (GetUsersForRoleRequest) returns (GetUsersForRoleReply){
+		option (google.api.http) = {
+			get : "/authorization/v1/getUsersForRole"
+		};
+	};
+
+	// 删除用户某个角色
+	rpc DeleteRoleForUser (DeleteRoleForUserRequest) returns (CheckReply){
+		option (google.api.http) = {
+			delete : "/authorization/v1/deleteRoleForUser"
+		};
+	};
+
 	// 策略授权规则列表
 	rpc GetPolicies (GetPoliciesRequest) returns (GetPoliciesReply){
 		option (google.api.http) = {
@@ -389,6 +403,20 @@ message GetRolesForUserReply {
 	repeated string roles = 1;
 }
 
+message GetUsersForRoleRequest {
+	string role = 1;
+}
+
+message GetUsersForRoleReply {
+	repeated string users = 1;
+}
+
+message DeleteRoleForUserRequest{
+	string username = 1;
+	string role = 2;
+}
+
+
 message PolicyRules {
 	string path = 1;
 	string method = 2;
@@ -471,8 +499,9 @@ message MenuBtn {
 	int64 menu_id = 2;
 	string name = 3;
 	string description = 4;
-	string created_at = 5;
-	string updated_at = 6;
+	string identifier = 5;
+	string created_at = 6;
+	string updated_at = 7;
 }
 
 message CreateMenuRequest {
@@ -530,7 +559,7 @@ message GetRoleMenuBtnRequest {
 }
 
 message GetRoleMenuBtnReply {
-	repeated int64 menu_btn_ids = 1;
+	repeated MenuBtn list = 1;
 }
 
 message SetRoleMenuBtnRequest {

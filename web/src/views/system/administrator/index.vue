@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-button class="filter-item" type="primary" icon="el-icon-plus" @click="handleCreate">
+      <el-button class="filter-item" type="primary" icon="el-icon-plus" @click="handleCreate" v-if="checkBtnPermission('createAdministrator')">
         新增
       </el-button>
 
@@ -92,19 +92,19 @@
       </el-table-column>
       <el-table-column label="操作" align="center" width="250" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
-          <el-button type="primary" size="mini" @click="handleUpdate(row)">
+          <el-button type="primary" size="mini" @click="handleUpdate(row)" v-if="checkBtnPermission('updateAdministrator')">
             编辑
           </el-button>
-          <el-button v-if="row.deletedAt == ''" size="mini" type="danger" @click="handleDelete(row,$index)">
+          <el-button v-if="row.deletedAt == '' && checkBtnPermission('deleteRecoverAdministrator')" size="mini" type="danger" @click="handleDelete(row,$index)">
             删除
           </el-button>
-          <el-button v-if="row.deletedAt != ''" size="mini" type="success" @click="handleRecover(row,$index)">
+          <el-button v-if="row.deletedAt != '' && checkBtnPermission('deleteRecoverAdministrator') " size="mini" type="success" @click="handleRecover(row,$index)">
             恢复
           </el-button>
-          <el-button v-if="row.status == '1'" size="mini" type="warning" @click="handleForbid(row,$index)">
+          <el-button v-if="row.status == '1' && checkBtnPermission('forbidAApproveAdministrator')" size="mini" type="warning" @click="handleForbid(row,$index)">
             禁用
           </el-button>
-          <el-button v-if="row.status == '2'" size="mini" type="success" @click="handleApprove(row,$index)">
+          <el-button v-if="row.status == '2' && checkBtnPermission('forbidAApproveAdministrator')" size="mini" type="success" @click="handleApprove(row,$index)">
             解禁
           </el-button>
         </template>
@@ -163,6 +163,8 @@ import { listRole, saveAdministratorRole, getAdministratorRole} from '@/api/auth
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import { getDate, parseTime } from '@/utils/index.js'
+import checkBtnPermission from '@/utils/permission'
+
 const statusOptions = [
   { key: '1', display_name: '正常' },
   { key: '2', display_name: '禁用' },
@@ -252,6 +254,7 @@ export default {
     this.getRoleList()
   },
   methods: {
+    checkBtnPermission,
     getRoleList() {
       this.listLoading = true
       listRole(this.listQuery).then(response => {

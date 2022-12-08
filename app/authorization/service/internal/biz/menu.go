@@ -12,6 +12,7 @@ type MenuBtn struct {
 	MenuId      int64  `validate:"gte=0" label:"菜单id"`
 	Name        string `validate:"required,max=255" label:"按钮名称"`
 	Description string `validate:"required,max=255" label:"按钮描述"`
+	Identifier  string `validate:"required,max=255" label:"按钮标识符"`
 	CreatedAt   string
 	UpdatedAt   string
 }

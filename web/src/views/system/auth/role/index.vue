@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-button class="filter-item" type="primary" icon="el-icon-plus" @click="handleCreate(0)">
+      <el-button class="filter-item" type="primary" icon="el-icon-plus" @click="handleCreate(0)" v-if="checkBtnPermission('createRole')">
         新增
       </el-button>
     </div>
@@ -20,19 +20,21 @@
       </el-table-column>
       <el-table-column label="操作" align="center" width="500" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
-          <el-button type="warning" size="mini" @click="openDrawer(row)">
+          <el-button type="warning" size="mini" @click="openDrawer(row)" v-if="checkBtnPermission('setRolePermission')">
             设置权限
           </el-button>
-          <el-button type="primary" size="mini" @click="handleChildRole(row)">
+          <el-button type="primary" size="mini" @click="handleChildRole(row)" v-if="checkBtnPermission('createRole')">
             新增子角色
           </el-button>
-          <el-button type="primary" size="mini" @click="handleUpdate(row)">
+          <el-button type="primary" size="mini" @click="handleUpdate(row)" v-if="checkBtnPermission('updateRole')">
             编辑
           </el-button>
-          <el-button size="mini" type="danger" @click="handleDelete(row, $index)">
+          <el-button size="mini" type="danger" @click="handleDelete(row, $index)" v-if="checkBtnPermission('deleteRole')">
             删除
           </el-button>
-          
+          <el-button size="mini" type="success" @click="viewAdministrator(row, $index)" v-if="checkBtnPermission('getRoleMembers')">
+            查看成员
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -67,7 +69,7 @@
         <el-tab-pane label="角色菜单">
           <div>
             <el-input v-model="filterMenuText" style="width: 60%;" placeholder="筛选" />
-            <el-button style="float: right;" size="small" type="primary" @click="saveMenu">确 定</el-button>
+            <el-button style="float: right;" size="small" type="primary" @click="saveMenu" v-if="checkBtnPermission('setRoleMenuPermission')">确 定</el-button>
           </div>
           <div class="tree-content">
             <el-tree :data="menuData" show-checkbox node-key="id" default-expand-all highlight-current ref="menuData"
@@ -85,7 +87,7 @@
         <el-tab-pane label="角色api">
           <div>
             <el-input v-model="filterApiText" style="width: 60%;" placeholder="筛选" />
-            <el-button style="float: right;" size="small" type="primary" @click="saveApi">确 定</el-button>
+            <el-button style="float: right;" size="small" type="primary" @click="saveApi" v-if="checkBtnPermission('setRoleAPIPermission')">确 定</el-button>
           </div>
           <div class="tree-content">
             <el-tree :data="apiData" show-checkbox node-key="id" default-expand-all highlight-current ref="apiData"
@@ -106,16 +108,33 @@
       <template #footer>
         <div class="dialog-footer">
           <el-button size="small" @click="closeDialog">取 消</el-button>
-          <el-button size="small" type="primary" @click="saveBtn">确 定</el-button>
+          <el-button size="small" type="primary" @click="saveBtn" v-if="checkBtnPermission('setRoleMenuButtonPermission')">确 定</el-button>
         </div>
       </template>
+    </el-dialog>
+
+    <el-dialog :visible.sync="roleAdministratorVisible" :title="currentRole + ' 角色成员'" destroy-on-close>
+      <el-table :data="roleAdministratorList" row-key="ID">
+        <el-table-column label="用户名" prop="createdAt" align="center">
+          <template slot-scope="{row}">
+            <span>{{ row }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" prop="row" align="center">
+          <template slot-scope="{row,$index}">
+            <el-button size="mini" type="danger" @click="removeRole(row, $index)" v-if="checkBtnPermission('removeRoleMember')">
+              移除
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
     </el-dialog>
   </div>
 </template>
 
 <script>
 import checkBtnPermission from '@/utils/permission' // 按钮权限判断函数
-import { listRole, createRole, updateRole, deleteRole, saveRoleMenu, getRolePolicies, saveRolePolicies, getRoleMenuBtn, setRoleMenuBtn } from '@/api/auth/role'
+import { listRole, createRole, updateRole, deleteRole, saveRoleMenu, getRolePolicies, saveRolePolicies, getRoleMenuBtn, setRoleMenuBtn, getRoleAdministrator, deleteRoleAdministrator } from '@/api/auth/role'
 import { getBaseMenuTree, getRoleMenu } from '@/api/auth/menu'
 import { getApiAll } from '@/api/auth/api'
 import waves from '@/directive/waves' // waves directive
@@ -138,6 +157,9 @@ export default {
   },
   data() {
     return {
+      currentRole: "",
+      roleAdministratorList: [],
+      roleAdministratorVisible: false,
       btnVisible: false,
       btnData: [],
       currentRow: {},
@@ -349,6 +371,18 @@ export default {
         })
       })
     },
+    viewAdministrator(row) {
+      this.roleAdministratorVisible = true
+      this.currentRole = row.name
+      getRoleAdministrator({ role: row.name }).then(response => {
+        this.roleAdministratorList = response.data.users
+      })
+    },
+    removeRole(username, index) {
+      deleteRoleAdministrator({ role: this.currentRole, username: username }).then(() => {
+        this.roleAdministratorList.splice(index, 1)
+      })
+    },
     setOptions() {
       this.roleOptions = [
         {
@@ -473,9 +507,9 @@ export default {
       // 获取当前角色拥有的菜单按钮
       getRoleMenuBtn({ role_id: this.currentRow.id, menu_id: node.data.id }).then(response => {
         this.btnData.forEach(item => {
-          response.data.menuBtnIds.some(btnId => {
+          response.data.list.some(buttonInfo => {
             this.$nextTick(() => {
-              if (item.id === btnId) {
+              if (item.identifier === buttonInfo.identifier) {
                 this.$refs.multipleTable.toggleRowSelection(item, true)
               }
             })

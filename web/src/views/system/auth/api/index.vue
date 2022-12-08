@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-button class="filter-item" type="primary" icon="el-icon-plus" @click="handleCreate">
+      <el-button class="filter-item" type="primary" icon="el-icon-plus" @click="handleCreate" v-if="checkBtnPermission('createAPI')">
         新增
       </el-button>
 
@@ -61,10 +61,10 @@
       </el-table-column>
       <el-table-column label="操作" align="center" width="250" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
-          <el-button type="primary" size="mini" @click="handleUpdate(row)">
+          <el-button type="primary" size="mini" @click="handleUpdate(row)" v-if="checkBtnPermission('updateAPI')">
             编辑
           </el-button>
-          <el-button size="mini" type="danger" @click="handleDelete(row,$index)">
+          <el-button size="mini" type="danger" @click="handleDelete(row,$index)"  v-if="checkBtnPermission('deleteAPI')">
             删除
           </el-button>
         </template>
@@ -114,6 +114,7 @@ import { listApi, createApi, updateApi, deleteApi} from '@/api/auth/api'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import { getDate } from '@/utils/index.js'
+import checkBtnPermission from '@/utils/permission'
 
 export default {
   name: 'ComplexTable',
@@ -164,6 +165,7 @@ export default {
     this.getList()
   },
   methods: {
+    checkBtnPermission,
     getList() {
       this.listLoading = true
       listApi(this.listQuery).then(response => {

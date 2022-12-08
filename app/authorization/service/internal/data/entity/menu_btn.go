@@ -9,6 +9,7 @@ type MenuBtn struct {
 	MenuId      int64
 	Name        string
 	Description string
+	Identifier  string
 	CreatedAt   *time.Time
 	UpdatedAt   *time.Time
 }

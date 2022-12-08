@@ -96,3 +96,21 @@ export function getAdministratorRole(params) {
   })
 }
 
+export function getRoleAdministrator(params) {
+  return request({
+    url: '/authorization/v1/getUsersForRole',
+    method: 'get',
+    params
+  })
+}
+
+export function deleteRoleAdministrator(params) {
+  return request({
+    url: '/authorization/v1/deleteRoleForUser',
+    method: 'delete',
+    params
+  })
+}
+
+
+

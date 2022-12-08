@@ -242,8 +242,9 @@ message MenuBtn {
 	int64 menu_id = 2;
 	string name = 3;
 	string description = 4;
-	string created_at = 5;
-	string updated_at = 6;
+	string identifier = 5;
+	string created_at = 6;
+	string updated_at = 7;
 }
 
 message CreateMenuRequest {
@@ -301,7 +302,7 @@ message GetRoleMenuBtnRequest {
 }
 
 message GetRoleMenuBtnReply {
-	repeated int64 menu_btn_ids = 1;
+	repeated MenuBtn list = 1;
 }
 
 message SetRoleMenuBtnRequest {

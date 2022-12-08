@@ -88,13 +88,25 @@ func (s *AuthorizationService) SetRoleMenu(ctx context.Context, req *v1.SetRoleM
 }
 
 func (s *AuthorizationService) GetRoleMenuBtn(ctx context.Context, req *v1.GetRoleMenuBtnRequest) (*v1.GetRoleMenuBtnReply, error) {
-	menuBtnIds, err := s.authorizationUsecase.GetRoleMenuBtn(ctx, req.RoleId, req.RoleName, req.MenuId)
+	list, err := s.authorizationUsecase.GetRoleMenuBtn(ctx, req.RoleId, req.RoleName, req.MenuId)
 	if err != nil {
 		return nil, err
 	}
+	resList := []*v1.MenuBtn{}
+	for _, v := range list {
+		resList = append(resList, &v1.MenuBtn{
+			Id:          v.Id,
+			MenuId:      v.MenuId,
+			Name:        v.Name,
+			Description: v.Description,
+			Identifier:  v.Identifier,
+			CreatedAt:   v.CreatedAt,
+			UpdatedAt:   v.UpdatedAt,
+		})
+	}
 
 	return &v1.GetRoleMenuBtnReply{
-		MenuBtnIds: menuBtnIds,
+		List: resList,
 	}, nil
 
 }

@@ -182,18 +182,18 @@ func (a AuthorizationRepo) getMenuIdsByRoleId(roleId int64) (menuIds []int64) {
 	return menuIds
 }
 
-func (a AuthorizationRepo) GetRoleMenuBtn(ctx context.Context, roleId int64, roleName string, menuId int64) (btnIds []int64, err error) {
+func (a AuthorizationRepo) GetRoleMenuBtn(ctx context.Context, roleId int64, roleName string, menuId int64) (list []*biz.MenuBtn, err error) {
 	// 如果角色名称不为空， 则根据名称查找角色id
 	if roleName != "" {
 		roleInfo, err := a.GetRole(ctx, map[string]interface{}{
 			"name": roleName,
 		})
 		if err != nil {
-			return []int64{}, err
+			return nil, err
 		}
 
 		if roleId != 0 && roleInfo.Id != roleId {
-			return []int64{}, kerrors.BadRequest(errResponse.ReasonParamsError, "角色参数错误")
+			return nil, kerrors.BadRequest(errResponse.ReasonParamsError, "角色参数错误")
 		}
 		roleId = roleInfo.Id
 	}
@@ -207,11 +207,29 @@ func (a AuthorizationRepo) GetRoleMenuBtn(ctx context.Context, roleId int64, rol
 		conn = conn.Where("role_id = ?", roleId)
 	}
 	err = conn.Find(&roleMenuBtn).Error
+	var btnIds []int64
 	// 查看角色拥有菜单id
 	for _, v := range roleMenuBtn {
 		btnIds = append(btnIds, v.BtnId)
 	}
-	return btnIds, err
+
+	btnList := []*entity.MenuBtn{}
+	if len(btnIds) == 0 {
+		return []*biz.MenuBtn{}, nil
+	}
+	a.data.db.Model(&entity.MenuBtn{}).Where("id IN (?)", btnIds).Find(&btnList)
+	for _, v := range btnList {
+		list = append(list, &biz.MenuBtn{
+			Id:          v.Id,
+			MenuId:      v.MenuId,
+			Name:        v.Name,
+			Description: v.Description,
+			Identifier:  v.Identifier,
+			CreatedAt:   v.CreatedAt.Format("2006-01-02 15:04:05"),
+			UpdatedAt:   v.UpdatedAt.Format("2006-01-02 15:04:05"),
+		})
+	}
+	return list, err
 }
 
 func (a AuthorizationRepo) SetRoleMenuBtn(ctx context.Context, roleId int64, menuId int64, btnIds []int64) error {

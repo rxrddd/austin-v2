@@ -25,6 +25,14 @@ func (s *AdminInterface) SetRolesForUser(ctx context.Context, req *v1.SetRolesFo
 func (s *AdminInterface) GetRolesForUser(ctx context.Context, req *v1.GetRolesForUserRequest) (*v1.GetRolesForUserReply, error) {
 	return s.authorizationRepo.GetRolesForUser(ctx, req)
 }
+func (s *AdminInterface) GetUsersForRole(ctx context.Context, req *v1.GetUsersForRoleRequest) (*v1.GetUsersForRoleReply, error) {
+	return s.authorizationRepo.GetUsersForRole(ctx, req)
+}
+
+func (s *AdminInterface) DeleteRoleForUser(ctx context.Context, req *v1.DeleteRoleForUserRequest) (*v1.CheckReply, error) {
+	return s.authorizationRepo.DeleteRoleForUser(ctx, req)
+}
+
 func (s *AdminInterface) GetPolicies(ctx context.Context, req *v1.GetPoliciesRequest) (*v1.GetPoliciesReply, error) {
 	return s.authorizationRepo.GetPolicies(ctx, req)
 }

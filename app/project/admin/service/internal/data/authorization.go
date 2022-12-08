@@ -174,6 +174,33 @@ func (rp AuthorizationRepo) GetRolesForUser(ctx context.Context, req *v1.GetRole
 	return res, nil
 }
 
+func (rp AuthorizationRepo) GetUsersForRole(ctx context.Context, req *v1.GetUsersForRoleRequest) (*v1.GetUsersForRoleReply, error) {
+	reply, err := rp.data.authorizationClient.GetUsersForRole(ctx, &authorizationServiceV1.GetUsersForRoleRequest{
+		Role: req.Role,
+	})
+	if err != nil {
+		return nil, err
+	}
+	res := &v1.GetUsersForRoleReply{
+		Users: reply.Users,
+	}
+	return res, nil
+}
+
+func (rp AuthorizationRepo) DeleteRoleForUser(ctx context.Context, req *v1.DeleteRoleForUserRequest) (*v1.CheckReply, error) {
+	reply, err := rp.data.authorizationClient.DeleteRoleForUser(ctx, &authorizationServiceV1.DeleteRoleForUserRequest{
+		Username: req.Username,
+		Role:     req.Role,
+	})
+	if err != nil {
+		return nil, err
+	}
+	res := &v1.CheckReply{
+		IsSuccess: reply.IsSuccess,
+	}
+	return res, nil
+}
+
 func (rp AuthorizationRepo) GetPolicies(ctx context.Context, req *v1.GetPoliciesRequest) (*v1.GetPoliciesReply, error) {
 	reply, err := rp.data.authorizationClient.GetPolicies(ctx, &authorizationServiceV1.GetPoliciesRequest{
 		Role: req.Role,
@@ -342,6 +369,7 @@ func (rp AuthorizationRepo) GetMenuAll(ctx context.Context) (*v1.GetMenuTreeRepl
 				MenuId:      btn.MenuId,
 				Name:        btn.Name,
 				Description: btn.Description,
+				Identifier:  btn.Identifier,
 				CreatedAt:   btn.CreatedAt,
 				UpdatedAt:   btn.UpdatedAt,
 			})
@@ -386,6 +414,7 @@ func (rp AuthorizationRepo) GetMenuTree(ctx context.Context) (*v1.GetMenuTreeRep
 				MenuId:      btn.MenuId,
 				Name:        btn.Name,
 				Description: btn.Description,
+				Identifier:  btn.Identifier,
 				CreatedAt:   btn.CreatedAt,
 				UpdatedAt:   btn.UpdatedAt,
 			})
@@ -427,6 +456,7 @@ func findChildrenMenu(menu *authorizationServiceV1.MenuInfo) []*v1.MenuInfo {
 					MenuId:      btn.MenuId,
 					Name:        btn.Name,
 					Description: btn.Description,
+					Identifier:  btn.Identifier,
 					CreatedAt:   btn.CreatedAt,
 					UpdatedAt:   btn.UpdatedAt,
 				})
@@ -461,6 +491,7 @@ func (rp AuthorizationRepo) CreateMenu(ctx context.Context, req *v1.CreateMenuRe
 			MenuId:      btn.MenuId,
 			Name:        btn.Name,
 			Description: btn.Description,
+			Identifier:  btn.Identifier,
 		})
 	}
 
@@ -486,6 +517,7 @@ func (rp AuthorizationRepo) CreateMenu(ctx context.Context, req *v1.CreateMenuRe
 			MenuId:      btn.MenuId,
 			Name:        btn.Name,
 			Description: btn.Description,
+			Identifier:  btn.Identifier,
 			CreatedAt:   btn.CreatedAt,
 			UpdatedAt:   btn.UpdatedAt,
 		})
@@ -515,6 +547,7 @@ func (rp AuthorizationRepo) UpdateMenu(ctx context.Context, req *v1.UpdateMenuRe
 			MenuId:      btn.MenuId,
 			Name:        btn.Name,
 			Description: btn.Description,
+			Identifier:  btn.Identifier,
 		})
 	}
 	reply, err := rp.data.authorizationClient.UpdateMenu(ctx, &authorizationServiceV1.UpdateMenuRequest{
@@ -540,6 +573,7 @@ func (rp AuthorizationRepo) UpdateMenu(ctx context.Context, req *v1.UpdateMenuRe
 			MenuId:      btn.MenuId,
 			Name:        btn.Name,
 			Description: btn.Description,
+			Identifier:  btn.Identifier,
 			CreatedAt:   btn.CreatedAt,
 			UpdatedAt:   btn.UpdatedAt,
 		})
@@ -593,6 +627,7 @@ func (rp AuthorizationRepo) GetRoleMenuTree(ctx context.Context, req *v1.GetRole
 				MenuId:      btn.MenuId,
 				Name:        btn.Name,
 				Description: btn.Description,
+				Identifier:  btn.Identifier,
 				CreatedAt:   btn.CreatedAt,
 				UpdatedAt:   btn.UpdatedAt,
 			})
@@ -640,6 +675,7 @@ func (rp AuthorizationRepo) GetRoleMenu(ctx context.Context, req *v1.GetRoleMenu
 				MenuId:      btn.MenuId,
 				Name:        btn.Name,
 				Description: btn.Description,
+				Identifier:  btn.Identifier,
 				CreatedAt:   btn.CreatedAt,
 				UpdatedAt:   btn.UpdatedAt,
 			})
@@ -692,8 +728,20 @@ func (rp AuthorizationRepo) GetRoleMenuBtn(ctx context.Context, req *v1.GetRoleM
 	if err != nil {
 		return nil, err
 	}
+	list := []*v1.MenuBtn{}
+	for _, v := range reply.List {
+		list = append(list, &v1.MenuBtn{
+			Id:          v.Id,
+			MenuId:      v.MenuId,
+			Name:        v.Name,
+			Description: v.Description,
+			Identifier:  v.Identifier,
+			CreatedAt:   v.CreatedAt,
+			UpdatedAt:   v.UpdatedAt,
+		})
+	}
 	res := &v1.GetRoleMenuBtnReply{
-		MenuBtnIds: reply.MenuBtnIds,
+		List: list,
 	}
 	return res, nil
 }

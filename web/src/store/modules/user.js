@@ -74,9 +74,12 @@ const actions = {
           if (response.code !== 0) {
             throw new Error('按钮权限数据加载异常')
           } else {
-            const menuBtnIds = response.data.menuBtnIds
+            const menuBtnIdentifiers = []
+            response.data.list.forEach(item => {
+              menuBtnIdentifiers.push(item.identifier)
+            });
             // 设置按钮
-            commit('SET_BUTTONS', menuBtnIds)
+            commit('SET_BUTTONS', menuBtnIdentifiers)
           }
         }).catch(error => {
           console.log(error)

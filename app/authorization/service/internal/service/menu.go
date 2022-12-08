@@ -22,6 +22,7 @@ func (s *AuthorizationService) GetMenuAll(ctx context.Context, req *emptypb.Empt
 				MenuId:      btn.MenuId,
 				Name:        btn.Name,
 				Description: btn.Description,
+				Identifier:  btn.Identifier,
 				CreatedAt:   btn.CreatedAt,
 				UpdatedAt:   btn.UpdatedAt,
 			})
@@ -67,6 +68,7 @@ func (s *AuthorizationService) GetMenuTree(ctx context.Context, req *emptypb.Emp
 				MenuId:      btn.MenuId,
 				Name:        btn.Name,
 				Description: btn.Description,
+				Identifier:  btn.Identifier,
 				CreatedAt:   btn.CreatedAt,
 				UpdatedAt:   btn.UpdatedAt,
 			})
@@ -108,6 +110,7 @@ func findChildrenMenu(menu *biz.Menu) []*v1.MenuInfo {
 					MenuId:      btn.MenuId,
 					Name:        btn.Name,
 					Description: btn.Description,
+					Identifier:  btn.Identifier,
 					CreatedAt:   btn.CreatedAt,
 					UpdatedAt:   btn.UpdatedAt,
 				})
@@ -139,6 +142,7 @@ func (s *AuthorizationService) CreateMenu(ctx context.Context, req *v1.CreateMen
 		btns = append(btns, biz.MenuBtn{
 			Name:        v.Name,
 			Description: v.Description,
+			Identifier:  v.Identifier,
 		})
 	}
 	bc := &biz.Menu{
@@ -165,6 +169,7 @@ func (s *AuthorizationService) CreateMenu(ctx context.Context, req *v1.CreateMen
 			MenuId:      v.MenuId,
 			Name:        v.Name,
 			Description: v.Description,
+			Identifier:  v.Identifier,
 			CreatedAt:   v.CreatedAt,
 			UpdatedAt:   v.UpdatedAt,
 		})
@@ -194,6 +199,7 @@ func (s *AuthorizationService) UpdateMenu(ctx context.Context, req *v1.UpdateMen
 			MenuId:      v.MenuId,
 			Name:        v.Name,
 			Description: v.Description,
+			Identifier:  v.Identifier,
 		})
 	}
 	bc := &biz.Menu{
@@ -221,6 +227,7 @@ func (s *AuthorizationService) UpdateMenu(ctx context.Context, req *v1.UpdateMen
 			MenuId:      v.MenuId,
 			Name:        v.Name,
 			Description: v.Description,
+			Identifier:  v.Identifier,
 			CreatedAt:   v.CreatedAt,
 			UpdatedAt:   v.UpdatedAt,
 		})

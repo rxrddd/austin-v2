@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-button class="filter-item" type="primary" icon="el-icon-plus" @click="handleCreate(0)">
+      <el-button class="filter-item" type="primary" icon="el-icon-plus" @click="handleCreate(0)" v-if="checkBtnPermission('createMenu')">
         新增
       </el-button>
     </div>
@@ -38,13 +38,13 @@
       </el-table-column>
       <el-table-column label="操作" width="250" class-name="small-padding fixed-width" fixed="right">
         <template slot-scope="{row,$index}">
-          <el-button type="primary" size="mini" @click="handleChildMenu(row)">
+          <el-button type="primary" size="mini" @click="handleChildMenu(row)" v-if="checkBtnPermission('createMenu')">
             新增子菜单
           </el-button>
-          <el-button type="primary" size="mini" @click="handleUpdate(row)">
+          <el-button type="primary" size="mini" @click="handleUpdate(row)" v-if="checkBtnPermission('updateMenu')">
             编辑
           </el-button>
-          <el-button size="mini" type="danger" @click="handleDelete(row)">
+          <el-button size="mini" type="danger" @click="handleDelete(row)" v-if="checkBtnPermission('deleteMenu')">
             删除
           </el-button>
         </template>
@@ -114,6 +114,7 @@
 import { getBaseMenuTree, createMenu, updateMenu, deleteMenu } from '@/api/auth/menu'
 import waves from '@/directive/waves' // waves directive
 import elementIcons from './element-icons'
+import checkBtnPermission from '@/utils/permission'
 
 export default {
   name: 'ComplexTable',
@@ -184,6 +185,7 @@ export default {
     this.getList()
   },
   methods: {
+    checkBtnPermission,
     getList() {
       this.listLoading = true
       getBaseMenuTree().then(response => {

@@ -29,9 +29,9 @@ func (uc *AuthorizationUsecase) GetRoleMenuTree(ctx context.Context, role string
 	return result, nil
 }
 
-func (uc *AuthorizationUsecase) GetRoleMenuBtn(ctx context.Context, roleId int64, roleName string, menuId int64) ([]int64, error) {
+func (uc *AuthorizationUsecase) GetRoleMenuBtn(ctx context.Context, roleId int64, roleName string, menuId int64) ([]*MenuBtn, error) {
 	if roleId == 0 && roleName == "" {
-		return []int64{}, kerrors.BadRequest(errResponse.ReasonParamsError, "角色信息不得为空")
+		return nil, kerrors.BadRequest(errResponse.ReasonParamsError, "角色信息不得为空")
 	}
 	return uc.repo.GetRoleMenuBtn(ctx, roleId, roleName, menuId)
 }

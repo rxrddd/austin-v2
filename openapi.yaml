@@ -453,6 +453,34 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /authorization/v1/deleteRoleForUser:
+        delete:
+            tags:
+                - Admin
+            description: 删除用户某个角色
+            operationId: Admin_DeleteRoleForUser
+            parameters:
+                - name: username
+                  in: query
+                  schema:
+                    type: string
+                - name: role
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/CheckReply'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /authorization/v1/getPolicies:
         get:
             tags:
@@ -495,6 +523,30 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/GetRolesForUserReply'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /authorization/v1/getUsersForRole:
+        get:
+            tags:
+                - Admin
+            description: 获取角色用户列表
+            operationId: Admin_GetUsersForRole
+            parameters:
+                - name: role
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GetUsersForRoleReply'
                 default:
                     description: Default error response
                     content:
@@ -1066,15 +1118,21 @@ components:
         GetRoleMenuBtnReply:
             type: object
             properties:
-                menuBtnIds:
+                list:
                     type: array
                     items:
-                        type: integer
-                        format: int64
+                        $ref: '#/components/schemas/MenuBtn'
         GetRolesForUserReply:
             type: object
             properties:
                 roles:
+                    type: array
+                    items:
+                        type: string
+        GetUsersForRoleReply:
+            type: object
+            properties:
+                users:
                     type: array
                     items:
                         type: string
@@ -1120,6 +1178,8 @@ components:
                 name:
                     type: string
                 description:
+                    type: string
+                identifier:
                     type: string
                 createdAt:
                     type: string

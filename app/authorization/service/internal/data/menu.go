@@ -29,6 +29,7 @@ func (a AuthorizationRepo) GetMenuAll(ctx context.Context) ([]*biz.Menu, error) 
 				MenuId:      btn.MenuId,
 				Name:        btn.Name,
 				Description: btn.Description,
+				Identifier:  btn.Identifier,
 				CreatedAt:   btn.CreatedAt.Format("2006-01-02 15:04:05"),
 				UpdatedAt:   btn.UpdatedAt.Format("2006-01-02 15:04:05"),
 			})
@@ -67,6 +68,7 @@ func (a AuthorizationRepo) GetMenuTree(ctx context.Context) ([]*biz.Menu, error)
 				MenuId:      btn.MenuId,
 				Name:        btn.Name,
 				Description: btn.Description,
+				Identifier:  btn.Identifier,
 				CreatedAt:   btn.CreatedAt.Format("2006-01-02 15:04:05"),
 				UpdatedAt:   btn.UpdatedAt.Format("2006-01-02 15:04:05"),
 			})
@@ -109,6 +111,7 @@ func (a AuthorizationRepo) findChildrenMenu(menu *biz.Menu) (err error) {
 				MenuId:      btn.MenuId,
 				Name:        btn.Name,
 				Description: btn.Description,
+				Identifier:  btn.Identifier,
 				CreatedAt:   btn.CreatedAt.Format("2006-01-02 15:04:05"),
 				UpdatedAt:   btn.UpdatedAt.Format("2006-01-02 15:04:05"),
 			})
@@ -144,6 +147,7 @@ func (a AuthorizationRepo) CreateMenu(ctx context.Context, reqData *biz.Menu) (*
 		btns = append(btns, &entity.MenuBtn{
 			Name:        v.Name,
 			Description: v.Description,
+			Identifier:  v.Identifier,
 		})
 	}
 	var menu entity.Menu
@@ -173,6 +177,7 @@ func (a AuthorizationRepo) CreateMenu(ctx context.Context, reqData *biz.Menu) (*
 			MenuId:      v.MenuId,
 			Name:        v.Name,
 			Description: v.Description,
+			Identifier:  v.Identifier,
 			CreatedAt:   v.CreatedAt.Format("2006-01-02 15:04:05"),
 			UpdatedAt:   v.UpdatedAt.Format("2006-01-02 15:04:05"),
 		})
@@ -203,6 +208,7 @@ func (a AuthorizationRepo) UpdateMenu(ctx context.Context, reqData *biz.Menu) (*
 			MenuId:      reqData.Id,
 			Name:        v.Name,
 			Description: v.Description,
+			Identifier:  v.Identifier,
 		})
 	}
 	var menu entity.Menu
@@ -246,6 +252,7 @@ func (a AuthorizationRepo) UpdateMenu(ctx context.Context, reqData *biz.Menu) (*
 			MenuId:      v.MenuId,
 			Name:        v.Name,
 			Description: v.Description,
+			Identifier:  v.Identifier,
 			CreatedAt:   v.CreatedAt.Format("2006-01-02 15:04:05"),
 			UpdatedAt:   v.UpdatedAt.Format("2006-01-02 15:04:05"),
 		})
