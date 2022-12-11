@@ -1,4 +1,4 @@
-FROM golang:1.19 AS builder
+FROM golang:1.17 AS builder
 
 ARG APP_RELATIVE_PATH
 
