@@ -3,8 +3,7 @@
 本项目为一个使用 [kratos框架](https://github.com/go-kratos/kratos) 创建的，基础的微服务项目模板，
 以便于后续快速开发。
 
-目前已经实现管理后台管理员和权限系统，已经实现按钮、接口级权限
-
+目前已经实现管理后台管理员和权限系统，已经实现按钮、接口级权限. [演示地址](http://kratos.niu12.com/#/system/adminstrator)
 ## 项目目录
 
 ```
