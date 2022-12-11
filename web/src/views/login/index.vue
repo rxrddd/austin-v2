@@ -3,7 +3,7 @@
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">
 
       <div class="title-container">
-        <h3 class="title">k admin</h3>
+        <h3 class="title">kratos admin</h3>
       </div>
 
       <el-form-item prop="username">
@@ -42,6 +42,25 @@
       </el-form-item>
 
       <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">Login</el-button>
+      
+      <div style="position:relative">
+        <div class="tips">
+          <span>超级管理员 : </span>
+          <span> admin</span>
+        </div>
+        <div class="tips">
+          <span>权限测试管理员 : </span>
+          <span> test</span>
+        </div>
+        <div class="tips">
+          <span>游客 : </span>
+          <span> guest</span>
+        </div>
+
+        <div class="tips">
+          密码均为： 123456
+        </div>
+      </div>
 
     </el-form>
   </div>

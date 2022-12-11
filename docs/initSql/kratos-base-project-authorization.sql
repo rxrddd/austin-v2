@@ -11,7 +11,7 @@
  Target Server Version : 80031
  File Encoding         : 65001
 
- Date: 07/12/2022 17:13:25
+ Date: 09/12/2022 09:36:57
 */
 
 SET NAMES utf8mb4;
@@ -30,7 +30,7 @@ CREATE TABLE `authorization_api`  (
   `created_at` datetime(0) NOT NULL COMMENT '创建时间',
   `updated_at` datetime(0) NOT NULL COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 34 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '角色表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 36 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '角色表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of authorization_api
@@ -66,6 +66,8 @@ INSERT INTO `authorization_api` VALUES (31, 'API管理', '新增', 'POST', '/api
 INSERT INTO `authorization_api` VALUES (32, 'API管理', '编辑', 'PUT', '/api.admin.v1.Admin/UpdateApi', '2022-12-06 12:14:35', '2022-12-06 12:14:35');
 INSERT INTO `authorization_api` VALUES (33, 'API管理', '列表', 'GET', '/api.admin.v1.Admin/GetApiList', '2022-12-06 12:15:21', '2022-12-06 12:15:21');
 INSERT INTO `authorization_api` VALUES (34, 'API管理', '删除', 'DELETE', '/api.admin.v1.Admin/DeleteApi', '2022-12-06 12:16:19', '2022-12-06 12:16:19');
+INSERT INTO `authorization_api` VALUES (35, '角色管理', '查看角色成员', 'GET', '/api.admin.v1.Admin/GetUsersForRole', '2022-12-07 18:26:33', '2022-12-07 18:26:33');
+INSERT INTO `authorization_api` VALUES (36, '角色管理', '移除角色用户', 'DELETE', '/api.admin.v1.Admin/DeleteRoleForUser', '2022-12-07 18:26:56', '2022-12-07 18:26:56');
 
 -- ----------------------------
 -- Table structure for authorization_menu_btns
@@ -76,37 +78,36 @@ CREATE TABLE `authorization_menu_btns`  (
   `menu_id` int(0) NOT NULL COMMENT '菜单id',
   `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '按钮名称',
   `description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '按钮描述',
+  `identifier` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '标识符 权限依据',
   `created_at` datetime(3) NOT NULL COMMENT '创建时间',
   `updated_at` datetime(3) NOT NULL COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 37 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '菜单表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 43 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '菜单表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of authorization_menu_btns
 -- ----------------------------
-INSERT INTO `authorization_menu_btns` VALUES (1, 12, '新增', '新增管理员', '2022-12-06 11:05:36.421', '2022-12-06 11:05:36.421');
-INSERT INTO `authorization_menu_btns` VALUES (2, 12, '编辑', '编辑管理员', '2022-12-06 11:05:36.421', '2022-12-06 11:05:36.421');
-INSERT INTO `authorization_menu_btns` VALUES (3, 12, '删除/恢复', '删除/恢复管理员', '2022-12-06 11:05:36.421', '2022-12-06 11:05:36.421');
-INSERT INTO `authorization_menu_btns` VALUES (4, 12, '禁用/解禁', '禁用/解禁管理员', '2022-12-06 11:05:36.421', '2022-12-06 11:05:36.421');
-INSERT INTO `authorization_menu_btns` VALUES (20, 2, '新增', '新增管理员', '2022-12-06 14:12:38.442', '2022-12-06 14:12:38.442');
-INSERT INTO `authorization_menu_btns` VALUES (21, 2, '编辑', '编辑管理员', '2022-12-06 14:12:38.444', '2022-12-06 14:12:38.444');
-INSERT INTO `authorization_menu_btns` VALUES (22, 2, '禁用/解禁', '禁用/解禁管理员', '2022-12-06 14:12:38.446', '2022-12-06 14:12:38.446');
-INSERT INTO `authorization_menu_btns` VALUES (23, 2, '删除/恢复', '删除/恢复管理员', '2022-12-06 14:12:38.448', '2022-12-06 14:12:38.448');
-INSERT INTO `authorization_menu_btns` VALUES (24, 3, '新增', '新增菜单', '2022-12-06 14:18:02.694', '2022-12-06 14:18:02.694');
-INSERT INTO `authorization_menu_btns` VALUES (25, 3, '编辑', '编辑菜单', '2022-12-06 14:18:02.695', '2022-12-06 14:18:02.695');
-INSERT INTO `authorization_menu_btns` VALUES (26, 3, '删除', '删除菜单', '2022-12-06 14:18:02.697', '2022-12-06 14:18:02.697');
-INSERT INTO `authorization_menu_btns` VALUES (27, 4, '新增', '新增角色', '2022-12-06 14:22:46.669', '2022-12-06 14:22:46.669');
-INSERT INTO `authorization_menu_btns` VALUES (28, 4, '编辑', '编辑角色', '2022-12-06 14:22:46.671', '2022-12-06 14:22:46.671');
-INSERT INTO `authorization_menu_btns` VALUES (29, 4, '删除', '删除角色', '2022-12-06 14:22:46.672', '2022-12-06 14:22:46.672');
-INSERT INTO `authorization_menu_btns` VALUES (30, 4, '设置权限', '设置角色权限', '2022-12-06 14:22:46.673', '2022-12-06 14:22:46.673');
-INSERT INTO `authorization_menu_btns` VALUES (31, 4, '设置菜单权限', '设置角色菜单权限', '2022-12-06 14:22:46.674', '2022-12-06 14:22:46.674');
-INSERT INTO `authorization_menu_btns` VALUES (32, 4, '设置API权限', '设置角色API权限', '2022-12-06 14:22:46.675', '2022-12-06 14:22:46.675');
-INSERT INTO `authorization_menu_btns` VALUES (33, 4, '设置按钮权限', '设置角色按钮权限', '2022-12-06 14:22:46.677', '2022-12-06 14:22:46.677');
-INSERT INTO `authorization_menu_btns` VALUES (34, 5, '新增', '新增API', '2022-12-06 14:23:26.970', '2022-12-06 14:23:26.970');
-INSERT INTO `authorization_menu_btns` VALUES (35, 5, '编辑', '编辑API', '2022-12-06 14:23:26.971', '2022-12-06 14:23:26.971');
-INSERT INTO `authorization_menu_btns` VALUES (36, 5, '删除', '删除API', '2022-12-06 14:23:26.972', '2022-12-06 14:23:26.972');
-INSERT INTO `authorization_menu_btns` VALUES (39, 36, '有权限', '有权限按钮', '2022-12-07 11:44:35.456', '2022-12-07 11:44:35.456');
-INSERT INTO `authorization_menu_btns` VALUES (40, 36, '无权限', '无权限按钮', '2022-12-07 11:44:35.456', '2022-12-07 11:44:35.456');
+INSERT INTO `authorization_menu_btns` VALUES (20, 2, '新增', '新增管理员', 'createAdministrator', '2022-12-06 14:12:38.442', '2022-12-06 14:12:38.442');
+INSERT INTO `authorization_menu_btns` VALUES (21, 2, '编辑', '编辑管理员', 'updateAdministrator', '2022-12-06 14:12:38.444', '2022-12-06 14:12:38.444');
+INSERT INTO `authorization_menu_btns` VALUES (22, 2, '禁用/解禁', '禁用/解禁管理员', 'deleteRecoverAdministrator', '2022-12-06 14:12:38.446', '2022-12-06 14:12:38.446');
+INSERT INTO `authorization_menu_btns` VALUES (23, 2, '删除/恢复', '删除/恢复管理员', 'forbidAApproveAdministrator', '2022-12-06 14:12:38.448', '2022-12-06 14:12:38.448');
+INSERT INTO `authorization_menu_btns` VALUES (24, 3, '新增', '新增菜单', 'createMenu', '2022-12-06 14:18:02.694', '2022-12-06 14:18:02.694');
+INSERT INTO `authorization_menu_btns` VALUES (25, 3, '编辑', '编辑菜单', 'updateMenu', '2022-12-06 14:18:02.695', '2022-12-06 14:18:02.695');
+INSERT INTO `authorization_menu_btns` VALUES (26, 3, '删除', '删除菜单', 'deleteMenu', '2022-12-06 14:18:02.697', '2022-12-06 14:18:02.697');
+INSERT INTO `authorization_menu_btns` VALUES (27, 4, '新增', '新增角色', 'createRole', '2022-12-07 18:23:24.319', '2022-12-07 18:23:24.319');
+INSERT INTO `authorization_menu_btns` VALUES (28, 4, '编辑', '编辑角色', 'updateRole', '2022-12-07 18:23:24.321', '2022-12-07 18:23:24.321');
+INSERT INTO `authorization_menu_btns` VALUES (29, 4, '删除', '删除角色', 'deleteRole', '2022-12-07 18:23:24.322', '2022-12-07 18:23:24.322');
+INSERT INTO `authorization_menu_btns` VALUES (30, 4, '设置权限', '设置角色权限', 'setRolePermission', '2022-12-07 18:23:24.324', '2022-12-07 18:23:24.324');
+INSERT INTO `authorization_menu_btns` VALUES (31, 4, '设置菜单权限', '设置角色菜单权限', 'setRoleMenuPermission', '2022-12-07 18:23:24.325', '2022-12-07 18:23:24.325');
+INSERT INTO `authorization_menu_btns` VALUES (32, 4, '设置API权限', '设置角色API权限', 'setRoleAPIPermission', '2022-12-07 18:23:24.327', '2022-12-07 18:23:24.327');
+INSERT INTO `authorization_menu_btns` VALUES (33, 4, '设置按钮权限', '设置角色按钮权限', 'setRoleMenuButtonPermission', '2022-12-07 18:23:24.328', '2022-12-07 18:23:24.328');
+INSERT INTO `authorization_menu_btns` VALUES (34, 4, '查看成员', '查看角色所有成员', 'getRoleMembers', '2022-12-07 18:23:24.330', '2022-12-07 18:23:24.330');
+INSERT INTO `authorization_menu_btns` VALUES (35, 4, '移除角色成员', '移除角色成员', 'removeRoleMember', '2022-12-07 18:23:24.331', '2022-12-07 18:23:24.331');
+INSERT INTO `authorization_menu_btns` VALUES (36, 5, '删除', '删除API', 'deleteAPI', '2022-12-06 14:23:26.972', '2022-12-06 14:23:26.972');
+INSERT INTO `authorization_menu_btns` VALUES (37, 5, '新增', '新增API', 'createAPI', '2022-12-06 14:23:26.970', '2022-12-06 14:23:26.970');
+INSERT INTO `authorization_menu_btns` VALUES (38, 5, '编辑', '编辑API', 'updateAPI', '2022-12-06 14:23:26.971', '2022-12-06 14:23:26.971');
+INSERT INTO `authorization_menu_btns` VALUES (39, 36, '有权限', '有权限按钮', 'hasPermissionButton', '2022-12-07 11:44:35.456', '2022-12-07 11:44:35.456');
+INSERT INTO `authorization_menu_btns` VALUES (40, 36, '无权限', '无权限按钮', 'noPermissionButton', '2022-12-07 11:44:35.456', '2022-12-07 11:44:35.456');
 
 -- ----------------------------
 -- Table structure for authorization_menus
@@ -127,7 +128,7 @@ CREATE TABLE `authorization_menus`  (
   `created_at` datetime(3) NOT NULL COMMENT '创建时间',
   `updated_at` datetime(3) NOT NULL COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 35 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '菜单表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 37 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '菜单表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of authorization_menus
@@ -135,7 +136,7 @@ CREATE TABLE `authorization_menus`  (
 INSERT INTO `authorization_menus` VALUES (1, 0, '0', '/system', 'system', 0, '#', 1, '系统管理', 'el-icon-s-tools', '', '2022-11-15 14:56:16.000', '2022-11-15 14:56:18.000');
 INSERT INTO `authorization_menus` VALUES (2, 1, '1', '/system/adminstrator', 'administrator', 0, '/system/administrator/index', 1, '管理员管理', 'el-icon-user-solid', '', '2022-11-15 14:58:41.000', '2022-12-06 14:12:38.439');
 INSERT INTO `authorization_menus` VALUES (3, 1, '1', '/system/auth/menu', 'menu', 0, '/system/auth/menu/index', 2, '菜单管理', 'el-icon-notebook-2', '', '2022-12-01 15:48:57.000', '2022-12-06 14:18:02.691');
-INSERT INTO `authorization_menus` VALUES (4, 1, '1', '/system/auth/role', 'role', 0, '/system/auth/role/index', 3, '角色管理', 'el-icon-user', '', '2022-11-24 15:33:30.000', '2022-12-06 14:22:46.665');
+INSERT INTO `authorization_menus` VALUES (4, 1, '1', '/system/auth/role', 'role', 0, '/system/auth/role/index', 3, '角色管理', 'el-icon-user', '', '2022-11-24 15:33:30.000', '2022-12-07 18:23:24.315');
 INSERT INTO `authorization_menus` VALUES (5, 1, '1', '/system/auth/api', 'api', 0, '/system/auth/api/index', 4, 'API管理', 'el-icon-setting', '', '2022-11-23 14:42:04.000', '2022-12-06 14:23:26.966');
 INSERT INTO `authorization_menus` VALUES (35, 0, '0', '/example', 'example', 0, '#', 1, '测试菜单', 'el-icon-s-flag', '', '2022-12-07 10:36:58.676', '2022-12-07 11:43:33.458');
 INSERT INTO `authorization_menus` VALUES (36, 35, '35', '/example/permission', 'permission_test', 0, '/example/index', 1, '按钮权限测试', 'el-icon-s-tools', '', '2022-12-07 11:44:35.452', '2022-12-07 11:44:35.452');
@@ -149,7 +150,7 @@ CREATE TABLE `authorization_role_menu`  (
   `role_id` int(0) NOT NULL COMMENT '角色id',
   `menu_id` int(0) NOT NULL COMMENT '菜单id',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 65 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '角色表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 82 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '角色表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of authorization_role_menu
@@ -174,7 +175,7 @@ CREATE TABLE `authorization_role_menu_btn`  (
   `menu_id` int(0) NOT NULL COMMENT '菜单id',
   `btn_id` int(0) NOT NULL COMMENT '按钮id',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 19 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '角色菜单按钮表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 23 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '角色菜单按钮表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of authorization_role_menu_btn
@@ -239,15 +240,15 @@ CREATE TABLE `casbin_rule`  (
   `v7` varchar(25) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `idx_casbin_rule`(`ptype`, `v0`, `v1`, `v2`, `v3`, `v4`, `v5`, `v6`, `v7`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 51 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 401 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of casbin_rule
 -- ----------------------------
-INSERT INTO `casbin_rule` VALUES (50, 'g', '2', '测试管理员', '', '', '', '', '', '');
+INSERT INTO `casbin_rule` VALUES (367, 'g', 'admin', '测试管理员', '', '', '', '', '', '');
+INSERT INTO `casbin_rule` VALUES (366, 'g', 'admin', '超级管理员', '', '', '', '', '', '');
 INSERT INTO `casbin_rule` VALUES (278, 'g', 'guest', '游客', '', '', '', '', '', '');
 INSERT INTO `casbin_rule` VALUES (277, 'g', 'test', '测试管理员', '', '', '', '', '', '');
-INSERT INTO `casbin_rule` VALUES (38, 'g', 'zhouqi', '超级管理员', '', '', '', '', '', '');
 INSERT INTO `casbin_rule` VALUES (357, 'p', '测试管理员', '/api.admin.v1.Admin/GetAdministratorInfo', 'GET', '', '', '', '', '');
 INSERT INTO `casbin_rule` VALUES (355, 'p', '测试管理员', '/api.admin.v1.Admin/GetRoleMenuBtn', 'GET', '', '', '', '', '');
 INSERT INTO `casbin_rule` VALUES (359, 'p', '测试管理员', '/api.admin.v1.Admin/GetRoleMenuTree', 'GET', '', '', '', '', '');
@@ -260,36 +261,38 @@ INSERT INTO `casbin_rule` VALUES (365, 'p', '游客', '/api.admin.v1.Admin/GetRo
 INSERT INTO `casbin_rule` VALUES (362, 'p', '游客', '/api.admin.v1.Admin/Login', 'POST', '', '', '', '', '');
 INSERT INTO `casbin_rule` VALUES (360, 'p', '游客', '/api.admin.v1.Admin/LoginSuccess', 'GET', '', '', '', '', '');
 INSERT INTO `casbin_rule` VALUES (364, 'p', '游客', '/api.admin.v1.Admin/Logout', 'POST', '', '', '', '', '');
-INSERT INTO `casbin_rule` VALUES (327, 'p', '超级管理员', '/api.admin.v1.Admin/approveAdministrator', 'PATCH', '', '', '', '', '');
-INSERT INTO `casbin_rule` VALUES (326, 'p', '超级管理员', '/api.admin.v1.Admin/CreateAdministrator', 'POST', '', '', '', '', '');
-INSERT INTO `casbin_rule` VALUES (319, 'p', '超级管理员', '/api.admin.v1.Admin/CreateApi', 'POST', '', '', '', '', '');
-INSERT INTO `casbin_rule` VALUES (337, 'p', '超级管理员', '/api.admin.v1.Admin/CreateMenu', 'GET', '', '', '', '', '');
-INSERT INTO `casbin_rule` VALUES (338, 'p', '超级管理员', '/api.admin.v1.Admin/CreateRole', 'POST', '', '', '', '', '');
-INSERT INTO `casbin_rule` VALUES (332, 'p', '超级管理员', '/api.admin.v1.Admin/DeleteAdministrator', 'DELETE', '', '', '', '', '');
-INSERT INTO `casbin_rule` VALUES (316, 'p', '超级管理员', '/api.admin.v1.Admin/DeleteApi', 'DELETE', '', '', '', '', '');
-INSERT INTO `casbin_rule` VALUES (334, 'p', '超级管理员', '/api.admin.v1.Admin/DeleteMenu', 'DELETE', '', '', '', '', '');
-INSERT INTO `casbin_rule` VALUES (340, 'p', '超级管理员', '/api.admin.v1.Admin/DeleteRole', 'DELETE', '', '', '', '', '');
-INSERT INTO `casbin_rule` VALUES (333, 'p', '超级管理员', '/api.admin.v1.Admin/forbidAdministrator', 'PATCH', '', '', '', '', '');
-INSERT INTO `casbin_rule` VALUES (331, 'p', '超级管理员', '/api.admin.v1.Admin/GetAdministrator', 'GET', '', '', '', '', '');
-INSERT INTO `casbin_rule` VALUES (323, 'p', '超级管理员', '/api.admin.v1.Admin/GetAdministratorInfo', 'GET', '', '', '', '', '');
-INSERT INTO `casbin_rule` VALUES (330, 'p', '超级管理员', '/api.admin.v1.Admin/GetAdministratorList', 'GET', '', '', '', '', '');
-INSERT INTO `casbin_rule` VALUES (342, 'p', '超级管理员', '/api.admin.v1.Admin/GetApiAll', 'GET', '', '', '', '', '');
-INSERT INTO `casbin_rule` VALUES (317, 'p', '超级管理员', '/api.admin.v1.Admin/GetApiList', 'GET', '', '', '', '', '');
-INSERT INTO `casbin_rule` VALUES (335, 'p', '超级管理员', '/api.admin.v1.Admin/GetMenuTree', 'GET', '', '', '', '', '');
-INSERT INTO `casbin_rule` VALUES (343, 'p', '超级管理员', '/api.admin.v1.Admin/GetPolicies', 'GET', '', '', '', '', '');
-INSERT INTO `casbin_rule` VALUES (341, 'p', '超级管理员', '/api.admin.v1.Admin/GetRoleList', 'GET', '', '', '', '', '');
-INSERT INTO `casbin_rule` VALUES (321, 'p', '超级管理员', '/api.admin.v1.Admin/GetRoleMenuBtn', 'GET', '', '', '', '', '');
-INSERT INTO `casbin_rule` VALUES (325, 'p', '超级管理员', '/api.admin.v1.Admin/GetRoleMenuTree', 'GET', '', '', '', '', '');
-INSERT INTO `casbin_rule` VALUES (322, 'p', '超级管理员', '/api.admin.v1.Admin/Login', 'POST', '', '', '', '', '');
-INSERT INTO `casbin_rule` VALUES (320, 'p', '超级管理员', '/api.admin.v1.Admin/LoginSuccess', 'GET', '', '', '', '', '');
-INSERT INTO `casbin_rule` VALUES (324, 'p', '超级管理员', '/api.admin.v1.Admin/Logout', 'POST', '', '', '', '', '');
-INSERT INTO `casbin_rule` VALUES (328, 'p', '超级管理员', '/api.admin.v1.Admin/RecoverAdministrator', 'PATCH', '', '', '', '', '');
-INSERT INTO `casbin_rule` VALUES (344, 'p', '超级管理员', '/api.admin.v1.Admin/SetRoleMenu', 'POST', '', '', '', '', '');
-INSERT INTO `casbin_rule` VALUES (346, 'p', '超级管理员', '/api.admin.v1.Admin/SetRoleMenuBtn', 'POST', '', '', '', '', '');
-INSERT INTO `casbin_rule` VALUES (329, 'p', '超级管理员', '/api.admin.v1.Admin/UpdateAdministrator', 'PUT', '', '', '', '', '');
-INSERT INTO `casbin_rule` VALUES (318, 'p', '超级管理员', '/api.admin.v1.Admin/UpdateApi', 'PUT', '', '', '', '', '');
-INSERT INTO `casbin_rule` VALUES (336, 'p', '超级管理员', '/api.admin.v1.Admin/UpdateMenu', 'PUT', '', '', '', '', '');
-INSERT INTO `casbin_rule` VALUES (345, 'p', '超级管理员', '/api.admin.v1.Admin/UpdatePolicies', 'POST', '', '', '', '', '');
-INSERT INTO `casbin_rule` VALUES (339, 'p', '超级管理员', '/api.admin.v1.Admin/UpdateRole', 'PUT', '', '', '', '', '');
+INSERT INTO `casbin_rule` VALUES (385, 'p', '超级管理员', '/api.admin.v1.Admin/approveAdministrator', 'PATCH', '', '', '', '', '');
+INSERT INTO `casbin_rule` VALUES (378, 'p', '超级管理员', '/api.admin.v1.Admin/CreateAdministrator', 'POST', '', '', '', '', '');
+INSERT INTO `casbin_rule` VALUES (368, 'p', '超级管理员', '/api.admin.v1.Admin/CreateApi', 'POST', '', '', '', '', '');
+INSERT INTO `casbin_rule` VALUES (389, 'p', '超级管理员', '/api.admin.v1.Admin/CreateMenu', 'GET', '', '', '', '', '');
+INSERT INTO `casbin_rule` VALUES (398, 'p', '超级管理员', '/api.admin.v1.Admin/CreateRole', 'POST', '', '', '', '', '');
+INSERT INTO `casbin_rule` VALUES (382, 'p', '超级管理员', '/api.admin.v1.Admin/DeleteAdministrator', 'DELETE', '', '', '', '', '');
+INSERT INTO `casbin_rule` VALUES (371, 'p', '超级管理员', '/api.admin.v1.Admin/DeleteApi', 'DELETE', '', '', '', '', '');
+INSERT INTO `casbin_rule` VALUES (387, 'p', '超级管理员', '/api.admin.v1.Admin/DeleteMenu', 'DELETE', '', '', '', '', '');
+INSERT INTO `casbin_rule` VALUES (391, 'p', '超级管理员', '/api.admin.v1.Admin/DeleteRole', 'DELETE', '', '', '', '', '');
+INSERT INTO `casbin_rule` VALUES (400, 'p', '超级管理员', '/api.admin.v1.Admin/DeleteRoleForUser', 'DELETE', '', '', '', '', '');
+INSERT INTO `casbin_rule` VALUES (384, 'p', '超级管理员', '/api.admin.v1.Admin/forbidAdministrator', 'PATCH', '', '', '', '', '');
+INSERT INTO `casbin_rule` VALUES (381, 'p', '超级管理员', '/api.admin.v1.Admin/GetAdministrator', 'GET', '', '', '', '', '');
+INSERT INTO `casbin_rule` VALUES (377, 'p', '超级管理员', '/api.admin.v1.Admin/GetAdministratorInfo', 'GET', '', '', '', '', '');
+INSERT INTO `casbin_rule` VALUES (380, 'p', '超级管理员', '/api.admin.v1.Admin/GetAdministratorList', 'GET', '', '', '', '', '');
+INSERT INTO `casbin_rule` VALUES (393, 'p', '超级管理员', '/api.admin.v1.Admin/GetApiAll', 'GET', '', '', '', '', '');
+INSERT INTO `casbin_rule` VALUES (370, 'p', '超级管理员', '/api.admin.v1.Admin/GetApiList', 'GET', '', '', '', '', '');
+INSERT INTO `casbin_rule` VALUES (386, 'p', '超级管理员', '/api.admin.v1.Admin/GetMenuTree', 'GET', '', '', '', '', '');
+INSERT INTO `casbin_rule` VALUES (394, 'p', '超级管理员', '/api.admin.v1.Admin/GetPolicies', 'GET', '', '', '', '', '');
+INSERT INTO `casbin_rule` VALUES (392, 'p', '超级管理员', '/api.admin.v1.Admin/GetRoleList', 'GET', '', '', '', '', '');
+INSERT INTO `casbin_rule` VALUES (374, 'p', '超级管理员', '/api.admin.v1.Admin/GetRoleMenuBtn', 'GET', '', '', '', '', '');
+INSERT INTO `casbin_rule` VALUES (375, 'p', '超级管理员', '/api.admin.v1.Admin/GetRoleMenuTree', 'GET', '', '', '', '', '');
+INSERT INTO `casbin_rule` VALUES (399, 'p', '超级管理员', '/api.admin.v1.Admin/GetUsersForRole', 'GET', '', '', '', '', '');
+INSERT INTO `casbin_rule` VALUES (373, 'p', '超级管理员', '/api.admin.v1.Admin/Login', 'POST', '', '', '', '', '');
+INSERT INTO `casbin_rule` VALUES (372, 'p', '超级管理员', '/api.admin.v1.Admin/LoginSuccess', 'GET', '', '', '', '', '');
+INSERT INTO `casbin_rule` VALUES (376, 'p', '超级管理员', '/api.admin.v1.Admin/Logout', 'POST', '', '', '', '', '');
+INSERT INTO `casbin_rule` VALUES (383, 'p', '超级管理员', '/api.admin.v1.Admin/RecoverAdministrator', 'PATCH', '', '', '', '', '');
+INSERT INTO `casbin_rule` VALUES (395, 'p', '超级管理员', '/api.admin.v1.Admin/SetRoleMenu', 'POST', '', '', '', '', '');
+INSERT INTO `casbin_rule` VALUES (397, 'p', '超级管理员', '/api.admin.v1.Admin/SetRoleMenuBtn', 'POST', '', '', '', '', '');
+INSERT INTO `casbin_rule` VALUES (379, 'p', '超级管理员', '/api.admin.v1.Admin/UpdateAdministrator', 'PUT', '', '', '', '', '');
+INSERT INTO `casbin_rule` VALUES (369, 'p', '超级管理员', '/api.admin.v1.Admin/UpdateApi', 'PUT', '', '', '', '', '');
+INSERT INTO `casbin_rule` VALUES (388, 'p', '超级管理员', '/api.admin.v1.Admin/UpdateMenu', 'PUT', '', '', '', '', '');
+INSERT INTO `casbin_rule` VALUES (396, 'p', '超级管理员', '/api.admin.v1.Admin/UpdatePolicies', 'POST', '', '', '', '', '');
+INSERT INTO `casbin_rule` VALUES (390, 'p', '超级管理员', '/api.admin.v1.Admin/UpdateRole', 'PUT', '', '', '', '', '');
 
 SET FOREIGN_KEY_CHECKS = 1;

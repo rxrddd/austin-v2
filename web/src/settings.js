@@ -1,5 +1,5 @@
 module.exports = {
-  title: 'Vue Element Admin',
+  title: 'Kratos base project',
 
   /**
    * @type {boolean} true | false

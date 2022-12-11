@@ -1,6 +1,6 @@
 import defaultSettings from '@/settings'
 
-const title = defaultSettings.title || 'Vue Element Admin'
+const title = defaultSettings.title || 'Kratos base project'
 
 export default function getPageTitle(pageTitle) {
   if (pageTitle) {

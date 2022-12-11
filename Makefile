@@ -84,6 +84,7 @@ run:
 ent:
 	cd internal/data/ && ent generate ./ent/schema
 
+
 .PHONY: docker
 # grpc服务生成docker
 docker:

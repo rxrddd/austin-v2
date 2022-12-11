@@ -1,6 +1,6 @@
 module github.com/ZQCard/kratos-base-project
 
-go 1.16
+go 1.19
 
 require (
 	github.com/go-kratos/kratos/contrib/registry/consul/v2 v2.0.0-20221130041748-2cf82fa4a75c

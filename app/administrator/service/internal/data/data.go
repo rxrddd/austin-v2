@@ -39,7 +39,7 @@ func NewData(db *gorm.DB, redisCmd redis.Cmdable, logger log.Logger) (*Data, fun
 
 	d := &Data{
 		Module:   module,
-		db:       db.Debug(),
+		db:       db,
 		redisCli: redisCmd,
 	}
 	return d, func() {
