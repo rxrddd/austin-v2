@@ -15,7 +15,8 @@ PS:演示数据由定时任务服务，每10分钟初始化恢复demo数据库�
 ├── app // 服务集合
 │   ├── administrator // 管理员服务
 │   ├── authorization // 权限服务
-│   ├── jobs // 定时后台 如初始化数据库
+│   ├── jobs // 分布式定时任务
+│   ├── └── initDB // 初始化数据库
 │   └── project // api接口服务
 │       └── // api接口服务
 ├── deploy // 部署文件
@@ -38,7 +39,10 @@ PS:演示数据由定时任务服务，每10分钟初始化恢复demo数据库�
 - [x]  api管理
 
 #### 其他
-- [x]  定时任务
+- [x] 定时服务
+- [ ] 文件服务
+- [ ] 短信服务
+
 
 #### 运行方式
 
@@ -49,7 +53,7 @@ PS:演示数据由定时任务服务，每10分钟初始化恢复demo数据库�
 
 链路追踪：jaeger
 
-数据库：mysql #文件位于docs/initSql
+数据库：mysql
 
 缓存：redis
 
@@ -58,6 +62,12 @@ orm: GORM
 
 
 ### 安装
+##### 数据库
+1.导入sql
+```
+文件位于docs/initSql
+```
+
 ##### 后端
 1.下载
 ```
@@ -138,3 +148,7 @@ server {
 
 }
 ```
+
+* 有任何建议，请扫码添加我微信进行交流。
+
+![扫码提建议](https://kratos-base-project.oss-cn-hangzhou.aliyuncs.com/f8f5dacdf87cf358c98c9eb60ce2a13.jpg)
