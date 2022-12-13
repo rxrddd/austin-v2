@@ -2,11 +2,8 @@ package data
 
 import (
 	"context"
-	"encoding/json"
 	"github.com/ZQCard/kratos-base-project/app/authorization/service/internal/biz"
 	"github.com/ZQCard/kratos-base-project/app/authorization/service/internal/conf"
-	"math"
-
 	"github.com/casbin/casbin/v2"
 	"github.com/casbin/casbin/v2/model"
 	gormadapter "github.com/casbin/gorm-adapter/v3"
@@ -55,30 +52,7 @@ func GetCasbinEnforcer() *casbin.Enforcer {
 	return casbinEnforcer
 }
 
-// SaveRedisCache 缓存信息
-func (a AuthorizationRepo) SaveRedisCache(key, value string) error {
-	return a.data.redisCli.Set(key, value, 0).Err()
-}
-
 // GetRedisCache 获取信息缓存
 func (a AuthorizationRepo) GetRedisCache(key string) string {
 	return a.data.redisCli.Get(key).Val()
-}
-
-// DeleteRedisCache 批量删除信息缓存
-func (a AuthorizationRepo) DeleteRedisCache(childModule string) {
-	keys, _ := a.data.redisCli.Scan(0, a.GetRedisCacheKey(childModule, map[string]interface{}{})+"*", math.MaxInt64).Val()
-	a.data.redisCli.Del(keys...)
-}
-
-// GetRedisCacheKey 根据参数获取redis key
-func (a AuthorizationRepo) GetRedisCacheKey(childModule string, params map[string]interface{}) string {
-	cacheKey := a.data.Module + ":Authorization:" + childModule + ":"
-	if len(params) == 0 {
-		return cacheKey
-	}
-	jsonParams, _ := json.Marshal(params)
-	paramsStr := string(jsonParams)
-	cacheKey += paramsStr
-	return cacheKey
 }

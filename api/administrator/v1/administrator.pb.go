@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.28.1
 // 	protoc        v3.21.8
-// source: api/administrator/v1/administrator.proto
+// source: api/administrator/v1/jobs.proto
 
 package v1
 

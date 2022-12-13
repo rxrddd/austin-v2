@@ -2,5 +2,5 @@ package biz
 
 import "github.com/google/wire"
 
-// ProviderSet is biz providers.
+// ProviderSet is initDB providers.
 var ProviderSet = wire.NewSet(NewAuthorizationUsecase)

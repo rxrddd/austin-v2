@@ -6,6 +6,7 @@ import (
 	"github.com/ZQCard/kratos-base-project/app/authorization/service/internal/biz"
 	"github.com/ZQCard/kratos-base-project/app/authorization/service/internal/data/entity"
 	"github.com/ZQCard/kratos-base-project/pkg/errResponse"
+	"github.com/ZQCard/kratos-base-project/pkg/utils/redisHelper"
 	kerrors "github.com/go-kratos/kratos/v2/errors"
 )
 
@@ -18,7 +19,7 @@ func (a AuthorizationRepo) GetRoleMenuTree(ctx context.Context, role string) ([]
 	cacheParams := map[string]interface{}{
 		"role": role,
 	}
-	cacheKey := a.GetRedisCacheKey(childModuleRoleMenu, cacheParams)
+	cacheKey := redisHelper.GetRedisCacheKeyByParams(a.data.Module+":"+childModuleRoleMenu+":", cacheParams)
 	// 查看缓存
 	if cache := a.GetRedisCache(cacheKey); cache != "" {
 		if err := json.Unmarshal([]byte(cache), &response); err == nil {
@@ -69,8 +70,7 @@ func (a AuthorizationRepo) GetRoleMenuTree(ctx context.Context, role string) ([]
 	}
 	// 返回数据
 	jsonResponse, _ := json.Marshal(response)
-	responseStr := string(jsonResponse)
-	_ = a.SaveRedisCache(cacheKey, responseStr)
+	_ = redisHelper.SaveRedisCache(a.data.redisCli, cacheKey, string(jsonResponse))
 	return response, nil
 }
 
@@ -121,7 +121,7 @@ func (a AuthorizationRepo) GetRoleMenu(ctx context.Context, role string) ([]*biz
 		"type": "GetRoleMenu",
 		"role": role,
 	}
-	cacheKey := a.GetRedisCacheKey(childModuleRoleMenu, cacheParams)
+	cacheKey := redisHelper.GetRedisCacheKeyByParams(a.data.Module+":"+childModuleRoleMenu+":", cacheParams)
 	// 查看缓存
 	if cache := a.GetRedisCache(cacheKey); cache != "" {
 		if err := json.Unmarshal([]byte(cache), &response); err == nil {
@@ -177,8 +177,7 @@ func (a AuthorizationRepo) GetRoleMenu(ctx context.Context, role string) ([]*biz
 	}
 	// 返回数据
 	jsonResponse, _ := json.Marshal(response)
-	responseStr := string(jsonResponse)
-	_ = a.SaveRedisCache(cacheKey, responseStr)
+	_ = redisHelper.SaveRedisCache(a.data.redisCli, cacheKey, string(jsonResponse))
 	return response, nil
 }
 
@@ -207,7 +206,7 @@ func (a AuthorizationRepo) SaveRoleMenu(ctx context.Context, roleId int64, menuI
 		return kerrors.InternalServer(errResponse.ReasonSystemError, err.Error())
 	}
 	tx.Commit()
-	a.DeleteRedisCache(childModuleRoleMenu)
+	redisHelper.BatchDeleteRedisCache(a.data.redisCli, a.data.Module+":"+childModuleRoleMenu+":")
 	return nil
 }
 
@@ -245,7 +244,7 @@ func (a AuthorizationRepo) GetRoleMenuBtn(ctx context.Context, roleId int64, rol
 		"roleName": roleName,
 		"menuId":   menuId,
 	}
-	cacheKey := a.GetRedisCacheKey(childModuleRoleMenu, cacheParams)
+	cacheKey := redisHelper.GetRedisCacheKeyByParams(a.data.Module+":"+childModuleRoleMenu+":", cacheParams)
 	// 查看缓存
 	if cache := a.GetRedisCache(cacheKey); cache != "" {
 		if err := json.Unmarshal([]byte(cache), &response); err == nil {
@@ -271,12 +270,12 @@ func (a AuthorizationRepo) GetRoleMenuBtn(ctx context.Context, roleId int64, rol
 		btnIds = append(btnIds, v.BtnId)
 	}
 
-	btnresponse := []*entity.MenuBtn{}
+	btnResponse := []*entity.MenuBtn{}
 	if len(btnIds) == 0 {
 		return []*biz.MenuBtn{}, nil
 	}
-	a.data.db.Model(&entity.MenuBtn{}).Where("id IN (?)", btnIds).Find(&btnresponse)
-	for _, v := range btnresponse {
+	a.data.db.Model(&entity.MenuBtn{}).Where("id IN (?)", btnIds).Find(&btnResponse)
+	for _, v := range btnResponse {
 		response = append(response, &biz.MenuBtn{
 			Id:          v.Id,
 			MenuId:      v.MenuId,
@@ -289,8 +288,7 @@ func (a AuthorizationRepo) GetRoleMenuBtn(ctx context.Context, roleId int64, rol
 	}
 	// 返回数据
 	jsonResponse, _ := json.Marshal(response)
-	responseStr := string(jsonResponse)
-	_ = a.SaveRedisCache(cacheKey, responseStr)
+	_ = redisHelper.SaveRedisCache(a.data.redisCli, cacheKey, string(jsonResponse))
 	return response, err
 }
 
@@ -320,6 +318,6 @@ func (a AuthorizationRepo) SetRoleMenuBtn(ctx context.Context, roleId int64, men
 		return kerrors.InternalServer(errResponse.ReasonSystemError, err.Error())
 	}
 	tx.Commit()
-	a.DeleteRedisCache(childModuleRoleMenu)
+	redisHelper.BatchDeleteRedisCache(a.data.redisCli, a.data.Module+":"+childModuleRoleMenu+":")
 	return nil
 }

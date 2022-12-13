@@ -7,6 +7,7 @@ import (
 	"github.com/ZQCard/kratos-base-project/app/authorization/service/internal/biz"
 	"github.com/ZQCard/kratos-base-project/app/authorization/service/internal/data/entity"
 	"github.com/ZQCard/kratos-base-project/pkg/errResponse"
+	"github.com/ZQCard/kratos-base-project/pkg/utils/redisHelper"
 	"gorm.io/gorm"
 	"strconv"
 	"time"
@@ -21,7 +22,7 @@ func (a AuthorizationRepo) GetApiAll(ctx context.Context) ([]*biz.Api, error) {
 	cacheParams := map[string]interface{}{
 		"type": "all",
 	}
-	cacheKey := a.GetRedisCacheKey(childModuleAPI, cacheParams)
+	cacheKey := redisHelper.GetRedisCacheKeyByParams(a.data.Module+":"+childModuleAPI+":", cacheParams)
 	// 查看缓存
 	if cache := a.GetRedisCache(cacheKey); cache != "" {
 		res := []*biz.Api{}
@@ -51,8 +52,7 @@ func (a AuthorizationRepo) GetApiAll(ctx context.Context) ([]*biz.Api, error) {
 	}
 	// 返回数据
 	jsonResponse, _ := json.Marshal(response)
-	responseStr := string(jsonResponse)
-	_ = a.SaveRedisCache(cacheKey, responseStr)
+	_ = redisHelper.SaveRedisCache(a.data.redisCli, cacheKey, string(jsonResponse))
 	return response, nil
 }
 
@@ -61,7 +61,7 @@ func (a AuthorizationRepo) GetApiList(ctx context.Context, page int64, pageSize 
 	cacheParams := params
 	cacheParams["page"] = page
 	cacheParams["pageSize"] = pageSize
-	cacheKey := a.GetRedisCacheKey(childModuleAPI, cacheParams)
+	cacheKey := redisHelper.GetRedisCacheKeyByParams(a.data.Module+":"+childModuleAPI+":", cacheParams)
 	countCacheKey := cacheKey + ":count"
 
 	var response []*biz.Api
@@ -115,9 +115,8 @@ func (a AuthorizationRepo) GetApiList(ctx context.Context, page int64, pageSize 
 	}
 	// 返回数据
 	jsonResponse, _ := json.Marshal(response)
-	responseStr := string(jsonResponse)
-	_ = a.SaveRedisCache(cacheKey, responseStr)
-	_ = a.SaveRedisCache(countCacheKey, strconv.FormatInt(count, 10))
+	_ = redisHelper.SaveRedisCache(a.data.redisCli, cacheKey, string(jsonResponse))
+	_ = redisHelper.SaveRedisCache(a.data.redisCli, countCacheKey, strconv.FormatInt(count, 10))
 	return response, count, nil
 }
 
@@ -151,7 +150,7 @@ func (a AuthorizationRepo) CreateApi(ctx context.Context, reqData *biz.Api) (*bi
 		CreatedAt: api.CreatedAt.Format("2006-01-02 15:04:05"),
 		UpdatedAt: api.UpdatedAt.Format("2006-01-02 15:04:05"),
 	}
-	a.DeleteRedisCache(childModuleAPI)
+	redisHelper.BatchDeleteRedisCache(a.data.redisCli, a.data.Module+":"+childModuleAPI+":")
 	return res, nil
 }
 
@@ -188,7 +187,7 @@ func (a AuthorizationRepo) UpdateApi(ctx context.Context, reqData *biz.Api) (*bi
 		CreatedAt: api.CreatedAt.Format("2006-01-02 15:04:05"),
 		UpdatedAt: api.UpdatedAt.Format("2006-01-02 15:04:05"),
 	}
-	a.DeleteRedisCache(childModuleAPI)
+	redisHelper.BatchDeleteRedisCache(a.data.redisCli, a.data.Module+":"+childModuleAPI+":")
 	return res, nil
 }
 
@@ -212,6 +211,6 @@ func (a AuthorizationRepo) DeleteApi(ctx context.Context, id int64) error {
 		return kerrors.InternalServer(errResponse.ReasonSystemError, err.Error())
 	}
 	a.data.enforcer.RemoveFilteredPolicy(0, "", api.Name, api.Method)
-	a.DeleteRedisCache(childModuleAPI)
+	redisHelper.BatchDeleteRedisCache(a.data.redisCli, a.data.Module+":"+childModuleAPI+":")
 	return nil
 }

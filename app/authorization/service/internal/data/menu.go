@@ -8,6 +8,7 @@ import (
 	"github.com/ZQCard/kratos-base-project/app/authorization/service/internal/data/entity"
 	"github.com/ZQCard/kratos-base-project/pkg/errResponse"
 	"github.com/ZQCard/kratos-base-project/pkg/utils/convertHelper"
+	"github.com/ZQCard/kratos-base-project/pkg/utils/redisHelper"
 	"gorm.io/gorm"
 	"time"
 
@@ -22,7 +23,7 @@ func (a AuthorizationRepo) GetMenuAll(ctx context.Context) ([]*biz.Menu, error) 
 	cacheParams := map[string]interface{}{
 		"type": "all",
 	}
-	cacheKey := a.GetRedisCacheKey(childModuleMenu, cacheParams)
+	cacheKey := redisHelper.GetRedisCacheKeyByParams(a.data.Module+":"+childModuleMenu+":", cacheParams)
 	// 查看缓存
 	if cache := a.GetRedisCache(cacheKey); cache != "" {
 		if err := json.Unmarshal([]byte(cache), &response); err == nil {
@@ -68,8 +69,7 @@ func (a AuthorizationRepo) GetMenuAll(ctx context.Context) ([]*biz.Menu, error) 
 	}
 	// 返回数据
 	jsonResponse, _ := json.Marshal(response)
-	responseStr := string(jsonResponse)
-	_ = a.SaveRedisCache(cacheKey, responseStr)
+	_ = redisHelper.SaveRedisCache(a.data.redisCli, cacheKey, string(jsonResponse))
 	return response, nil
 }
 
@@ -79,7 +79,7 @@ func (a AuthorizationRepo) GetMenuTree(ctx context.Context) ([]*biz.Menu, error)
 	cacheParams := map[string]interface{}{
 		"type": "tree",
 	}
-	cacheKey := a.GetRedisCacheKey(childModuleMenu, cacheParams)
+	cacheKey := redisHelper.GetRedisCacheKeyByParams(a.data.Module+":"+childModuleMenu+":", cacheParams)
 	// 查看缓存
 	if cache := a.GetRedisCache(cacheKey); cache != "" {
 		if err := json.Unmarshal([]byte(cache), &response); err == nil {
@@ -130,7 +130,7 @@ func (a AuthorizationRepo) GetMenuTree(ctx context.Context) ([]*biz.Menu, error)
 			return response, kerrors.InternalServer(errResponse.ReasonSystemError, err.Error())
 		}
 	}
-	a.DeleteRedisCache(childModuleMenu)
+	redisHelper.BatchDeleteRedisCache(a.data.redisCli, a.data.Module+":"+childModuleMenu+":")
 	return response, nil
 }
 
@@ -232,7 +232,7 @@ func (a AuthorizationRepo) CreateMenu(ctx context.Context, reqData *biz.Menu) (*
 		UpdatedAt: menu.UpdatedAt.Format("2006-01-02 15:04:05"),
 		MenuBtns:  btns2,
 	}
-	a.DeleteRedisCache(childModuleMenu)
+	redisHelper.BatchDeleteRedisCache(a.data.redisCli, a.data.Module+":"+childModuleMenu+":")
 	return res, nil
 }
 
@@ -308,7 +308,7 @@ func (a AuthorizationRepo) UpdateMenu(ctx context.Context, reqData *biz.Menu) (*
 		CreatedAt: menu.CreatedAt.Format("2006-01-02 15:04:05"),
 		UpdatedAt: menu.UpdatedAt.Format("2006-01-02 15:04:05"),
 	}
-	a.DeleteRedisCache(childModuleMenu)
+	redisHelper.BatchDeleteRedisCache(a.data.redisCli, a.data.Module+":"+childModuleMenu+":")
 	return res, nil
 }
 
@@ -344,6 +344,6 @@ func (a AuthorizationRepo) DeleteMenu(ctx context.Context, id int64) error {
 		return kerrors.InternalServer(errResponse.ReasonSystemError, err.Error())
 	}
 	tx.Commit()
-	a.DeleteRedisCache(childModuleMenu)
+	redisHelper.BatchDeleteRedisCache(a.data.redisCli, a.data.Module+":"+childModuleMenu+":")
 	return nil
 }

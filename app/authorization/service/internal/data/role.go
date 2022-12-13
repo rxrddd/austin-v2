@@ -8,6 +8,7 @@ import (
 	"github.com/ZQCard/kratos-base-project/app/authorization/service/internal/data/entity"
 	"github.com/ZQCard/kratos-base-project/pkg/errResponse"
 	"github.com/ZQCard/kratos-base-project/pkg/utils/convertHelper"
+	"github.com/ZQCard/kratos-base-project/pkg/utils/redisHelper"
 	"gorm.io/gorm"
 	"time"
 
@@ -22,7 +23,7 @@ func (a AuthorizationRepo) GetRoleList(ctx context.Context) ([]*biz.Role, error)
 	cacheParams := map[string]interface{}{
 		"type": "all",
 	}
-	cacheKey := a.GetRedisCacheKey(childModuleRole, cacheParams)
+	cacheKey := redisHelper.GetRedisCacheKeyByParams(a.data.Module+":"+childModuleRole+":", cacheParams)
 	// 查看缓存
 	if cache := a.GetRedisCache(cacheKey); cache != "" {
 		if err := json.Unmarshal([]byte(cache), &response); err == nil {
@@ -56,8 +57,7 @@ func (a AuthorizationRepo) GetRoleList(ctx context.Context) ([]*biz.Role, error)
 	}
 	// 返回数据
 	jsonResponse, _ := json.Marshal(response)
-	responseStr := string(jsonResponse)
-	_ = a.SaveRedisCache(cacheKey, responseStr)
+	_ = redisHelper.SaveRedisCache(a.data.redisCli, cacheKey, string(jsonResponse))
 	return response, nil
 }
 
@@ -86,7 +86,7 @@ func (a AuthorizationRepo) findChildrenRole(role *biz.Role) (err error) {
 func (a AuthorizationRepo) GetRole(ctx context.Context, params map[string]interface{}) (*biz.Role, error) {
 	var response *biz.Role
 	// 缓存key
-	cacheKey := a.GetRedisCacheKey(childModuleRole, params)
+	cacheKey := redisHelper.GetRedisCacheKeyByParams(a.data.Module+":"+childModuleRole+":", params)
 	// 查看缓存
 	if cache := a.GetRedisCache(cacheKey); cache != "" {
 		if err := json.Unmarshal([]byte(cache), response); err == nil {
@@ -122,7 +122,7 @@ func (a AuthorizationRepo) GetRole(ctx context.Context, params map[string]interf
 	}
 	// 返回数据
 	jsonResponse, _ := json.Marshal(response)
-	_ = a.SaveRedisCache(cacheKey, string(jsonResponse))
+	_ = redisHelper.SaveRedisCache(a.data.redisCli, cacheKey, string(jsonResponse))
 	return response, nil
 }
 
@@ -155,7 +155,7 @@ func (a AuthorizationRepo) CreateRole(ctx context.Context, reqData *biz.Role) (*
 		CreatedAt: role.CreatedAt.Format("2006-01-02 15:04:05"),
 		UpdatedAt: role.CreatedAt.Format("2006-01-02 15:04:05"),
 	}
-	a.DeleteRedisCache(childModuleRole)
+	redisHelper.BatchDeleteRedisCache(a.data.redisCli, a.data.Module+":"+childModuleRole+":")
 	return res, nil
 }
 
@@ -187,7 +187,7 @@ func (a AuthorizationRepo) UpdateRole(ctx context.Context, reqData *biz.Role) (*
 		CreatedAt: role.CreatedAt.Format("2006-01-02 15:04:05"),
 		UpdatedAt: role.UpdatedAt.Format("2006-01-02 15:04:05"),
 	}
-	a.DeleteRedisCache(childModuleRole)
+	redisHelper.BatchDeleteRedisCache(a.data.redisCli, a.data.Module+":"+childModuleRole+":")
 	return res, nil
 }
 
@@ -240,6 +240,6 @@ func (a AuthorizationRepo) DeleteRole(ctx context.Context, id int64) error {
 	tx.Commit()
 	// 删除策略
 	a.data.enforcer.RemoveFilteredPolicy(0, role.Name)
-	a.DeleteRedisCache(childModuleRole)
+	redisHelper.BatchDeleteRedisCache(a.data.redisCli, a.data.Module+":"+childModuleRole+":")
 	return nil
 }

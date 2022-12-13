@@ -7,11 +7,11 @@ import (
 	"github.com/ZQCard/kratos-base-project/app/administrator/service/internal/data/entity"
 	"github.com/ZQCard/kratos-base-project/pkg/errResponse"
 	"github.com/ZQCard/kratos-base-project/pkg/utils/encryption"
+	"github.com/ZQCard/kratos-base-project/pkg/utils/redisHelper"
 	"github.com/ZQCard/kratos-base-project/pkg/utils/timeHelper"
 	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/log"
 	"gorm.io/gorm"
-	"math"
 	"net/http"
 	"strconv"
 )
@@ -95,7 +95,7 @@ func (s AdministratorRepo) CreateAdministrator(ctx context.Context, reqData *biz
 
 	}
 	response := ModelToResponse(modelTable)
-	s.DeleteRedisCache()
+	redisHelper.BatchDeleteRedisCache(s.data.redisCli, s.data.Module)
 	return &response, nil
 }
 
@@ -122,7 +122,7 @@ func (s AdministratorRepo) UpdateAdministrator(ctx context.Context, reqData *biz
 	}
 	// 返回数据
 	response := ModelToResponse(record)
-	s.DeleteRedisCache()
+	redisHelper.BatchDeleteRedisCache(s.data.redisCli, s.data.Module)
 	return &response, nil
 }
 
@@ -135,7 +135,7 @@ func (s AdministratorRepo) UpdateAdministratorLoginInfo(ctx context.Context, id 
 	if err != nil {
 		return errors.New(http.StatusInternalServerError, errResponse.ReasonSystemError, err.Error())
 	}
-	s.DeleteRedisCache()
+	redisHelper.BatchDeleteRedisCache(s.data.redisCli, s.data.Module)
 	return nil
 }
 
@@ -143,9 +143,9 @@ func (s AdministratorRepo) GetAdministrator(ctx context.Context, params map[stri
 	response := &biz.Administrator{}
 
 	// 缓存key
-	cacheKey := s.GetRedisCacheKey(params)
+	cacheKey := redisHelper.GetRedisCacheKeyByParams(s.data.Module, params)
 	// 查看缓存
-	if cache := s.GetRedisCache(cacheKey); cache != "" {
+	if cache := redisHelper.GetRedisCache(s.data.redisCli, cacheKey); cache != "" {
 		if err := json.Unmarshal([]byte(cache), response); err == nil {
 			return response, nil
 		} else {
@@ -160,7 +160,7 @@ func (s AdministratorRepo) GetAdministrator(ctx context.Context, params map[stri
 	tmp := ModelToResponse(record)
 	response = &tmp
 	jsonResponse, _ := json.Marshal(response)
-	_ = s.SaveRedisCache(cacheKey, string(jsonResponse))
+	_ = redisHelper.SaveRedisCache(s.data.redisCli, cacheKey, string(jsonResponse))
 	return response, nil
 }
 
@@ -171,11 +171,11 @@ func (s AdministratorRepo) ListAdministrator(ctx context.Context, page, pageSize
 	cacheParams := params
 	cacheParams["page"] = page
 	cacheParams["pageSize"] = pageSize
-	cacheKey := s.GetRedisCacheKey(cacheParams)
+	cacheKey := redisHelper.GetRedisCacheKeyByParams(s.data.Module, cacheParams)
 	countCacheKey := cacheKey + ":count"
 	// 查看缓存
-	if cache := s.GetRedisCache(cacheKey); cache != "" {
-		countStr := s.GetRedisCache(countCacheKey)
+	if cache := redisHelper.GetRedisCache(s.data.redisCli, cacheKey); cache != "" {
+		countStr := redisHelper.GetRedisCache(s.data.redisCli, countCacheKey)
 		count, _ := strconv.ParseInt(countStr, 10, 64)
 		if err := json.Unmarshal([]byte(cache), &response); err == nil {
 			return response, count, nil
@@ -236,9 +236,8 @@ func (s AdministratorRepo) ListAdministrator(ctx context.Context, page, pageSize
 
 	// 返回数据
 	jsonResponse, _ := json.Marshal(response)
-	responseStr := string(jsonResponse)
-	_ = s.SaveRedisCache(cacheKey, responseStr)
-	_ = s.SaveRedisCache(countCacheKey, strconv.FormatInt(count, 10))
+	_ = redisHelper.SaveRedisCache(s.data.redisCli, cacheKey, string(jsonResponse))
+	_ = redisHelper.SaveRedisCache(s.data.redisCli, countCacheKey, strconv.FormatInt(count, 10))
 	return response, count, nil
 }
 
@@ -253,7 +252,7 @@ func (s AdministratorRepo) DeleteAdministrator(ctx context.Context, id int64) er
 	if err := s.data.db.Model(&record).Where("id = ?", id).UpdateColumn("deleted_at", timeHelper.GetCurrentYMDHIS()).Error; err != nil {
 		return err
 	}
-	s.DeleteRedisCache()
+	redisHelper.BatchDeleteRedisCache(s.data.redisCli, s.data.Module)
 	return nil
 }
 
@@ -265,7 +264,7 @@ func (s AdministratorRepo) RecoverAdministrator(ctx context.Context, id int64) e
 	if err != nil {
 		return errors.New(http.StatusInternalServerError, errResponse.ReasonSystemError, err.Error())
 	}
-	s.DeleteRedisCache()
+	redisHelper.BatchDeleteRedisCache(s.data.redisCli, s.data.Module)
 	return nil
 }
 func (s AdministratorRepo) AdministratorStatusChange(ctx context.Context, id int64, status int64) error {
@@ -279,7 +278,7 @@ func (s AdministratorRepo) AdministratorStatusChange(ctx context.Context, id int
 	if err != nil {
 		return errors.New(http.StatusInternalServerError, errResponse.ReasonSystemError, err.Error())
 	}
-	s.DeleteRedisCache()
+	redisHelper.BatchDeleteRedisCache(s.data.redisCli, s.data.Module)
 	return nil
 }
 
@@ -320,32 +319,4 @@ func NewAdministratorRepo(data *Data, logger log.Logger) biz.AdministratorRepo {
 		data: data,
 		log:  log.NewHelper(log.With(logger, "module", "data/administrator-service")),
 	}
-}
-
-// SaveRedisCache 缓存信息
-func (s AdministratorRepo) SaveRedisCache(key, value string) error {
-	return s.data.redisCli.Set(key, value, 0).Err()
-}
-
-// GetRedisCache 获取信息缓存
-func (s AdministratorRepo) GetRedisCache(key string) string {
-	return s.data.redisCli.Get(key).Val()
-}
-
-// DeleteRedisCache 批量删除信息缓存
-func (s AdministratorRepo) DeleteRedisCache() {
-	keys, _ := s.data.redisCli.Scan(0, s.GetRedisCacheKey(map[string]interface{}{})+"*", math.MaxInt64).Val()
-	s.data.redisCli.Del(keys...)
-}
-
-// GetRedisCacheKey 根据参数获取redis key
-func (s AdministratorRepo) GetRedisCacheKey(params map[string]interface{}) string {
-	cacheKey := s.data.Module + ":Administrator:"
-	if len(params) == 0 {
-		return cacheKey
-	}
-	jsonParams, _ := json.Marshal(params)
-	paramsStr := string(jsonParams)
-	cacheKey += paramsStr
-	return cacheKey
 }

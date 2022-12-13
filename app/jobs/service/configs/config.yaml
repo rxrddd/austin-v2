@@ -1,0 +1,26 @@
+service:
+  name: kratos-base-project.jobs.service
+  version: v1
+trace:
+  endpoint: http://127.0.0.1:14268/api/traces
+server:
+  grpc:
+    addr: 0.0.0.0:9000
+    timeout: 1s
+data:
+  administrator:
+    driver: mysql
+    source: root:123456@tcp(127.0.0.1:3306)/kratos-base-project-administrator?parseTime=true&collation=utf8mb4_unicode_ci&loc=Asia%2FShanghai&charset=utf8mb4
+  authorization:
+    driver: mysql
+    source: root:123456@tcp(127.0.0.1:3306)/kratos-base-project-authorization?parseTime=true&collation=utf8mb4_unicode_ci&loc=Asia%2FShanghai&charset=utf8mb4
+  redis:
+    addr: "127.0.0.1:6379"
+    password: "123456"
+    read_timeout: "0.2s"
+    write_timeout: "0.2s"
+auth:
+  service_key: "jobs-service-key"
+  api_key: "jobs-api-key"
+etcd:
+  address: 127.0.0.1:2379

@@ -37,7 +37,7 @@ type Data struct {
 // NewData .
 func NewData(db *gorm.DB, redisCmd redis.Cmdable, logger log.Logger) (*Data, func(), error) {
 	logs := log.NewHelper(log.With(logger, "module", "authorization-service/data"))
-	module := "kratos-base-project/administrator-service/data"
+	module := "kratos-base-project/authorization-service/data"
 	d := &Data{
 		Module:   module,
 		db:       db,
