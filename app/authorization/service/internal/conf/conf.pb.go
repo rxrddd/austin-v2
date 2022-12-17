@@ -28,7 +28,7 @@ type Bootstrap struct {
 
 	Service *Service `protobuf:"bytes,1,opt,name=service,proto3" json:"service,omitempty"`
 	Trace   *Trace   `protobuf:"bytes,2,opt,name=trace,proto3" json:"trace,omitempty"`
-	Server  *Server  `protobuf:"bytes,3,opt,name=server,proto3" json:"server,omitempty"`
+	Server  *Server  `protobuf:"bytes,3,opt,name=serviceName,proto3" json:"serviceName,omitempty"`
 	Data    *Data    `protobuf:"bytes,4,opt,name=data,proto3" json:"data,omitempty"`
 	Casbin  *Casbin  `protobuf:"bytes,5,opt,name=casbin,proto3" json:"casbin,omitempty"`
 	AuthKey *AuthKey `protobuf:"bytes,6,opt,name=authKey,proto3" json:"authKey,omitempty"`
@@ -902,7 +902,7 @@ var file_internal_conf_conf_proto_goTypes = []interface{}{
 var file_internal_conf_conf_proto_depIdxs = []int32{
 	1,  // 0: kratos.api.Bootstrap.service:type_name -> kratos.api.Service
 	2,  // 1: kratos.api.Bootstrap.trace:type_name -> kratos.api.Trace
-	3,  // 2: kratos.api.Bootstrap.server:type_name -> kratos.api.Server
+	3,  // 2: kratos.api.Bootstrap.serviceName:type_name -> kratos.api.Server
 	4,  // 3: kratos.api.Bootstrap.data:type_name -> kratos.api.Data
 	6,  // 4: kratos.api.Bootstrap.casbin:type_name -> kratos.api.Casbin
 	7,  // 5: kratos.api.Bootstrap.authKey:type_name -> kratos.api.AuthKey

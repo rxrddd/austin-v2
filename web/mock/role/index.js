@@ -36,7 +36,7 @@ const roles = [
 ]
 
 module.exports = [
-  // mock get all routes form server
+  // mock get all routes form serviceName
   {
     url: '/vue-element-admin/routes',
     type: 'get',
@@ -48,7 +48,7 @@ module.exports = [
     }
   },
 
-  // mock get all roles form server
+  // mock get all roles form serviceName
   {
     url: '/vue-element-admin/roles',
     type: 'get',

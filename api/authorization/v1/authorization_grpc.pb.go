@@ -341,7 +341,7 @@ func (c *authorizationClient) SetRoleMenuBtn(ctx context.Context, in *SetRoleMen
 	return out, nil
 }
 
-// AuthorizationServer is the server API for Authorization service.
+// AuthorizationServer is the serviceName API for Authorization service.
 // All implementations must embed UnimplementedAuthorizationServer
 // for forward compatibility
 type AuthorizationServer interface {

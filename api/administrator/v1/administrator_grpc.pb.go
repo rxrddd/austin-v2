@@ -122,7 +122,7 @@ func (c *administratorClient) AdministratorStatusChange(ctx context.Context, in 
 	return out, nil
 }
 
-// AdministratorServer is the server API for Administrator service.
+// AdministratorServer is the serviceName API for Administrator service.
 // All implementations must embed UnimplementedAdministratorServer
 // for forward compatibility
 type AdministratorServer interface {

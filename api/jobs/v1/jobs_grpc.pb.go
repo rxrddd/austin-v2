@@ -42,7 +42,7 @@ func (c *jobsClient) ListJobs(ctx context.Context, in *ListJobsRequest, opts ...
 	return out, nil
 }
 
-// JobsServer is the server API for Jobs service.
+// JobsServer is the serviceName API for Jobs service.
 // All implementations must embed UnimplementedJobsServer
 // for forward compatibility
 type JobsServer interface {

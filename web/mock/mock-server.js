@@ -31,7 +31,7 @@ function unregisterRoutes() {
   })
 }
 
-// for mock server
+// for mock serviceName
 const responseFake = (url, type, respond) => {
   return {
     url: new RegExp(`${process.env.VUE_APP_BASE_API}${url}`),
@@ -55,7 +55,7 @@ module.exports = app => {
   var mockRoutesLength = mockRoutes.mockRoutesLength
   var mockStartIndex = mockRoutes.mockStartIndex
 
-  // watch files, hot reload mock server
+  // watch serviceName, hot reload mock serviceName
   chokidar.watch(mockDir, {
     ignored: /mock-server/,
     ignoreInitial: true

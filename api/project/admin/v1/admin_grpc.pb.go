@@ -95,6 +95,8 @@ type AdminClient interface {
 	GetRoleMenuBtn(ctx context.Context, in *GetRoleMenuBtnRequest, opts ...grpc.CallOption) (*GetRoleMenuBtnReply, error)
 	// 角色菜单按钮更新
 	SetRoleMenuBtn(ctx context.Context, in *SetRoleMenuBtnRequest, opts ...grpc.CallOption) (*CheckReply, error)
+	// 获取OSS StsToken
+	GetOssStsToken(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*OssStsTokenResponse, error)
 }
 
 type adminClient struct {
@@ -438,6 +440,15 @@ func (c *adminClient) SetRoleMenuBtn(ctx context.Context, in *SetRoleMenuBtnRequ
 	return out, nil
 }
 
+func (c *adminClient) GetOssStsToken(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*OssStsTokenResponse, error) {
+	out := new(OssStsTokenResponse)
+	err := c.cc.Invoke(ctx, "/api.admin.v1.Admin/GetOssStsToken", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AdminServer is the server API for Admin service.
 // All implementations must embed UnimplementedAdminServer
 // for forward compatibility
@@ -514,6 +525,8 @@ type AdminServer interface {
 	GetRoleMenuBtn(context.Context, *GetRoleMenuBtnRequest) (*GetRoleMenuBtnReply, error)
 	// 角色菜单按钮更新
 	SetRoleMenuBtn(context.Context, *SetRoleMenuBtnRequest) (*CheckReply, error)
+	// 获取OSS StsToken
+	GetOssStsToken(context.Context, *emptypb.Empty) (*OssStsTokenResponse, error)
 	mustEmbedUnimplementedAdminServer()
 }
 
@@ -631,6 +644,9 @@ func (UnimplementedAdminServer) GetRoleMenuBtn(context.Context, *GetRoleMenuBtnR
 }
 func (UnimplementedAdminServer) SetRoleMenuBtn(context.Context, *SetRoleMenuBtnRequest) (*CheckReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SetRoleMenuBtn not implemented")
+}
+func (UnimplementedAdminServer) GetOssStsToken(context.Context, *emptypb.Empty) (*OssStsTokenResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetOssStsToken not implemented")
 }
 func (UnimplementedAdminServer) mustEmbedUnimplementedAdminServer() {}
 
@@ -1311,6 +1327,24 @@ func _Admin_SetRoleMenuBtn_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Admin_GetOssStsToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdminServer).GetOssStsToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.admin.v1.Admin/GetOssStsToken",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdminServer).GetOssStsToken(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Admin_ServiceDesc is the grpc.ServiceDesc for Admin service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -1465,6 +1499,10 @@ var Admin_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SetRoleMenuBtn",
 			Handler:    _Admin_SetRoleMenuBtn_Handler,
+		},
+		{
+			MethodName: "GetOssStsToken",
+			Handler:    _Admin_GetOssStsToken_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

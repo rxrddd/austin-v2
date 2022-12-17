@@ -21,7 +21,7 @@ import './utils/error-log' // error log
 import * as filters from './filters' // global filters
 
 /**
- * If you don't want to use mock-server
+ * If you don't want to use mock-serviceName
  * you want to use MockJs for mock api
  * you can execute: mockXHR()
  *

@@ -14,16 +14,19 @@ type AdminInterface struct {
 	v1.UnimplementedAdminServer
 	administratorRepo *data.AdministratorRepo
 	authorizationRepo *data.AuthorizationRepo
+	filesRepo         *data.FilesRepo
 	log               *log.Helper
 }
 
 func NewAdminInterface(
 	administratorRepo *data.AdministratorRepo,
 	authorizationRepo *data.AuthorizationRepo,
+	filesRepo *data.FilesRepo,
 	logger log.Logger) *AdminInterface {
 	return &AdminInterface{
 		log:               log.NewHelper(log.With(logger, "module", "service/interface")),
 		administratorRepo: administratorRepo,
 		authorizationRepo: authorizationRepo,
+		filesRepo:         filesRepo,
 	}
 }

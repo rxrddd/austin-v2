@@ -38,6 +38,7 @@ const OperationAdminGetApiAll = "/api.admin.v1.Admin/GetApiAll"
 const OperationAdminGetApiList = "/api.admin.v1.Admin/GetApiList"
 const OperationAdminGetMenuAll = "/api.admin.v1.Admin/GetMenuAll"
 const OperationAdminGetMenuTree = "/api.admin.v1.Admin/GetMenuTree"
+const OperationAdminGetOssStsToken = "/api.admin.v1.Admin/GetOssStsToken"
 const OperationAdminGetPolicies = "/api.admin.v1.Admin/GetPolicies"
 const OperationAdminGetRoleList = "/api.admin.v1.Admin/GetRoleList"
 const OperationAdminGetRoleMenu = "/api.admin.v1.Admin/GetRoleMenu"
@@ -77,6 +78,7 @@ type AdminHTTPServer interface {
 	GetApiList(context.Context, *GetApiListRequest) (*GetApiListReply, error)
 	GetMenuAll(context.Context, *emptypb.Empty) (*GetMenuTreeReply, error)
 	GetMenuTree(context.Context, *emptypb.Empty) (*GetMenuTreeReply, error)
+	GetOssStsToken(context.Context, *emptypb.Empty) (*OssStsTokenResponse, error)
 	GetPolicies(context.Context, *GetPoliciesRequest) (*GetPoliciesReply, error)
 	GetRoleList(context.Context, *emptypb.Empty) (*GetRoleListReply, error)
 	GetRoleMenu(context.Context, *GetRoleMenuRequest) (*GetMenuTreeReply, error)
@@ -137,6 +139,7 @@ func RegisterAdminHTTPServer(s *http.Server, srv AdminHTTPServer) {
 	r.POST("/authorization/v1/roleMenu", _Admin_SetRoleMenu0_HTTP_Handler(srv))
 	r.GET("/authorization/v1/roleMenuBtn", _Admin_GetRoleMenuBtn0_HTTP_Handler(srv))
 	r.POST("/authorization/v1/roleMenuBtn", _Admin_SetRoleMenuBtn0_HTTP_Handler(srv))
+	r.GET("/files/v1/getOssStsToken", _Admin_GetOssStsToken0_HTTP_Handler(srv))
 }
 
 func _Admin_Login0_HTTP_Handler(srv AdminHTTPServer) func(ctx http.Context) error {
@@ -842,6 +845,25 @@ func _Admin_SetRoleMenuBtn0_HTTP_Handler(srv AdminHTTPServer) func(ctx http.Cont
 	}
 }
 
+func _Admin_GetOssStsToken0_HTTP_Handler(srv AdminHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in emptypb.Empty
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationAdminGetOssStsToken)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.GetOssStsToken(ctx, req.(*emptypb.Empty))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*OssStsTokenResponse)
+		return ctx.Result(200, reply)
+	}
+}
+
 type AdminHTTPClient interface {
 	ApproveAdministrator(ctx context.Context, req *ApproveAdministratorRequest, opts ...http.CallOption) (rsp *CheckReply, err error)
 	CreateAdministrator(ctx context.Context, req *CreateAdministratorRequest, opts ...http.CallOption) (rsp *AdministratorInfoResponse, err error)
@@ -861,6 +883,7 @@ type AdminHTTPClient interface {
 	GetApiList(ctx context.Context, req *GetApiListRequest, opts ...http.CallOption) (rsp *GetApiListReply, err error)
 	GetMenuAll(ctx context.Context, req *emptypb.Empty, opts ...http.CallOption) (rsp *GetMenuTreeReply, err error)
 	GetMenuTree(ctx context.Context, req *emptypb.Empty, opts ...http.CallOption) (rsp *GetMenuTreeReply, err error)
+	GetOssStsToken(ctx context.Context, req *emptypb.Empty, opts ...http.CallOption) (rsp *OssStsTokenResponse, err error)
 	GetPolicies(ctx context.Context, req *GetPoliciesRequest, opts ...http.CallOption) (rsp *GetPoliciesReply, err error)
 	GetRoleList(ctx context.Context, req *emptypb.Empty, opts ...http.CallOption) (rsp *GetRoleListReply, err error)
 	GetRoleMenu(ctx context.Context, req *GetRoleMenuRequest, opts ...http.CallOption) (rsp *GetMenuTreeReply, err error)
@@ -1116,6 +1139,19 @@ func (c *AdminHTTPClientImpl) GetMenuTree(ctx context.Context, in *emptypb.Empty
 	pattern := "/authorization/v1/menuTree"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationAdminGetMenuTree))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
+func (c *AdminHTTPClientImpl) GetOssStsToken(ctx context.Context, in *emptypb.Empty, opts ...http.CallOption) (*OssStsTokenResponse, error) {
+	var out OssStsTokenResponse
+	pattern := "/files/v1/getOssStsToken"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationAdminGetOssStsToken))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
 	if err != nil {

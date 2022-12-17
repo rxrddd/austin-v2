@@ -24,13 +24,15 @@ func wireApp(confServer *conf.Server, registry *conf.Registry, confData *conf.Da
 	discovery := data.NewDiscovery(registry)
 	administratorClient := data.NewAdministratorServiceClient(auth, confService, discovery, tracerProvider)
 	authorizationClient := data.NewAuthorizationServiceClient(auth, confService, discovery, tracerProvider)
-	dataData, err := data.NewData(logger, cmdable, administratorClient, authorizationClient)
+	filesClient := data.NewFilesServiceClient(auth, confService, discovery, tracerProvider)
+	dataData, err := data.NewData(logger, cmdable, administratorClient, authorizationClient, filesClient)
 	if err != nil {
 		return nil, nil, err
 	}
 	administratorRepo := data.NewAdministratorRepo(dataData, logger)
 	authorizationRepo := data.NewAuthorizationRepo(dataData, logger)
-	adminInterface := service.NewAdminInterface(administratorRepo, authorizationRepo, logger)
+	filesRepo := data.NewFilesRepo(dataData, logger)
+	adminInterface := service.NewAdminInterface(administratorRepo, authorizationRepo, filesRepo, logger)
 	httpServer := server.NewHTTPServer(confServer, auth, adminInterface, tracerProvider, logger)
 	registrar := data.NewRegistrar(registry)
 	app := newApp(logger, httpServer, registrar)

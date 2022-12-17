@@ -1,0 +1,31 @@
+service:
+  name: kratos-base-project-files
+  version: v1
+trace:
+  endpoint: http://127.0.0.1:14268/api/traces
+server:
+  grpc:
+    addr: 0.0.0.0:9020
+    timeout: 1s
+data:
+  database:
+    driver: mysql
+    source: root:123456@tcp(127.0.0.1:3306)/kratos-base-project-administrator?parseTime=true&collation=utf8mb4_unicode_ci&loc=Asia%2FShanghai&charset=utf8mb4
+  redis:
+    addr: "127.0.0.1:6379"
+    password: "123456"
+    read_timeout: 0.2s
+    write_timeout: 0.2s
+  oss:
+    access_key: "<your accessKeyId>"
+    access_secret: "<your accessKey>"
+    end_point: "oss-cn-shanghai.aliyuncs.com"
+    bucket_name: "kratos-base-project"
+    region: "oss-cn-hangzhou"
+    sts_expire: "900"
+    sts_role_arn: "<your roleArn>"
+auth:
+  service_key: "files-service-key"
+  api_key: "files-api-key"
+etcd:
+  address: 127.0.0.1:2379

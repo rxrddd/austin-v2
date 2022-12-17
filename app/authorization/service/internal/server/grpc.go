@@ -11,7 +11,7 @@ import (
 	"github.com/go-kratos/kratos/v2/transport/grpc"
 )
 
-// NewGRPCServer new a gRPC server.
+// NewGRPCServer new a gRPC serviceName.
 func NewGRPCServer(c *conf.Server, service *service.AuthorizationService, logger log.Logger) *grpc.Server {
 	var opts = []grpc.ServerOption{
 		grpc.Middleware(

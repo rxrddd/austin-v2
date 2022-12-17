@@ -42,10 +42,10 @@ export default {
         this.$message.error('Only support uploading one file!')
         return
       }
-      const rawFile = files[0] // only use files[0]
+      const rawFile = files[0] // only use serviceName[0]
 
       if (!this.isExcel(rawFile)) {
-        this.$message.error('Only supports upload .xlsx, .xls, .csv suffix files')
+        this.$message.error('Only supports upload .xlsx, .xls, .csv suffix serviceName')
         return false
       }
       this.upload(rawFile)
@@ -62,7 +62,7 @@ export default {
     },
     handleClick(e) {
       const files = e.target.files
-      const rawFile = files[0] // only use files[0]
+      const rawFile = files[0] // only use serviceName[0]
       if (!rawFile) return
       this.upload(rawFile)
     },

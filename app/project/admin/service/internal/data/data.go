@@ -3,6 +3,7 @@ package data
 import (
 	administratorV1 "github.com/ZQCard/kratos-base-project/api/administrator/v1"
 	authorizationV1 "github.com/ZQCard/kratos-base-project/api/authorization/v1"
+	filesServiceV1 "github.com/ZQCard/kratos-base-project/api/files/v1"
 	"github.com/ZQCard/kratos-base-project/app/project/admin/service/internal/conf"
 	"github.com/go-kratos/kratos/contrib/registry/etcd/v2"
 	"github.com/go-kratos/kratos/v2/log"
@@ -21,8 +22,10 @@ var ProviderSet = wire.NewSet(
 	NewDiscovery,
 	NewAdministratorRepo,
 	NewAuthorizationRepo,
+	NewFilesRepo,
 	NewAdministratorServiceClient,
 	NewAuthorizationServiceClient,
+	NewFilesServiceClient,
 )
 
 var auth *conf.Auth
@@ -39,6 +42,7 @@ type Data struct {
 	redisCli            redis.Cmdable
 	administratorClient administratorV1.AdministratorClient
 	authorizationClient authorizationV1.AuthorizationClient
+	filesClient         filesServiceV1.FilesClient
 }
 
 // NewData .
@@ -47,6 +51,7 @@ func NewData(
 	redisCli redis.Cmdable,
 	administratorClient administratorV1.AdministratorClient,
 	authorizationClient authorizationV1.AuthorizationClient,
+	filesClient filesServiceV1.FilesClient,
 ) (*Data, error) {
 	l := log.NewHelper(log.With(logger, "module", "data"))
 	return &Data{
@@ -54,6 +59,7 @@ func NewData(
 		redisCli:            redisCli,
 		administratorClient: administratorClient,
 		authorizationClient: authorizationClient,
+		filesClient:         filesClient,
 	}, nil
 }
 

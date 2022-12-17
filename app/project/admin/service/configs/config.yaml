@@ -5,6 +5,8 @@ service:
     endpoint: discovery:///kratos-base-project.administrator.service
   authorization:
     endpoint: discovery:///kratos-base-project.authorization.service
+  files:
+    endpoint: discovery:///kratos-base-project.files.service
 trace:
   endpoint: http://127.0.0.1:14268/api/traces
 server:
