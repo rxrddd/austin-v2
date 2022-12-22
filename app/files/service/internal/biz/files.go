@@ -19,6 +19,7 @@ type OssStsToken struct {
 // FilesRepo 模块接口
 type FilesRepo interface {
 	GetOssStsToken(ctx context.Context) (*OssStsToken, error)
+	UploadFile(ctx context.Context, fileName string, fileType string, content []byte) (string, error)
 }
 
 type FilesUseCase struct {
@@ -32,4 +33,8 @@ func NewFilesUseCase(repo FilesRepo, logger log.Logger) *FilesUseCase {
 
 func (uc *FilesUseCase) GetOssStsToken(ctx context.Context) (*OssStsToken, error) {
 	return uc.repo.GetOssStsToken(ctx)
+}
+
+func (uc *FilesUseCase) UploadFile(ctx context.Context, fileName string, fileType string, content []byte) (string, error) {
+	return uc.repo.UploadFile(ctx, fileName, fileType, content)
 }

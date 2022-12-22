@@ -157,6 +157,8 @@ func NewHTTPServer(c *conf.Server, ac *conf.Auth, service *service.AdminInterfac
 	opts = append(opts, http.ErrorEncoder(errorEncoder))
 
 	srv := http.NewServer(opts...)
+	route := srv.Route("/")
+	route.POST("/files/v1/uploadFile", service.UploadFile)
 	v1.RegisterAdminHTTPServer(srv, service)
 	return srv
 }

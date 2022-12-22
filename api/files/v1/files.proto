@@ -10,6 +10,7 @@ option java_package = "api.files.v1";
 
 service Files {
 	rpc GetOssStsToken (google.protobuf.Empty) returns (OssStsTokenResponse);
+	rpc UploadFile (UploadFileRequest) returns (UploadFileResponse);
 }
 
 message OssStsTokenResponse {
@@ -21,4 +22,14 @@ message OssStsTokenResponse {
 	string bucket_name = 6;
 	string region = 7;
 	string url = 8;
+}
+
+message UploadFileRequest {
+	string file_name = 1;
+	string file_type = 2;
+	bytes content = 3;
+}
+
+message UploadFileResponse {
+	string url = 1;
 }

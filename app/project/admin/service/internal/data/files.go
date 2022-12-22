@@ -70,3 +70,15 @@ func (rp FilesRepo) GetOssStsToken(ctx context.Context) (*v1.OssStsTokenResponse
 	response.Url = reply.Url
 	return response, err
 }
+
+func (rp FilesRepo) UploadFile(ctx context.Context, fileName string, fileType string, context []byte) (string, error) {
+	reply, err := rp.data.filesClient.UploadFile(ctx, &filesServiceV1.UploadFileRequest{
+		FileName: fileName,
+		FileType: fileType,
+		Content:  context,
+	})
+	if err != nil {
+		return "", err
+	}
+	return reply.Url, err
+}

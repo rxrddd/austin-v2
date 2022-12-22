@@ -39,3 +39,13 @@ func (s *FilesService) GetOssStsToken(ctx context.Context, req *emptypb.Empty) (
 	response.Url = stsResponse.Url
 	return response, nil
 }
+
+func (s *FilesService) UploadFile(ctx context.Context, req *v1.UploadFileRequest) (*v1.UploadFileResponse, error) {
+	url, err := s.filesUseCase.UploadFile(ctx, req.FileName, req.FileType, req.Content)
+	if err != nil {
+		return nil, err
+	}
+	response := &v1.UploadFileResponse{}
+	response.Url = url
+	return response, err
+}

@@ -31,6 +31,13 @@ const ReasonAuthorizationUserHasRoleAlready = "AUTHORIZATION_USE_HAS_ROLE_ALREAD
 const ReasonAuthorizationApiNotFound = "AUTHORIZATION_API_NOT_FOUND"
 const ReasonAuthorizationApiExist = "AUTHORIZATION_API_EXIST"
 
+const ReasonFileNameMissing = "FILE_NAME_MISSING"
+const ReasonFileMissing = "FILE_MISSING"
+const ReasonFileOverLimitSize = "FILE_OVER_LIMIT_SIZE"
+const ReasonOssConfigWrong = "OSS_CONFIG_WRONG"
+const ReasonOssBucketWrong = "OSS_BUCKET_WRONG"
+const ReasonOssPutObjectFail = "OSS_PUT_OBJECT_FILE"
+
 const ReasonAdministratorUnauthorized = "UNAUTHORIZED"
 
 const ReasonSystemError = "SYSTEM_ERROR"
@@ -66,6 +73,14 @@ var reasonMessageAll = map[string]string{
 	ReasonAuthorizationApiNotFound: "API不存在",
 	ReasonAuthorizationApiExist:    "API已存在",
 
+	ReasonFileNameMissing:   "文件名称不得为空",
+	ReasonFileMissing:       "文件不得为空",
+	ReasonFileOverLimitSize: "文件超过最大限制",
+
+	ReasonOssConfigWrong:   "OSS配置错误",
+	ReasonOssBucketWrong:   "OSS Bucket配置错误",
+	ReasonOssPutObjectFail: "OSS文件上传失败",
+
 	ReasonSystemError:           "系统繁忙,请稍后再试",
 	ReasonServiceGatewayTimeout: "服务不可达",
 	ReasonServiceUnavailable:    "服务不可达",
@@ -98,6 +113,13 @@ var reasonCodeAll = map[string]int{
 
 	ReasonAuthorizationApiExist:    40302,
 	ReasonAuthorizationApiNotFound: 40304,
+
+	ReasonFileNameMissing:   40401,
+	ReasonFileMissing:       40402,
+	ReasonFileOverLimitSize: 40403,
+	ReasonOssConfigWrong:    40404,
+	ReasonOssBucketWrong:    40405,
+	ReasonOssPutObjectFail:  40406,
 
 	ReasonSystemError:           50000,
 	ReasonServiceGatewayTimeout: 50004,

@@ -1,5 +1,5 @@
 service:
-  name: kratos-base-project-files
+  name: kratos-base-project.files.service
   version: v1
 trace:
   endpoint: http://127.0.0.1:14268/api/traces
@@ -17,13 +17,13 @@ data:
     read_timeout: 0.2s
     write_timeout: 0.2s
   oss:
-    access_key: "<your accessKeyId>"
-    access_secret: "<your accessKey>"
-    end_point: "oss-cn-shanghai.aliyuncs.com"
-    bucket_name: "kratos-base-project"
-    region: "oss-cn-hangzhou"
+    access_key: "<your access_key>"
+    access_secret: "<your access_secret>"
+    end_point: "<your end_point>"
+    bucket_name: "<your bucket_name>"
+    region: "<your region>"
     sts_expire: "900"
-    sts_role_arn: "<your roleArn>"
+    sts_role_arn: "<your sts_role_arn>"
 auth:
   service_key: "files-service-key"
   api_key: "files-api-key"
