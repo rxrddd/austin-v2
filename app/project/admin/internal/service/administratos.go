@@ -2,6 +2,7 @@ package service
 
 import (
 	"austin-v2/api/project/admin/v1"
+	"austin-v2/app/project/admin/pkg/ctxdata"
 	"austin-v2/pkg/utils/timeHelper"
 	"context"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -30,7 +31,7 @@ func (s *AdminInterface) Login(ctx context.Context, req *v1.LoginRequest) (*v1.L
 }
 
 func (s *AdminInterface) LoginSuccess(ctx context.Context, empty *emptypb.Empty) (*emptypb.Empty, error) {
-	administrator, err := s.administratorRepo.GetAdministrator(ctx, ctx.Value("kratos-AdministratorId").(int64))
+	administrator, err := s.administratorRepo.GetAdministrator(ctx, ctxdata.GetAdminId(ctx))
 	if err != nil {
 		return nil, err
 	}
@@ -49,7 +50,7 @@ func (s *AdminInterface) LoginSuccess(ctx context.Context, empty *emptypb.Empty)
 }
 
 func (s *AdminInterface) Logout(ctx context.Context, empty *emptypb.Empty) (*emptypb.Empty, error) {
-	res, err := s.administratorRepo.GetAdministrator(ctx, ctx.Value("kratos-AdministratorId").(int64))
+	res, err := s.administratorRepo.GetAdministrator(ctx, ctxdata.GetAdminId(ctx))
 	if err != nil {
 		return nil, err
 	}
@@ -62,7 +63,7 @@ func (s *AdminInterface) GetAdministratorList(ctx context.Context, req *v1.ListA
 }
 
 func (s *AdminInterface) GetAdministratorInfo(ctx context.Context, empty *emptypb.Empty) (*v1.AdministratorInfoResponse, error) {
-	res, err := s.administratorRepo.GetAdministrator(ctx, ctx.Value("kratos-AdministratorId").(int64))
+	res, err := s.administratorRepo.GetAdministrator(ctx, ctxdata.GetAdminId(ctx))
 	if err != nil {
 		return nil, err
 	}

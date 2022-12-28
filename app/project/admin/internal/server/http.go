@@ -5,6 +5,7 @@ import (
 	"austin-v2/app/project/admin/internal/conf"
 	"austin-v2/app/project/admin/internal/data"
 	"austin-v2/app/project/admin/internal/service"
+	"austin-v2/app/project/admin/pkg/ctxdata"
 	"austin-v2/pkg/errResponse"
 	"austin-v2/pkg/middleware/casbin"
 	"context"
@@ -81,8 +82,8 @@ func setUserInfo() middleware.Middleware {
 			}
 			claimInfo := claim.(jwt2.MapClaims)
 			AdministratorId := int64(claimInfo["AdministratorId"].(float64))
-			ctx = context.WithValue(ctx, "kratos-AdministratorId", AdministratorId)
-			ctx = context.WithValue(ctx, "kratos-AdministratorUsername", claimInfo["AdministratorUsername"])
+			ctx = context.WithValue(ctx, ctxdata.AdministratorIdKey, AdministratorId)
+			ctx = context.WithValue(ctx, ctxdata.AdministratorUsername, claimInfo["AdministratorUsername"])
 			return handler(ctx, req)
 		}
 	}
