@@ -49,7 +49,7 @@ var reasonMessageAll = map[string]string{
 	ReasonUnknownError: "未知错误",
 
 	ReasonParamsError:    "请求参数错误",
-	ReasonMissingParams:  "缺少搜索参数",
+	ReasonMissingParams:  "请求参数错误",
 	TimeFormatError:      "时间格式错误",
 	ReasonMissingId:      "id不得为空",
 	ReasonRecordNotFound: "数据不存在",

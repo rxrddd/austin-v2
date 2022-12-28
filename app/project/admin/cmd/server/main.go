@@ -4,8 +4,6 @@ import (
 	"flag"
 	"github.com/ZQCard/kratos-base-project/app/project/admin/internal/conf"
 	"github.com/ZQCard/kratos-base-project/pkg/utils/stringHelper"
-	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/attribute"
 
 	"os"
 
@@ -15,10 +13,6 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/registry"
 	"github.com/go-kratos/kratos/v2/transport/http"
-	"go.opentelemetry.io/otel/exporters/jaeger"
-	"go.opentelemetry.io/otel/sdk/resource"
-	tracesdk "go.opentelemetry.io/otel/sdk/trace"
-	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
 )
 
 // go build -ldflags "-X main.Version=x.y.z"
@@ -53,12 +47,6 @@ func newApp(logger log.Logger, hs *http.Server, rr registry.Registrar) *kratos.A
 
 func main() {
 	flag.Parse()
-	logger := log.With(log.NewStdLogger(os.Stdout),
-		"service.name", Name,
-		"service.version", Version,
-		"ts", log.DefaultTimestamp,
-		"caller", log.DefaultCaller,
-	)
 
 	c := config.New(
 		config.WithSource(
@@ -86,25 +74,30 @@ func main() {
 	if err := c.Scan(&rc); err != nil {
 		panic(err)
 	}
-
-	// 初始化链路追踪
-	exp, err := jaeger.New(jaeger.WithCollectorEndpoint(jaeger.WithEndpoint(bc.Trace.Endpoint)))
-	if err != nil {
-		panic(err)
-	}
-	tp := tracesdk.NewTracerProvider(
-		// 将基于父span的采样率设置为100%
-		tracesdk.WithSampler(tracesdk.ParentBased(tracesdk.TraceIDRatioBased(1.0))),
-		// 始终确保再生成中批量处理
-		tracesdk.WithBatcher(exp),
-		// 在资源中记录有关此应用程序的信息
-		tracesdk.WithResource(resource.NewSchemaless(
-			semconv.ServiceNameKey.String(Name),
-			attribute.String("env", "dev"),
-		)),
+	logger := log.With(log.NewStdLogger(os.Stdout),
+		"service.name", Name,
+		"service.version", Version,
+		"ts", log.DefaultTimestamp,
+		"caller", log.DefaultCaller,
 	)
-	otel.SetTracerProvider(tp)
-	app, cleanup, err := wireApp(bc.Server, &rc, bc.Data, bc.Auth, bc.Service, logger, tp)
+	// 初始化链路追踪
+	//exp, err := jaeger.New(jaeger.WithCollectorEndpoint(jaeger.WithEndpoint(bc.Trace.Endpoint)))
+	//if err != nil {
+	//	panic(err)
+	//}
+	//tp := tracesdk.NewTracerProvider(
+	//	// 将基于父span的采样率设置为100%
+	//	tracesdk.WithSampler(tracesdk.ParentBased(tracesdk.TraceIDRatioBased(1.0))),
+	//	// 始终确保再生成中批量处理
+	//	tracesdk.WithBatcher(exp),
+	//	// 在资源中记录有关此应用程序的信息
+	//	tracesdk.WithResource(resource.NewSchemaless(
+	//		semconv.ServiceNameKey.String(Name),
+	//		attribute.String("env", "dev"),
+	//	)),
+	//)
+	//otel.SetTracerProvider(tp)
+	app, cleanup, err := wireApp(bc.Server, &rc, bc.Data, bc.Auth, bc.Service, logger)
 	if err != nil {
 		panic(err)
 	}

@@ -8,15 +8,14 @@ import (
 	"github.com/ZQCard/kratos-base-project/app/project/admin/internal/conf"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
-	"github.com/go-kratos/kratos/v2/middleware/tracing"
 	"github.com/go-kratos/kratos/v2/registry"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
-	tracesdk "go.opentelemetry.io/otel/sdk/trace"
 	"golang.org/x/sync/singleflight"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
-func NewFilesServiceClient(ac *conf.Auth, sr *conf.Service, r registry.Discovery, tp *tracesdk.TracerProvider) filesServiceV1.FilesClient {
+//, tp *tracesdk.TracerProvider
+func NewFilesServiceClient(ac *conf.Auth, sr *conf.Service, r registry.Discovery) filesServiceV1.FilesClient {
 	// 初始化auth配置
 	auth = ac
 	conn, err := grpc.DialInsecure(
@@ -24,7 +23,7 @@ func NewFilesServiceClient(ac *conf.Auth, sr *conf.Service, r registry.Discovery
 		grpc.WithEndpoint(sr.Files.Endpoint),
 		grpc.WithDiscovery(r),
 		grpc.WithMiddleware(
-			tracing.Client(tracing.WithTracerProvider(tp)),
+			//tracing.Client(tracing.WithTracerProvider(tp)),
 			recovery.Recovery(),
 			//jwt.Client(func(token *jwt2.Token) (interface{}, error) {
 			//	return []byte(ac.ServiceKey), nil

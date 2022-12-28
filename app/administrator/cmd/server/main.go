@@ -5,7 +5,6 @@ import (
 	"github.com/ZQCard/kratos-base-project/app/administrator/internal/conf"
 	"github.com/ZQCard/kratos-base-project/pkg/utils/stringHelper"
 	"github.com/go-kratos/kratos/v2/registry"
-	"go.opentelemetry.io/otel/sdk/resource"
 	"os"
 
 	"github.com/go-kratos/kratos/v2"
@@ -14,9 +13,6 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware/tracing"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
-	"go.opentelemetry.io/otel/exporters/jaeger"
-	tracesdk "go.opentelemetry.io/otel/sdk/trace"
-	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
 )
 
 // go build -ldflags "-X main.Version=x.y.z"
@@ -51,15 +47,7 @@ func newApp(logger log.Logger, gs *grpc.Server, rr registry.Registrar) *kratos.A
 
 func main() {
 	flag.Parse()
-	logger := log.With(log.NewStdLogger(os.Stdout),
-		"ts", log.DefaultTimestamp,
-		"caller", log.DefaultCaller,
-		"service.id", Id,
-		"service.name", Name,
-		"service.version", Version,
-		"trace.id", tracing.TraceID(),
-		"span.id", tracing.SpanID(),
-	)
+
 	c := config.New(
 		config.WithSource(
 			file.NewSource(flagconf),
@@ -86,18 +74,29 @@ func main() {
 	if err := c.Scan(&rc); err != nil {
 		panic(err)
 	}
-	exp, err := jaeger.New(jaeger.WithCollectorEndpoint(jaeger.WithEndpoint(bc.Trace.Endpoint)))
-	if err != nil {
-		panic(err)
-	}
-	tp := tracesdk.NewTracerProvider(
-		tracesdk.WithBatcher(exp),
-		tracesdk.WithResource(resource.NewSchemaless(
-			semconv.ServiceNameKey.String(Name),
-		)),
+
+	logger := log.With(log.NewStdLogger(os.Stdout),
+		"ts", log.DefaultTimestamp,
+		"caller", log.DefaultCaller,
+		"service.id", Id,
+		"service.name", Name,
+		"service.version", Version,
+		"trace.id", tracing.TraceID(),
+		"span.id", tracing.SpanID(),
 	)
 
-	app, cleanup, err := wireApp(bc.Server, &rc, bc.Data, bc.Auth, logger, tp)
+	//exp, err := jaeger.New(jaeger.WithCollectorEndpoint(jaeger.WithEndpoint(bc.Trace.Endpoint)))
+	//if err != nil {
+	//	panic(err)
+	//}
+	//tp := tracesdk.NewTracerProvider(
+	//	tracesdk.WithBatcher(exp),
+	//	tracesdk.WithResource(resource.NewSchemaless(
+	//		semconv.ServiceNameKey.String(Name),
+	//	)),
+	//)
+
+	app, cleanup, err := wireApp(bc.Server, &rc, bc.Data, bc.Auth, logger)
 	if err != nil {
 		panic(err)
 	}

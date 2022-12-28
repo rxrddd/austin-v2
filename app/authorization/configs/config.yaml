@@ -10,14 +10,14 @@ server:
 data:
   database:
     driver: mysql
-    source: root:123456@tcp(127.0.0.1:3306)/kratos-base-project-authorization?parseTime=true&collation=utf8mb4_unicode_ci&loc=Asia%2FShanghai&charset=utf8mb4
+    source: root:123456@tcp(127.0.0.1:3306)/kratos-admin?parseTime=true&collation=utf8mb4_unicode_ci&loc=Asia%2FShanghai&charset=utf8mb4
   redis:
     addr: "127.0.0.1:6379"
     password: "123456"
     read_timeout: "0.2s"
     write_timeout: "0.2s"
 etcd:
-  address: 127.0.0.1:2379
+  address: 192.168.0.103:2379
 casbin:
   # casbin model必须使用换行 否则无法加载
   rbac_model: "[request_definition]

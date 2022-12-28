@@ -9,16 +9,15 @@ import (
 	"github.com/ZQCard/kratos-base-project/pkg/utils/encryption"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
-	"github.com/go-kratos/kratos/v2/middleware/tracing"
 	"github.com/go-kratos/kratos/v2/registry"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
 	"github.com/golang-jwt/jwt/v4"
-	tracesdk "go.opentelemetry.io/otel/sdk/trace"
 	"golang.org/x/sync/singleflight"
 	"time"
 )
 
-func NewAdministratorServiceClient(ac *conf.Auth, sr *conf.Service, r registry.Discovery, tp *tracesdk.TracerProvider) administratorServiceV1.AdministratorClient {
+//, tp *tracesdk.TracerProvider
+func NewAdministratorServiceClient(ac *conf.Auth, sr *conf.Service, r registry.Discovery) administratorServiceV1.AdministratorClient {
 	// 初始化auth配置
 	auth = ac
 
@@ -27,7 +26,7 @@ func NewAdministratorServiceClient(ac *conf.Auth, sr *conf.Service, r registry.D
 		grpc.WithEndpoint(sr.Administrator.Endpoint),
 		grpc.WithDiscovery(r),
 		grpc.WithMiddleware(
-			tracing.Client(tracing.WithTracerProvider(tp)),
+			//tracing.Client(tracing.WithTracerProvider(tp)),
 			recovery.Recovery(),
 			//jwt.Client(func(token *jwt2.Token) (interface{}, error) {
 			//	return []byte(ac.ServiceKey), nil

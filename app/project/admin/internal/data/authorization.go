@@ -10,10 +10,8 @@ import (
 
 	authorizationServiceV1 "github.com/ZQCard/kratos-base-project/api/authorization/v1"
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
-	"github.com/go-kratos/kratos/v2/middleware/tracing"
 	"github.com/go-kratos/kratos/v2/registry"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
-	tracesdk "go.opentelemetry.io/otel/sdk/trace"
 )
 
 type AuthorizationRepo struct {
@@ -30,13 +28,14 @@ func NewAuthorizationRepo(data *Data, logger log.Logger) *AuthorizationRepo {
 	}
 }
 
-func NewAuthorizationServiceClient(ac *conf.Auth, sr *conf.Service, r registry.Discovery, tp *tracesdk.TracerProvider) authorizationServiceV1.AuthorizationClient {
+//, tp *tracesdk.TracerProvider
+func NewAuthorizationServiceClient(ac *conf.Auth, sr *conf.Service, r registry.Discovery) authorizationServiceV1.AuthorizationClient {
 	conn, err := grpc.DialInsecure(
 		context.Background(),
 		grpc.WithEndpoint(sr.Authorization.Endpoint),
 		grpc.WithDiscovery(r),
 		grpc.WithMiddleware(
-			tracing.Client(tracing.WithTracerProvider(tp)),
+			//tracing.Client(tracing.WithTracerProvider(tp)),
 			recovery.Recovery(),
 			//jwt.Client(func(token *jwt2.Token) (interface{}, error) {
 			//	return []byte(ac.ServiceKey), nil

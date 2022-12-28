@@ -6,10 +6,6 @@ import (
 	"github.com/ZQCard/kratos-base-project/pkg/utils/stringHelper"
 	"github.com/go-kratos/kratos/v2/encoding/json"
 	"github.com/go-kratos/kratos/v2/registry"
-	"go.opentelemetry.io/otel/exporters/jaeger"
-	"go.opentelemetry.io/otel/sdk/resource"
-	tracesdk "go.opentelemetry.io/otel/sdk/trace"
-	semconv "go.opentelemetry.io/otel/semconv/v1.12.0"
 	"google.golang.org/protobuf/encoding/protojson"
 	"os"
 
@@ -57,15 +53,7 @@ func newApp(logger log.Logger, gs *grpc.Server, r registry.Registrar) *kratos.Ap
 
 func main() {
 	flag.Parse()
-	logger := log.With(log.NewStdLogger(os.Stdout),
-		"ts", log.DefaultTimestamp,
-		"caller", log.DefaultCaller,
-		"service.id", id,
-		"service.name", Name,
-		"service.version", Version,
-		"trace.id", tracing.TraceID(),
-		"span.id", tracing.SpanID(),
-	)
+
 	c := config.New(
 		config.WithSource(
 			file.NewSource(flagconf),
@@ -91,18 +79,28 @@ func main() {
 	if err := c.Scan(&rc); err != nil {
 		panic(err)
 	}
-	exp, err := jaeger.New(jaeger.WithCollectorEndpoint(jaeger.WithEndpoint(bc.Trace.Endpoint)))
-	if err != nil {
-		panic(err)
-	}
-	tp := tracesdk.NewTracerProvider(
-		tracesdk.WithBatcher(exp),
-		tracesdk.WithResource(resource.NewSchemaless(
-			semconv.ServiceNameKey.String(Name),
-		)),
-	)
 
-	app, cleanup, err := wireApp(bc.Server, &rc, bc.Data, bc.Casbin, logger, tp)
+	logger := log.With(log.NewStdLogger(os.Stdout),
+		"ts", log.DefaultTimestamp,
+		"caller", log.DefaultCaller,
+		"service.id", id,
+		"service.name", Name,
+		"service.version", Version,
+		"trace.id", tracing.TraceID(),
+		"span.id", tracing.SpanID(),
+	)
+	//exp, err := jaeger.New(jaeger.WithCollectorEndpoint(jaeger.WithEndpoint(bc.Trace.Endpoint)))
+	//if err != nil {
+	//	panic(err)
+	//}
+	//tp := tracesdk.NewTracerProvider(
+	//	tracesdk.WithBatcher(exp),
+	//	tracesdk.WithResource(resource.NewSchemaless(
+	//		semconv.ServiceNameKey.String(Name),
+	//	)),
+	//)
+	//, *tracesdk.TracerProvider
+	app, cleanup, err := wireApp(bc.Server, &rc, bc.Data, bc.Casbin, logger)
 	if err != nil {
 		panic(err)
 	}

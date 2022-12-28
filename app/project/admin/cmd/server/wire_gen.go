@@ -13,18 +13,17 @@ import (
 	"github.com/ZQCard/kratos-base-project/app/project/admin/internal/service"
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/log"
-	"go.opentelemetry.io/otel/sdk/trace"
 )
 
 // Injectors from wire.go:
 
 // wireApp init kratos application.
-func wireApp(confServer *conf.Server, registry *conf.Registry, confData *conf.Data, auth *conf.Auth, confService *conf.Service, logger log.Logger, tracerProvider *trace.TracerProvider) (*kratos.App, func(), error) {
+func wireApp(confServer *conf.Server, registry *conf.Registry, confData *conf.Data, auth *conf.Auth, confService *conf.Service, logger log.Logger) (*kratos.App, func(), error) {
 	cmdable := data.NewRedisCmd(confData, logger)
 	discovery := data.NewDiscovery(registry)
-	administratorClient := data.NewAdministratorServiceClient(auth, confService, discovery, tracerProvider)
-	authorizationClient := data.NewAuthorizationServiceClient(auth, confService, discovery, tracerProvider)
-	filesClient := data.NewFilesServiceClient(auth, confService, discovery, tracerProvider)
+	administratorClient := data.NewAdministratorServiceClient(auth, confService, discovery)
+	authorizationClient := data.NewAuthorizationServiceClient(auth, confService, discovery)
+	filesClient := data.NewFilesServiceClient(auth, confService, discovery)
 	dataData, err := data.NewData(logger, cmdable, administratorClient, authorizationClient, filesClient)
 	if err != nil {
 		return nil, nil, err
@@ -33,7 +32,7 @@ func wireApp(confServer *conf.Server, registry *conf.Registry, confData *conf.Da
 	authorizationRepo := data.NewAuthorizationRepo(dataData, logger)
 	filesRepo := data.NewFilesRepo(dataData, logger)
 	adminInterface := service.NewAdminInterface(administratorRepo, authorizationRepo, filesRepo, logger)
-	httpServer := server.NewHTTPServer(confServer, auth, adminInterface, tracerProvider, logger)
+	httpServer := server.NewHTTPServer(confServer, auth, adminInterface, logger)
 	registrar := data.NewRegistrar(registry)
 	app := newApp(logger, httpServer, registrar)
 	return app, func() {
