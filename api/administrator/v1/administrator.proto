@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package api.administrator.v1;
 
-option go_package = "github.com/ZQCard/kratos-base-project/api/administrator/v1;v1";
+option go_package = "austin-v2/api/administrator/v1;v1";
 option java_multiple_files = true;
 option java_package = "api.administrator.v1";
 

@@ -5,7 +5,7 @@
  Source Server Type    : MySQL
  Source Server Version : 80031
  Source Host           : 127.0.0.1:3306
- Source Schema         : kratos-base-project-authorization
+ Source Schema         : austin-v2-authorization
 
  Target Server Type    : MySQL
  Target Server Version : 80031

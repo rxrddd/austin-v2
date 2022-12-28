@@ -1,9 +1,9 @@
 package casbin
 
 import (
+	"austin-v2/pkg/errResponse"
 	"context"
 	"fmt"
-	"github.com/ZQCard/kratos-base-project/pkg/errResponse"
 	"github.com/casbin/casbin/v2"
 	"github.com/casbin/casbin/v2/model"
 	"github.com/casbin/casbin/v2/persist"

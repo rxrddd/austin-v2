@@ -1,8 +1,8 @@
 package service
 
 import (
+	"austin-v2/api/project/admin/v1"
 	"context"
-	"github.com/ZQCard/kratos-base-project/api/project/admin/v1"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 

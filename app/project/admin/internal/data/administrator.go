@@ -1,12 +1,12 @@
 package data
 
 import (
+	administratorServiceV1 "austin-v2/api/administrator/v1"
+	v1 "austin-v2/api/project/admin/v1"
+	"austin-v2/app/project/admin/internal/conf"
+	"austin-v2/pkg/errResponse"
+	"austin-v2/pkg/utils/encryption"
 	"context"
-	administratorServiceV1 "github.com/ZQCard/kratos-base-project/api/administrator/v1"
-	v1 "github.com/ZQCard/kratos-base-project/api/project/admin/v1"
-	"github.com/ZQCard/kratos-base-project/app/project/admin/internal/conf"
-	"github.com/ZQCard/kratos-base-project/pkg/errResponse"
-	"github.com/ZQCard/kratos-base-project/pkg/utils/encryption"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
 	"github.com/go-kratos/kratos/v2/registry"

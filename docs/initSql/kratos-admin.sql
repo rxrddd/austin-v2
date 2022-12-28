@@ -335,11 +335,10 @@ CREATE TABLE `sys_administrator` (
 
 -- ----------------------------
 -- Records of sys_administrator
--- ----------------------------
-BEGIN;
-INSERT INTO `sys_administrator` VALUES (18, 'admin', 'b9819e53ed8ea2b2b422ff1d2f1317ca', 'e701bf4e804804773099b4b20130d418', '18158445331', '卡牌', 'https://kratos-base-project.oss-cn-hangzhou.aliyuncs.com/3441660123117_.pic.jpg', 1, '超级管理员', '2022-12-07 17:05:08', '127.0.0.1:62201', '2022-08-17 16:15:17', '2022-11-22 17:41:38', '');
-INSERT INTO `sys_administrator` VALUES (27, 'test', '8ab138656a71b1e001aa12cc7298f901', 'cb1461e3e59ec7a2237bf5f5fa105ab5', '18158445332', '测试', 'https://kratos-base-project.oss-cn-hangzhou.aliyuncs.com/3441660123117_.pic.jpg', 1, '测试管理员', '2022-12-07 17:05:50', '127.0.0.1:59530', '2022-12-07 11:28:48', '2022-12-07 11:28:48', '');
-INSERT INTO `sys_administrator` VALUES (28, 'guest', 'a5ac55c657800544fa68377d4bb64505', 'dabba3032e7d0c51c48e7ca794e589b8', '18158445333', '游客', 'https://kratos-base-project.oss-cn-hangzhou.aliyuncs.com/3441660123117_.pic.jpg', 1, '游客', '2022-12-07 17:06:15', '127.0.0.1:59572', '2022-12-07 11:29:26', '2022-12-07 11:29:26', '');
+-- ----------------------------BEGIN;
+INSERT INTO `sys_administrator` VALUES (18, 'admin', 'b9819e53ed8ea2b2b422ff1d2f1317ca', 'e701bf4e804804773099b4b20130d418', '18158445331', '卡牌', 'https://austin-v2.oss-cn-hangzhou.aliyuncs.com/3441660123117_.pic.jpg', 1, '超级管理员', '2022-12-07 17:05:08', '127.0.0.1:62201', '2022-08-17 16:15:17', '2022-11-22 17:41:38', '');
+INSERT INTO `sys_administrator` VALUES (27, 'test', '8ab138656a71b1e001aa12cc7298f901', 'cb1461e3e59ec7a2237bf5f5fa105ab5', '18158445332', '测试', 'https://austin-v2.oss-cn-hangzhou.aliyuncs.com/3441660123117_.pic.jpg', 1, '测试管理员', '2022-12-07 17:05:50', '127.0.0.1:59530', '2022-12-07 11:28:48', '2022-12-07 11:28:48', '');
+INSERT INTO `sys_administrator` VALUES (28, 'guest', 'a5ac55c657800544fa68377d4bb64505', 'dabba3032e7d0c51c48e7ca794e589b8', '18158445333', '游客', 'https://austin-v2.oss-cn-hangzhou.aliyuncs.com/3441660123117_.pic.jpg', 1, '游客', '2022-12-07 17:06:15', '127.0.0.1:59572', '2022-12-07 11:29:26', '2022-12-07 11:29:26', '');
 COMMIT;
 
 SET FOREIGN_KEY_CHECKS = 1;

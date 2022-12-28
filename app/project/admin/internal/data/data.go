@@ -1,10 +1,10 @@
 package data
 
 import (
-	administratorV1 "github.com/ZQCard/kratos-base-project/api/administrator/v1"
-	authorizationV1 "github.com/ZQCard/kratos-base-project/api/authorization/v1"
-	filesServiceV1 "github.com/ZQCard/kratos-base-project/api/files/v1"
-	"github.com/ZQCard/kratos-base-project/app/project/admin/internal/conf"
+	administratorV1 "austin-v2/api/administrator/v1"
+	authorizationV1 "austin-v2/api/authorization/v1"
+	filesServiceV1 "austin-v2/api/files/v1"
+	"austin-v2/app/project/admin/internal/conf"
 	"github.com/go-kratos/kratos/contrib/registry/etcd/v2"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/registry"

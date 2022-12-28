@@ -1,9 +1,9 @@
 package service
 
 import (
+	v1 "austin-v2/api/administrator/v1"
+	"austin-v2/app/administrator/internal/biz"
 	"context"
-	v1 "github.com/ZQCard/kratos-base-project/api/administrator/v1"
-	"github.com/ZQCard/kratos-base-project/app/administrator/internal/biz"
 	"github.com/go-kratos/kratos/v2/log"
 )
 

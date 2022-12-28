@@ -1,8 +1,8 @@
 package service
 
 import (
+	"austin-v2/api/authorization/v1"
 	"context"
-	"github.com/ZQCard/kratos-base-project/api/authorization/v1"
 )
 
 func (s *AuthorizationService) GetRoleMenuTree(ctx context.Context, req *v1.GetRoleMenuRequest) (*v1.GetMenuTreeReply, error) {

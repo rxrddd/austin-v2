@@ -1,14 +1,14 @@
 package data
 
 import (
+	v1 "austin-v2/api/project/admin/v1"
+	"austin-v2/app/project/admin/internal/conf"
 	"context"
-	v1 "github.com/ZQCard/kratos-base-project/api/project/admin/v1"
-	"github.com/ZQCard/kratos-base-project/app/project/admin/internal/conf"
 	"github.com/go-kratos/kratos/v2/log"
 	"golang.org/x/sync/singleflight"
 	"google.golang.org/protobuf/types/known/emptypb"
 
-	authorizationServiceV1 "github.com/ZQCard/kratos-base-project/api/authorization/v1"
+	authorizationServiceV1 "austin-v2/api/authorization/v1"
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
 	"github.com/go-kratos/kratos/v2/registry"
 	"github.com/go-kratos/kratos/v2/transport/grpc"

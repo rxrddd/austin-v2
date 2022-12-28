@@ -1,4 +1,4 @@
-# kratos-base-project管理后台接口文档
+# austin-v2管理后台接口文档
 
 ## 调用方式
 使用http请求进行API接口调用，返回数据给是为json格式，对于POST请求传输application/json格式的数据。
@@ -241,7 +241,7 @@ GET {{host}}/admin/v1/getAdministratorInfo
 	"code": 0,
 	"message": "success",
 	"data": {
-		"avatar": "https://kratos-base-project.oss-cn-hangzhou.aliyuncs.com/3441660123117_.pic.jpg",
+		"avatar": "https://austin-v2.oss-cn-hangzhou.aliyuncs.com/3441660123117_.pic.jpg",
 		"createdAt": "2022-08-19 00:54:16",
 		"deletedAt": "",
 		"id": "19",
@@ -314,7 +314,7 @@ GET {{host}}/admin/v1/getAdministrators
 	"data": {
 		"list": [
 			{
-				"avatar": "https://kratos-base-project.oss-cn-hangzhou.aliyuncs.com/3441660123117_.pic.jpg",
+				"avatar": "https://austin-v2.oss-cn-hangzhou.aliyuncs.com/3441660123117_.pic.jpg",
 				"createdAt": "2022-08-17 16:15:17",
 				"deletedAt": "",
 				"id": "18",
@@ -383,7 +383,7 @@ GET {{host}}/admin/v1/getAdministrator?id=18
 	"code": 0,
 	"message": "success",
 	"data": {
-		"avatar": "https://kratos-base-project.oss-cn-hangzhou.aliyuncs.com/3441660123117_.pic.jpg",
+		"avatar": "https://austin-v2.oss-cn-hangzhou.aliyuncs.com/3441660123117_.pic.jpg",
 		"createdAt": "2022-08-19 00:54:16",
 		"deletedAt": "",
 		"id": "19",
@@ -455,7 +455,7 @@ POST {{host}}/admin/v1/administrator
     "password": "123456",
     "mobile": "18158445363",
     "nickname": "卡牌",
-    "avatar": "https://kratos-base-project.oss-cn-hangzhou.aliyuncs.com/3441660123117_.pic.jpg",
+    "avatar": "https://austin-v2.oss-cn-hangzhou.aliyuncs.com/3441660123117_.pic.jpg",
     "status": "1"
 }
 ```
@@ -469,7 +469,7 @@ POST {{host}}/admin/v1/administrator
 	"code": 0,
 	"message": "success",
 	"data": {
-		"avatar": "https://kratos-base-project.oss-cn-hangzhou.aliyuncs.com/3441660123117_.pic.jpg",
+		"avatar": "https://austin-v2.oss-cn-hangzhou.aliyuncs.com/3441660123117_.pic.jpg",
 		"createdAt": "2022-11-10 23:41:20",
 		"deletedAt": "",
 		"id": "22",
@@ -541,7 +541,7 @@ PUT {{host}}/admin/v1/administrator
     "password": "123456",
     "mobile": "18158445363",
     "nickname": "卡牌",
-    "avatar": "https://kratos-base-project.oss-cn-hangzhou.aliyuncs.com/3441660123117_.pic.jpg",
+    "avatar": "https://austin-v2.oss-cn-hangzhou.aliyuncs.com/3441660123117_.pic.jpg",
     "status": "1"
 }
 ```
@@ -555,7 +555,7 @@ PUT {{host}}/admin/v1/administrator
 	"code": 0,
 	"message": "success",
 	"data": {
-		"avatar": "https://kratos-base-project.oss-cn-hangzhou.aliyuncs.com/3441660123117_.pic.jpg",
+		"avatar": "https://austin-v2.oss-cn-hangzhou.aliyuncs.com/3441660123117_.pic.jpg",
 		"createdAt": "2022-11-10 23:41:20",
 		"deletedAt": "",
 		"id": "22",

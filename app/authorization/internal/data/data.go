@@ -1,7 +1,7 @@
 package data
 
 import (
-	"github.com/ZQCard/kratos-base-project/app/authorization/internal/conf"
+	"austin-v2/app/authorization/internal/conf"
 	"github.com/casbin/casbin/v2"
 	"github.com/go-kratos/kratos/contrib/registry/etcd/v2"
 	"github.com/go-redis/redis"
@@ -37,7 +37,7 @@ type Data struct {
 // NewData .
 func NewData(db *gorm.DB, redisCmd redis.Cmdable, logger log.Logger) (*Data, func(), error) {
 	logs := log.NewHelper(log.With(logger, "module", "authorization-service/data"))
-	module := "kratos-base-project/authorization-service/data"
+	module := "austin-v2/authorization-service/data"
 	d := &Data{
 		Module:   module,
 		db:       db,

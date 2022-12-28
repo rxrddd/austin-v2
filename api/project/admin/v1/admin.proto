@@ -6,7 +6,7 @@ import "google/protobuf/empty.proto";
 
 package api.admin.v1;
 
-option go_package = "github.com/ZQCard/kratos-base-project/project/admin/v1;v1";
+option go_package = "austin-v2/project/admin/v1;v1";
 
 service Admin {
 	// 管理员登陆

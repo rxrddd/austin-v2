@@ -1,14 +1,14 @@
 package data
 
 import (
+	"austin-v2/app/administrator/internal/biz"
+	entity2 "austin-v2/app/administrator/internal/data/entity"
+	"austin-v2/pkg/errResponse"
+	"austin-v2/pkg/utils/encryption"
+	"austin-v2/pkg/utils/redisHelper"
+	"austin-v2/pkg/utils/timeHelper"
 	"context"
 	"encoding/json"
-	"github.com/ZQCard/kratos-base-project/app/administrator/internal/biz"
-	entity2 "github.com/ZQCard/kratos-base-project/app/administrator/internal/data/entity"
-	"github.com/ZQCard/kratos-base-project/pkg/errResponse"
-	"github.com/ZQCard/kratos-base-project/pkg/utils/encryption"
-	"github.com/ZQCard/kratos-base-project/pkg/utils/redisHelper"
-	"github.com/ZQCard/kratos-base-project/pkg/utils/timeHelper"
 	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/log"
 	"gorm.io/gorm"

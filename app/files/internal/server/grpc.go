@@ -1,9 +1,9 @@
 package server
 
 import (
-	v1 "github.com/ZQCard/kratos-base-project/api/files/v1"
-	"github.com/ZQCard/kratos-base-project/app/files/internal/conf"
-	"github.com/ZQCard/kratos-base-project/app/files/internal/service"
+	v1 "austin-v2/api/files/v1"
+	"austin-v2/app/files/internal/conf"
+	"austin-v2/app/files/internal/service"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
 	"github.com/go-kratos/kratos/v2/transport/grpc"

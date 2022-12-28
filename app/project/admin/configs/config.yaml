@@ -1,12 +1,12 @@
 service:
-  name: kratos-base-project.adminInterface.service
+  name: austin-v2.adminInterface.service
   version: v1
   administrator:
-    endpoint: discovery:///kratos-base-project.administrator.service
+    endpoint: discovery:///austin-v2.administrator.service
   authorization:
-    endpoint: discovery:///kratos-base-project.authorization.service
+    endpoint: discovery:///austin-v2.authorization.service
   files:
-    endpoint: discovery:///kratos-base-project.files.service
+    endpoint: discovery:///austin-v2.files.service
 trace:
   endpoint: http://127.0.0.1:14268/api/traces
 server:
@@ -20,8 +20,8 @@ data:
     read_timeout: "0.2s"
     write_timeout: "0.2s"
 auth:
-  service_key: "kratos-base-project-admin-service-key"
-  api_key: "kratos-base-project-admin-api-key"
+  service_key: "austin-v2-admin-service-key"
+  api_key: "austin-v2-admin-api-key"
   api_key_expire: "86400"
 
   casbin_source: root:123456@tcp(127.0.0.1:3306)/kratos-admin?parseTime=true&collation=utf8mb4_unicode_ci&loc=Asia%2FShanghai&charset=utf8mb4

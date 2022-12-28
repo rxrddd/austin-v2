@@ -7,7 +7,7 @@
 
 [演示地址](http://kratos.niu12.com/#/system/adminstrator)
 
-[项目前端地址](https://github.com/ZQCard/kratos-base-project-frontend)
+[项目前端地址](https://austin-v2-frontend)
 
 PS:演示数据由定时任务服务，每10分钟初始化恢复demo数据库，可能会导致你的数据丢失
 ## 项目目录
@@ -75,12 +75,12 @@ orm: GORM
 ##### 后端
 1.下载
 ```
-$ go clone github.com/ZQCard/kratos-base-project
+$ go clone austin-v2
 ```
 
 2.安装依赖
 ```
-$ cd kratos-base-project && go mod tidy
+$ cd austin-v2 && go mod tidy
 ```
 
 3.设置配置 以管理员服务为例, 配置文件位于service/configs/  初始化sql文件位于 docs/initSql
@@ -120,7 +120,7 @@ $ make docker
 3.运行容器 
 ```
 # 注意端口映射设置， docker部署容器9000端口， 本地开发端口不能全是9000
-docker run -p 9000:9000 --name kratos-base-project-administrator --restart=always -v /data/project/kratos-base-project/app/administrator/service/configs:/data/conf -d kratos-base-project/administrator-service:0.1.0
+docker run -p 9000:9000 --name austin-v2-administrator --restart=always -v /data/project/austin-v2/app/administrator/service/configs:/data/conf -d austin-v2/administrator-service:0.1.0
 ```
 ##### 前端
 1.进入前端目录
@@ -140,7 +140,7 @@ server {
   listen [::]:80;
   server_name kratos.niu12.com;
   index index.html;
-  root /data/project/kratos-base-project/web/dist;
+  root /data/project/austin-v2/web/dist;
 
   # 管理后台接口转发代理
   location  /api/ {
@@ -155,4 +155,4 @@ server {
 
 * 有任何建议，请扫码添加我微信进行交流。
 
-![扫码提建议](https://kratos-base-project.oss-cn-hangzhou.aliyuncs.com/f8f5dacdf87cf358c98c9eb60ce2a13.jpg)
+![扫码提建议](https://austin-v2.oss-cn-hangzhou.aliyuncs.com/f8f5dacdf87cf358c98c9eb60ce2a13.jpg)

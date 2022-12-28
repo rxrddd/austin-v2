@@ -7,11 +7,11 @@
 package main
 
 import (
-	"github.com/ZQCard/kratos-base-project/app/files/internal/biz"
-	"github.com/ZQCard/kratos-base-project/app/files/internal/conf"
-	"github.com/ZQCard/kratos-base-project/app/files/internal/data"
-	"github.com/ZQCard/kratos-base-project/app/files/internal/server"
-	"github.com/ZQCard/kratos-base-project/app/files/internal/service"
+	"austin-v2/app/files/internal/biz"
+	"austin-v2/app/files/internal/conf"
+	"austin-v2/app/files/internal/data"
+	"austin-v2/app/files/internal/server"
+	"austin-v2/app/files/internal/service"
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/log"
 	"go.opentelemetry.io/otel/sdk/trace"

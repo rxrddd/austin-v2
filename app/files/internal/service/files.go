@@ -1,12 +1,12 @@
 package service
 
 import (
+	"austin-v2/app/files/internal/biz"
 	"context"
-	"github.com/ZQCard/kratos-base-project/app/files/internal/biz"
 	"github.com/go-kratos/kratos/v2/log"
 	"google.golang.org/protobuf/types/known/emptypb"
 
-	v1 "github.com/ZQCard/kratos-base-project/api/files/v1"
+	v1 "austin-v2/api/files/v1"
 )
 
 type FilesService struct {

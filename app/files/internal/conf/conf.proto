@@ -4,7 +4,7 @@ package kratos.api;
 
 import "google/protobuf/duration.proto";
 
-option go_package = "github.com/ZQCard/kratos-base-project/app/files/internal/conf;conf";
+option go_package = "austin-v2/app/files/internal/conf;conf";
 
 message Bootstrap {
   Service service = 1;

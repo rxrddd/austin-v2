@@ -1,7 +1,7 @@
 package data
 
 import (
-	"github.com/ZQCard/kratos-base-project/app/administrator/internal/conf"
+	"austin-v2/app/administrator/internal/conf"
 	"github.com/go-kratos/kratos/contrib/registry/etcd/v2"
 	"github.com/go-redis/redis"
 	etcdclient "go.etcd.io/etcd/client/v3"
@@ -34,7 +34,7 @@ type Data struct {
 
 // NewData .
 func NewData(db *gorm.DB, redisCmd redis.Cmdable, logger log.Logger) (*Data, func(), error) {
-	module := "kratos-base-project/administrator-service/data"
+	module := "austin-v2/administrator-service/data"
 	logs := log.NewHelper(log.With(logger, "module", module))
 
 	d := &Data{

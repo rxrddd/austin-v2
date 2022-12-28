@@ -1,11 +1,11 @@
 package data
 
 import (
+	"austin-v2/app/files/internal/biz"
+	"austin-v2/pkg/errResponse"
 	"bytes"
 	"context"
 	"fmt"
-	"github.com/ZQCard/kratos-base-project/app/files/internal/biz"
-	"github.com/ZQCard/kratos-base-project/pkg/errResponse"
 	openapi "github.com/alibabacloud-go/darabonba-openapi/client"
 	sts "github.com/alibabacloud-go/sts-20150401/client"
 	"github.com/alibabacloud-go/tea/tea"
@@ -15,7 +15,7 @@ import (
 	"strings"
 )
 
-var OssSessionName = "kratos-base-project"
+var OssSessionName = "austin-v2"
 
 type FilesRepo struct {
 	data *Data

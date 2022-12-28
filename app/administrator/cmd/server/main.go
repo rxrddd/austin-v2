@@ -1,9 +1,9 @@
 package main
 
 import (
+	"austin-v2/app/administrator/internal/conf"
+	"austin-v2/pkg/utils/stringHelper"
 	"flag"
-	"github.com/ZQCard/kratos-base-project/app/administrator/internal/conf"
-	"github.com/ZQCard/kratos-base-project/pkg/utils/stringHelper"
 	"github.com/go-kratos/kratos/v2/registry"
 	"os"
 

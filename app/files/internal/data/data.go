@@ -1,7 +1,7 @@
 package data
 
 import (
-	"github.com/ZQCard/kratos-base-project/app/files/internal/conf"
+	"austin-v2/app/files/internal/conf"
 	"time"
 
 	"github.com/aliyun/aliyun-oss-go-sdk/oss"

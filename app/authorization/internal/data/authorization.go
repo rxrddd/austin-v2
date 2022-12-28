@@ -1,9 +1,9 @@
 package data
 
 import (
+	"austin-v2/app/authorization/internal/biz"
+	"austin-v2/app/authorization/internal/conf"
 	"context"
-	"github.com/ZQCard/kratos-base-project/app/authorization/internal/biz"
-	"github.com/ZQCard/kratos-base-project/app/authorization/internal/conf"
 	"github.com/casbin/casbin/v2"
 	"github.com/casbin/casbin/v2/model"
 	gormadapter "github.com/casbin/gorm-adapter/v3"

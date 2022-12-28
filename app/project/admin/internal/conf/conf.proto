@@ -4,7 +4,7 @@ package kratos.api;
 
 import "google/protobuf/duration.proto";
 
-option go_package = "github.com/ZQCard/kratos-base-project/app/admin/service/internal/conf;conf";
+option go_package = "austin-v2/app/admin/service/internal/conf;conf";
 
 message Bootstrap {
   Trace trace = 1;

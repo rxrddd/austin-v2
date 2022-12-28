@@ -1,8 +1,8 @@
 package biz
 
 import (
+	"austin-v2/pkg/errResponse"
 	"context"
-	"github.com/ZQCard/kratos-base-project/pkg/errResponse"
 	kerrors "github.com/go-kratos/kratos/v2/errors"
 )
 

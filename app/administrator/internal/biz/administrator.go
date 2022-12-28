@@ -1,13 +1,13 @@
 package biz
 
 import (
+	v1 "austin-v2/api/administrator/v1"
+	"austin-v2/pkg/errResponse"
 	"context"
-	v1 "github.com/ZQCard/kratos-base-project/api/administrator/v1"
-	"github.com/ZQCard/kratos-base-project/pkg/errResponse"
 	"net/http"
 
-	"github.com/ZQCard/kratos-base-project/pkg/utils/typeConvert"
-	"github.com/ZQCard/kratos-base-project/pkg/validate"
+	"austin-v2/pkg/utils/typeConvert"
+	"austin-v2/pkg/validate"
 
 	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/log"

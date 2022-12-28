@@ -1,7 +1,7 @@
 package encryption
 
 import (
-	"github.com/ZQCard/kratos-base-project/pkg/utils/stringHelper"
+	"austin-v2/pkg/utils/stringHelper"
 )
 
 // HashPassword 密码加密

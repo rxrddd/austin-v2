@@ -1,9 +1,9 @@
 package server
 
 import (
-	"github.com/ZQCard/kratos-base-project/api/authorization/v1"
-	"github.com/ZQCard/kratos-base-project/app/authorization/internal/conf"
-	"github.com/ZQCard/kratos-base-project/app/authorization/internal/service"
+	"austin-v2/api/authorization/v1"
+	"austin-v2/app/authorization/internal/conf"
+	"austin-v2/app/authorization/internal/service"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware/logging"
 	"github.com/go-kratos/kratos/v2/middleware/recovery"

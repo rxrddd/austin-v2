@@ -1,8 +1,8 @@
 package service
 
 import (
-	"github.com/ZQCard/kratos-base-project/api/project/admin/v1"
-	data2 "github.com/ZQCard/kratos-base-project/app/project/admin/internal/data"
+	"austin-v2/api/project/admin/v1"
+	data2 "austin-v2/app/project/admin/internal/data"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/google/wire"
 )

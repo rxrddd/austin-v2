@@ -7,10 +7,10 @@
 package main
 
 import (
-	"github.com/ZQCard/kratos-base-project/app/project/admin/internal/conf"
-	"github.com/ZQCard/kratos-base-project/app/project/admin/internal/data"
-	"github.com/ZQCard/kratos-base-project/app/project/admin/internal/server"
-	"github.com/ZQCard/kratos-base-project/app/project/admin/internal/service"
+	"austin-v2/app/project/admin/internal/conf"
+	"austin-v2/app/project/admin/internal/data"
+	"austin-v2/app/project/admin/internal/server"
+	"austin-v2/app/project/admin/internal/service"
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/log"
 )

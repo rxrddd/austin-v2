@@ -6,11 +6,11 @@
 package main
 
 import (
-	"github.com/ZQCard/kratos-base-project/app/authorization/internal/biz"
-	"github.com/ZQCard/kratos-base-project/app/authorization/internal/conf"
-	"github.com/ZQCard/kratos-base-project/app/authorization/internal/data"
-	"github.com/ZQCard/kratos-base-project/app/authorization/internal/server"
-	"github.com/ZQCard/kratos-base-project/app/authorization/internal/service"
+	"austin-v2/app/authorization/internal/biz"
+	"austin-v2/app/authorization/internal/conf"
+	"austin-v2/app/authorization/internal/data"
+	"austin-v2/app/authorization/internal/server"
+	"austin-v2/app/authorization/internal/service"
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/google/wire"

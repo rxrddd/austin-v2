@@ -6,7 +6,7 @@ API_PROTO_FILES=$(shell cd ../../../api/$(APP_RELATIVE_PATH) && find . -name *.p
 KRATOS_VERSION=$(shell go mod graph |grep go-kratos/kratos/v2 |head -n 1 |awk -F '@' '{print $$2}')
 KRATOS=$(GOPATH)/pkg/mod/github.com/go-kratos/kratos/v2@$(KRATOS_VERSION)
 APP_NAME=$(shell echo $(APP_RELATIVE_PATH) | sed -En "s/\//-/p")
-DOCKER_IMAGE=$(shell echo $(APP_NAME) |awk -F '@' '{print "kratos-base-project/" $$0 ":0.1.0"}')
+DOCKER_IMAGE=$(shell echo $(APP_NAME) |awk -F '@' '{print "austin-v2/" $$0 ":0.1.0"}')
 
 .PHONY: init
 # init env

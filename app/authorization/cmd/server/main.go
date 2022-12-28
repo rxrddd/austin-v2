@@ -1,9 +1,9 @@
 package main
 
 import (
+	"austin-v2/app/authorization/internal/conf"
+	"austin-v2/pkg/utils/stringHelper"
 	"flag"
-	"github.com/ZQCard/kratos-base-project/app/authorization/internal/conf"
-	"github.com/ZQCard/kratos-base-project/pkg/utils/stringHelper"
 	"github.com/go-kratos/kratos/v2/encoding/json"
 	"github.com/go-kratos/kratos/v2/registry"
 	"google.golang.org/protobuf/encoding/protojson"

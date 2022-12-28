@@ -1,4 +1,4 @@
-module github.com/ZQCard/kratos-base-project
+module austin-v2
 
 go 1.17
 

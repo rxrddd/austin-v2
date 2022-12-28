@@ -1,10 +1,10 @@
 package service
 
 import (
+	v1 "austin-v2/api/project/admin/v1"
+	"austin-v2/pkg/errResponse"
 	"bytes"
 	"context"
-	v1 "github.com/ZQCard/kratos-base-project/api/project/admin/v1"
-	"github.com/ZQCard/kratos-base-project/pkg/errResponse"
 	kerrors "github.com/go-kratos/kratos/v2/errors"
 	khttp "github.com/go-kratos/kratos/v2/transport/http"
 	"google.golang.org/protobuf/types/known/emptypb"

@@ -1,12 +1,12 @@
 package data
 
 import (
+	"austin-v2/app/authorization/internal/biz"
+	entity2 "austin-v2/app/authorization/internal/data/entity"
+	"austin-v2/pkg/errResponse"
+	"austin-v2/pkg/utils/redisHelper"
 	"context"
 	"encoding/json"
-	"github.com/ZQCard/kratos-base-project/app/authorization/internal/biz"
-	entity2 "github.com/ZQCard/kratos-base-project/app/authorization/internal/data/entity"
-	"github.com/ZQCard/kratos-base-project/pkg/errResponse"
-	"github.com/ZQCard/kratos-base-project/pkg/utils/redisHelper"
 	kerrors "github.com/go-kratos/kratos/v2/errors"
 )
 

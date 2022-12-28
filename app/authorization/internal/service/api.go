@@ -1,9 +1,9 @@
 package service
 
 import (
+	"austin-v2/api/authorization/v1"
+	"austin-v2/app/authorization/internal/biz"
 	"context"
-	"github.com/ZQCard/kratos-base-project/api/authorization/v1"
-	"github.com/ZQCard/kratos-base-project/app/authorization/internal/biz"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 

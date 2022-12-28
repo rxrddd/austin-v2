@@ -1,14 +1,14 @@
 package server
 
 import (
+	"austin-v2/api/project/admin/v1"
+	"austin-v2/app/project/admin/internal/conf"
+	"austin-v2/app/project/admin/internal/data"
+	"austin-v2/app/project/admin/internal/service"
+	"austin-v2/pkg/errResponse"
+	"austin-v2/pkg/middleware/casbin"
 	"context"
 	"encoding/json"
-	"github.com/ZQCard/kratos-base-project/api/project/admin/v1"
-	"github.com/ZQCard/kratos-base-project/app/project/admin/internal/conf"
-	"github.com/ZQCard/kratos-base-project/app/project/admin/internal/data"
-	"github.com/ZQCard/kratos-base-project/app/project/admin/internal/service"
-	"github.com/ZQCard/kratos-base-project/pkg/errResponse"
-	"github.com/ZQCard/kratos-base-project/pkg/middleware/casbin"
 	"github.com/casbin/casbin/v2/model"
 	gormadapter "github.com/casbin/gorm-adapter/v3"
 	"github.com/go-kratos/kratos/v2/errors"

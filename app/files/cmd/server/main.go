@@ -1,9 +1,9 @@
 package main
 
 import (
+	"austin-v2/app/files/internal/conf"
+	"austin-v2/pkg/utils/stringHelper"
 	"flag"
-	"github.com/ZQCard/kratos-base-project/app/files/internal/conf"
-	"github.com/ZQCard/kratos-base-project/pkg/utils/stringHelper"
 	"github.com/go-kratos/kratos/v2/registry"
 	"go.opentelemetry.io/otel/sdk/resource"
 	"os"

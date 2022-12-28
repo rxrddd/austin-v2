@@ -1,5 +1,5 @@
 service:
-  name: kratos-base-project.authorization.service
+  name: austin-v2.authorization.service
   version: v1
 trace:
   endpoint: http://127.0.0.1:14268/api/traces
@@ -40,5 +40,5 @@ r = sub, obj, act
   
   m = g(r.sub, p.sub) && keyMatch2(r.obj, p.obj) && regexMatch(r.act, p.act)"
 auth:
-  service_key: "kratos-base-project-admin-service-key"
-  api_key: "kratos-base-project-admin-api-key"
+  service_key: "austin-v2-admin-service-key"
+  api_key: "austin-v2-admin-api-key"
