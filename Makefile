@@ -1,6 +1,6 @@
 GOPATH:=$(shell go env GOPATH)
 VERSION=$(shell git describe --tags --always)
-#APP_RELATIVE_PATH=$(shell a=`basename $$PWD` && cd .. && b=`basename $$PWD` && echo $$b/$$a)
+APP_RELATIVE_PATH=$(shell a=`basename $$PWD` && cd .. && b=`basename $$PWD` && echo $$a)
 INTERNAL_PROTO_FILES=$(shell find internal -name *.proto)
 API_PROTO_FILES=$(shell cd ../../../api/$(APP_RELATIVE_PATH) && find . -name *.proto)
 KRATOS_VERSION=$(shell go mod graph |grep go-kratos/kratos/v2 |head -n 1 |awk -F '@' '{print $$2}')
@@ -20,8 +20,8 @@ init:
 .PHONY: grpc
 # generate grpc code
 grpc:
-	 cd ../../../api/$(APP_RELATIVE_PATH) && protoc --proto_path=. \
-           --proto_path=../../../third_party \
+	 cd ../../api/$(APP_RELATIVE_PATH) && protoc --proto_path=. \
+           --proto_path=../../third_party \
            --go_out=paths=source_relative:. \
            --go-grpc_out=paths=source_relative:. \
            $(API_PROTO_FILES)
@@ -29,8 +29,8 @@ grpc:
 .PHONY: http
 # generate http code
 http:
-	cd ../../../api/$(APP_RELATIVE_PATH) && protoc --proto_path=. \
-           --proto_path=../../../third_party \
+	cd ../../api/$(APP_RELATIVE_PATH) && protoc --proto_path=. \
+           --proto_path=../../third_party \
            --go_out=paths=source_relative:. \
            --go-http_out=paths=source_relative:. \
            $(API_PROTO_FILES)
@@ -38,8 +38,8 @@ http:
 .PHONY: errors
 # generate errors code
 errors:
-	cd ../../../api/$(APP_RELATIVE_PATH) && protoc --proto_path=. \
-           --proto_path=../../../third_party \
+	cd ../../api/$(APP_RELATIVE_PATH) && protoc --proto_path=. \
+           --proto_path=../../third_party \
            --go_out=paths=source_relative:. \
            --go-errors_out=paths=source_relative:. \
            $(API_PROTO_FILES)
@@ -47,8 +47,8 @@ errors:
 .PHONY: swagger
 # generate swagger
 swagger:
-	cd ../../../api/$(APP_RELATIVE_PATH) && protoc --proto_path=. \
-	        --proto_path=../../../third_party \
+	cd ../../api/$(APP_RELATIVE_PATH) && protoc --proto_path=. \
+	        --proto_path=../../third_party \
 	        --openapiv2_out . \
 	        --openapiv2_opt logtostderr=true \
            $(API_PROTO_FILES)
@@ -107,7 +107,7 @@ wire:
 # generate internal proto
 config:
 	protoc --proto_path=. \
-	       --proto_path=../../../third_party \
+	       --proto_path=../../third_party \
  	       --go_out=paths=source_relative:. \
 	       $(INTERNAL_PROTO_FILES)
 
