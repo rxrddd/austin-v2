@@ -98,7 +98,7 @@ func NewRedisCmd(conf *conf.Data, logger log.Logger) redis.Cmdable {
 		DialTimeout:  time.Second * 2,
 		PoolSize:     10,
 	})
-	err := client.Ping().Err()
+	err := client.Ping(context.Background()).Err()
 	if err != nil {
 		logs.Fatalf("redis connect error: %v", err)
 	}

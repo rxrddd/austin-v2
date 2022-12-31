@@ -61,10 +61,9 @@ func NewBroker(c *conf.Data, logger log.Logger) broker.Broker {
 	)
 
 	_ = b.Init()
-
+	logs := log.NewHelper(log.With(logger, "module", "msgpusher-worker/data/broker"))
 	if err := b.Connect(); err != nil {
-		log.Error(`err`, err)
-		panic(err)
+		logs.Fatalf("broker connect error: %v", err)
 	}
 	log.NewHelper(logger).Info("NewBroker " + b.Name())
 	return b

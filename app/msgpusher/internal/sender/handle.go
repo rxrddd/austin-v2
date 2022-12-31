@@ -30,7 +30,7 @@ func NewHandle(
 		},
 	}
 
-	h.registerHandler(NewSms(h.svcCtx))
+	h.registerHandler(NewSms())
 
 	return h
 }

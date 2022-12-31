@@ -29,7 +29,7 @@ func NewSimpleLimitService(
 func (s *SimpleLimitService) Name() string {
 	return types.LimitSimple
 }
-func (s *SimpleLimitService) LimitFilter(ctx context.Context, duplication types.DeduplicationService, taskInfo *types.TaskInfo, param types.DeduplicationConfigItem) (filterReceiver []string, err error) {
+func (s *SimpleLimitService) LimitFilter(ctx context.Context, duplication types.IDeduplicationService, taskInfo *types.TaskInfo, param types.DeduplicationConfigItem) (filterReceiver []string, err error) {
 	filterReceiver = make([]string, 0)
 	readyPutRedisReceiver := make(map[string]string, len(taskInfo.Receiver))
 	keys := each(deduplicationAllKey(duplication, taskInfo), simpleLimitServiceTag)

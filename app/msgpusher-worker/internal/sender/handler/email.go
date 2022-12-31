@@ -9,28 +9,28 @@ import (
 	"github.com/go-redis/redis/v8"
 )
 
-type SmsHandler struct {
+type EmailHandler struct {
 	BaseHandler
 
 	logger *log.Helper
 	rds    redis.Cmdable
 }
 
-func NewSmsHandler(
+func NewEmailHandler(
 	logger log.Logger,
 	rds redis.Cmdable,
-) *SmsHandler {
-	return &SmsHandler{
+) *EmailHandler {
+	return &EmailHandler{
 		logger: log.NewHelper(log.With(logger, "module", "sender/sms")),
 		rds:    rds,
 	}
 }
 
-func (h *SmsHandler) Name() string {
-	return channelType.TypeCodeEn[channelType.Sms]
+func (h *EmailHandler) Name() string {
+	return channelType.TypeCodeEn[channelType.Email]
 }
 
-func (h *SmsHandler) Execute(ctx context.Context, taskInfo *types.TaskInfo) (err error) {
+func (h *EmailHandler) Execute(ctx context.Context, taskInfo *types.TaskInfo) (err error) {
 	fmt.Println("sms sender")
 	return nil
 }

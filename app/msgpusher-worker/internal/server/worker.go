@@ -22,7 +22,7 @@ func NewMqServer(
 	logger log.Logger,
 	bk broker.Broker,
 	executors *sender.TaskExecutor,
-	hs *sender.Handle,
+	hs *sender.HandleManager,
 	taskSvc *service.TaskService,
 ) *rabbitmq.Server {
 
@@ -56,7 +56,7 @@ type MqHandler struct {
 	logger   log.Logger
 	broker   broker.Broker
 	executor *sender.TaskExecutor
-	hs       *sender.Handle
+	hs       *sender.HandleManager
 	taskSvc  *service.TaskService
 }
 
@@ -64,7 +64,7 @@ func NewMqHandler(
 	logger log.Logger,
 	broker broker.Broker,
 	executor *sender.TaskExecutor,
-	hs *sender.Handle,
+	hs *sender.HandleManager,
 	taskSvc *service.TaskService,
 ) *MqHandler {
 	return &MqHandler{
@@ -84,7 +84,7 @@ func (m *MqHandler) onMassage(ctx context.Context, topic string, headers broker.
 		err := m.executor.Submit(ctx, fmt.Sprintf("%s.%s", channel, msgType), sender.NewTask(taskInfo, m.hs, m.logger, m.taskSvc))
 		if err != nil {
 			l := log.NewHelper(log.With(m.logger, "module", "MqHandler/onMassage"))
-			l.Error("err", err, "task_list", taskList)
+			l.Errorf(topic+" on massage err: %v", err, "task_list", taskList)
 		}
 	}
 	return nil

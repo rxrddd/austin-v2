@@ -11,8 +11,11 @@ import (
 	"austin-v2/app/msgpusher-worker/internal/conf"
 	"austin-v2/app/msgpusher-worker/internal/data"
 	"austin-v2/app/msgpusher-worker/internal/sender"
+	"austin-v2/app/msgpusher-worker/internal/sender/handler"
 	"austin-v2/app/msgpusher-worker/internal/server"
 	"austin-v2/app/msgpusher-worker/internal/service"
+	"austin-v2/app/msgpusher-worker/internal/service/deduplication"
+	"austin-v2/app/msgpusher-worker/internal/service/limiter"
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/log"
 )
@@ -23,8 +26,10 @@ import (
 func wireApp(confData *conf.Data, logger log.Logger) (*kratos.App, func(), error) {
 	broker := data.NewBroker(confData, logger)
 	taskExecutor := sender.NewTaskExecutor()
-	handle := sender.NewHandle(logger, broker)
 	cmdable := data.NewRedisCmd(confData, logger)
+	smsHandler := handler.NewSmsHandler(logger, cmdable)
+	emailHandler := handler.NewEmailHandler(logger, cmdable)
+	handleManager := sender.NewHandleManager(smsHandler, emailHandler)
 	discardMessageService := service.NewDiscardMessageService(logger, cmdable)
 	shieldService := service.NewShieldService(logger, cmdable)
 	db := data.NewMysqlCmd(confData, logger)
@@ -34,9 +39,14 @@ func wireApp(confData *conf.Data, logger log.Logger) (*kratos.App, func(), error
 	}
 	iMessageTemplateRepo := data.NewMessageTemplateRepo(dataData, logger)
 	messageTemplateUseCase := biz.NewMessageTemplateUseCase(iMessageTemplateRepo, logger)
-	deduplicationRuleService := service.NewDeduplicationRuleService(logger, cmdable, messageTemplateUseCase)
+	simpleLimitService := limit.NewSimpleLimitService(logger, cmdable)
+	limiterManager := limit.NewLimiterManager(simpleLimitService)
+	frequencyDeduplicationService := deduplication.NewFrequencyDeduplicationService(limiterManager)
+	contentDeduplicationService := deduplication.NewContentDeduplicationService(limiterManager)
+	deduplicationManager := deduplication.NewDeduplicationManager(frequencyDeduplicationService, contentDeduplicationService)
+	deduplicationRuleService := service.NewDeduplicationRuleService(logger, cmdable, messageTemplateUseCase, deduplicationManager)
 	taskService := service.NewTaskService(discardMessageService, shieldService, deduplicationRuleService)
-	rabbitmqServer := server.NewMqServer(confData, logger, broker, taskExecutor, handle, taskService)
+	rabbitmqServer := server.NewMqServer(confData, logger, broker, taskExecutor, handleManager, taskService)
 	app := newApp(logger, rabbitmqServer)
 	return app, func() {
 		cleanup()

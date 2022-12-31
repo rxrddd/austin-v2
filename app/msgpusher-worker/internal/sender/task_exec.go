@@ -10,7 +10,7 @@ import (
 
 type Task struct {
 	taskInfo *types.TaskInfo
-	hs       *Handle
+	manager  *HandleManager
 	logger   *log.Helper
 
 	svc *service.TaskService
@@ -18,14 +18,14 @@ type Task struct {
 
 func NewTask(
 	taskInfo *types.TaskInfo,
-	hs *Handle,
+	hm *HandleManager,
 	logger log.Logger,
 	svc *service.TaskService,
 ) *Task {
 
 	return &Task{
 		taskInfo: taskInfo,
-		hs:       hs,
+		manager:  hm,
 		logger:   log.NewHelper(log.With(logger, "module", "sender/task")),
 		svc:      svc,
 	}
@@ -33,6 +33,9 @@ func NewTask(
 }
 
 func (t *Task) Run(ctx context.Context) {
+
+	//fmt.Println(t.svc.ILimitService.Name())
+
 	// 0. 丢弃消息 根据redis配置丢弃某个模板的所有消息
 	if t.svc.DiscardMessageService.IsDiscard(ctx, t.taskInfo) {
 		t.logger.Info("msg", `消息被丢弃`, "task_info", t.taskInfo)
@@ -47,16 +50,16 @@ func (t *Task) Run(ctx context.Context) {
 	// 3. 真正发送消息
 
 	if len(t.taskInfo.Receiver) > 0 {
-		h, err := t.hs.Route(channelType.TypeCodeEn[t.taskInfo.SendChannel])
+		h, err := t.manager.Route(channelType.TypeCodeEn[t.taskInfo.SendChannel])
 		if err != nil {
-			t.logger.Error(`err`, err)
+			t.logger.Errorf("handle manager route err: %v", err)
 			return
 		}
 		for {
 			if h.Allow(ctx) {
 				err := h.Execute(ctx, t.taskInfo)
 				if err != nil {
-					t.logger.Error(`err`, err)
+					t.logger.Errorf("handle execute err: %v", err)
 				}
 				return
 			}

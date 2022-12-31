@@ -1,6 +1,8 @@
 package service
 
 import (
+	"austin-v2/app/msgpusher-worker/internal/service/deduplication"
+	limit "austin-v2/app/msgpusher-worker/internal/service/limiter"
 	"github.com/google/wire"
 )
 
@@ -10,5 +12,9 @@ var ServiceProviderSet = wire.NewSet(
 	NewShieldService,
 	NewDeduplicationRuleService,
 	NewTaskService,
-	//limit.NewSimpleLimitService,
+	limit.NewSimpleLimitService,
+	limit.NewLimiterManager,
+	deduplication.NewContentDeduplicationService,
+	deduplication.NewFrequencyDeduplicationService,
+	deduplication.NewDeduplicationManager,
 )

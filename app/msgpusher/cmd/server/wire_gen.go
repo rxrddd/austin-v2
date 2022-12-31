@@ -28,8 +28,10 @@ func wireApp(confServer *conf.Server, confData *conf.Data, logger log.Logger) (*
 	}
 	greeterRepo := data.NewGreeterRepo(dataData, logger)
 	greeterUsecase := biz.NewGreeterUsecase(greeterRepo, logger)
-	handle := sender.NewHandle(logger, broker)
-	handleUsecase := biz.NewHandleUsecase(logger, handle)
+	sms := sender.NewSms()
+	sms2 := sender.NewSms2()
+	v := sender.SenderList(sms, sms2)
+	handleUsecase := biz.NewHandleUsecase(logger, v)
 	msgPusherService := service.NewMsgPusherService(greeterUsecase, handleUsecase, broker, logger)
 	grpcServer := server.NewGRPCServer(confServer, msgPusherService, logger)
 	app := newApp(logger, grpcServer)
