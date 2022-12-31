@@ -8,7 +8,7 @@ import (
 	"github.com/go-kratos/kratos/contrib/registry/etcd/v2"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/registry"
-	"github.com/go-redis/redis"
+	"github.com/go-redis/redis/v8"
 	"github.com/google/wire"
 	etcdclient "go.etcd.io/etcd/client/v3"
 	"gorm.io/driver/mysql"

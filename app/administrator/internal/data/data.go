@@ -3,7 +3,7 @@ package data
 import (
 	"austin-v2/app/administrator/internal/conf"
 	"github.com/go-kratos/kratos/contrib/registry/etcd/v2"
-	"github.com/go-redis/redis"
+	"github.com/go-redis/redis/v8"
 	etcdclient "go.etcd.io/etcd/client/v3"
 
 	"github.com/go-kratos/kratos/v2/log"

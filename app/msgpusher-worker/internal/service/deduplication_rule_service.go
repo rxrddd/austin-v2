@@ -2,12 +2,9 @@ package service
 
 import (
 	"austin-v2/app/msgpusher-worker/internal/biz"
-	deduplicationService "austin-v2/app/msgpusher-worker/internal/service/deduplication"
-	"austin-v2/app/msgpusher-worker/internal/svc"
 	"austin-v2/pkg/types"
 	"context"
 	"encoding/json"
-	"fmt"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-redis/redis/v8"
 )
@@ -20,31 +17,21 @@ type DeduplicationRuleService struct {
 	logger *log.Helper
 	rds    redis.Cmdable
 	uc     *biz.MessageTemplateUseCase
-	//limiter []types.LimitService
-	limit types.LimitService
 }
 
 func NewDeduplicationRuleService(
 	logger log.Logger,
 	rds redis.Cmdable,
 	uc *biz.MessageTemplateUseCase,
-	//limiter []types.LimitService,
-	limit types.LimitService,
 ) *DeduplicationRuleService {
 	return &DeduplicationRuleService{
 		logger: log.NewHelper(log.With(logger, "module", "service/deduplication-rule-service")),
 		rds:    rds,
 		uc:     uc,
-		//limiter: limiter,
-		limit: limit,
 	}
 }
 
 func (l DeduplicationRuleService) Duplication(ctx context.Context, taskInfo *types.TaskInfo) {
-
-	//for _, h := range l.limiter {
-	//	fmt.Println(h.Name())
-	//}
 
 	// 配置样例：{"deduplication_10":{"num":1,"time":300},"deduplication_20":{"num":5}}
 	one, err := l.uc.One(ctx, taskInfo.MessageTemplateId)
@@ -67,25 +54,25 @@ func (l DeduplicationRuleService) Duplication(ctx context.Context, taskInfo *typ
 		return
 	}
 
-	for key, value := range deduplicationConfig {
-		exec, flag := getExec(key, l.svcCtx)
-		//表示没匹配到对于的执行器
-		if !flag {
-			continue
-		}
-		err := exec.Deduplication(ctx, taskInfo, value)
-		if err != nil {
-			logx.Errorw("exec.Deduplication err", logx.Field("err", err))
-		}
-	}
+	//for key, value := range deduplicationConfig {
+	//	exec, flag := getExec(key, l.svcCtx)
+	//	//表示没匹配到对于的执行器
+	//	if !flag {
+	//		continue
+	//	}
+	//	err := exec.Deduplication(ctx, taskInfo, value)
+	//	if err != nil {
+	//		logx.Errorw("exec.Deduplication err", logx.Field("err", err))
+	//	}
+	//}
 
 }
 
-func getExec(exec string, svcCtx *svc.ServiceContext) (structs.DuplicationService, bool) {
-	var duplicationExec = map[string]structs.DuplicationService{
-		deduplicationPrefix + Content:   deduplicationService.NewContentDeduplicationService(svcCtx),
-		deduplicationPrefix + Frequency: deduplicationService.NewFrequencyDeduplicationService(svcCtx),
-	}
-	v, ok := duplicationExec[exec]
-	return v, ok
-}
+//func getExec(exec string, svcCtx *svc.ServiceContext) (structs.DuplicationService, bool) {
+//	var duplicationExec = map[string]structs.DuplicationService{
+//		deduplicationPrefix + Content:   deduplicationService.NewContentDeduplicationService(svcCtx),
+//		deduplicationPrefix + Frequency: deduplicationService.NewFrequencyDeduplicationService(svcCtx),
+//	}
+//	v, ok := duplicationExec[exec]
+//	return v, ok
+//}

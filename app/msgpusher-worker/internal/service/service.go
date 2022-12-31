@@ -9,5 +9,6 @@ var ServiceProviderSet = wire.NewSet(
 	NewDiscardMessageService,
 	NewShieldService,
 	NewDeduplicationRuleService,
+	NewTaskService,
 	//limit.NewSimpleLimitService,
 )

@@ -6,6 +6,7 @@ import (
 	"austin-v2/app/msgpusher-worker/internal/enums/groups"
 	"austin-v2/app/msgpusher-worker/internal/enums/messageType"
 	"austin-v2/app/msgpusher-worker/internal/sender"
+	"austin-v2/app/msgpusher-worker/internal/service"
 	"austin-v2/pkg/types"
 	"context"
 	"fmt"
@@ -22,6 +23,7 @@ func NewMqServer(
 	bk broker.Broker,
 	executors *sender.TaskExecutor,
 	hs *sender.Handle,
+	taskSvc *service.TaskService,
 ) *rabbitmq.Server {
 
 	srv := rabbitmq.NewServer(
@@ -29,7 +31,7 @@ func NewMqServer(
 		rabbitmq.WithExchange("austin.biz.exchange", true),
 		rabbitmq.WithCodec("json"),
 	)
-	logic := NewMqHandler(logger, bk, executors, hs)
+	logic := NewMqHandler(logger, bk, executors, hs, taskSvc)
 
 	for _, groupId := range groups.GetAllGroupIds() {
 		fmt.Println(`subscriber`, fmt.Sprintf("austin.biz.%s", groupId))
@@ -55,6 +57,7 @@ type MqHandler struct {
 	broker   broker.Broker
 	executor *sender.TaskExecutor
 	hs       *sender.Handle
+	taskSvc  *service.TaskService
 }
 
 func NewMqHandler(
@@ -62,12 +65,14 @@ func NewMqHandler(
 	broker broker.Broker,
 	executor *sender.TaskExecutor,
 	hs *sender.Handle,
+	taskSvc *service.TaskService,
 ) *MqHandler {
 	return &MqHandler{
 		logger:   logger,
 		broker:   broker,
 		executor: executor,
 		hs:       hs,
+		taskSvc:  taskSvc,
 	}
 }
 
@@ -76,7 +81,7 @@ func (m *MqHandler) onMassage(ctx context.Context, topic string, headers broker.
 		fmt.Println(taskInfo)
 		channel := channelType.TypeCodeEn[taskInfo.SendChannel]
 		msgType := messageType.TypeCodeEn[taskInfo.MsgType]
-		err := m.executor.Submit(ctx, fmt.Sprintf("%s.%s", channel, msgType), sender.NewTask(taskInfo, m.hs, m.logger))
+		err := m.executor.Submit(ctx, fmt.Sprintf("%s.%s", channel, msgType), sender.NewTask(taskInfo, m.hs, m.logger, m.taskSvc))
 		if err != nil {
 			l := log.NewHelper(log.With(m.logger, "module", "MqHandler/onMassage"))
 			l.Error("err", err, "task_list", taskList)

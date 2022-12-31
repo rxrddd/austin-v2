@@ -29,7 +29,7 @@ func NewShieldService(logger log.Logger, rds redis.Cmdable) *ShieldService {
 	}
 }
 
-func (s *ShieldService) Shield(_ context.Context, taskInfo *types.TaskInfo) {
+func (s *ShieldService) Shield(ctx context.Context, taskInfo *types.TaskInfo) {
 	if taskInfo.ShieldType == NightNoShield {
 		return
 	}
@@ -45,12 +45,12 @@ func (s *ShieldService) Shield(_ context.Context, taskInfo *types.TaskInfo) {
 			//发送到mq
 			marshal, _ := json.Marshal(taskInfo)
 
-			_, err := s.rds.Pipelined(func(pipeliner redis.Pipeliner) error {
-				s.rds.LPush(NightShieldButNextDaySendKey, marshal)
+			_, err := s.rds.Pipelined(ctx, func(pipeliner redis.Pipeliner) error {
+				s.rds.LPush(ctx, NightShieldButNextDaySendKey, marshal)
 
 				expire := int(time.Now().AddDate(0, 0, 1).Unix() - time.Now().Unix())
 
-				s.rds.Expire(NightShieldButNextDaySendKey, time.Duration(expire)*time.Second)
+				s.rds.Expire(ctx, NightShieldButNextDaySendKey, time.Duration(expire)*time.Second)
 				return nil
 			})
 
