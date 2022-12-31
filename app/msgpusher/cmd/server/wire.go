@@ -9,7 +9,7 @@ import (
 	"austin-v2/app/msgpusher/internal/biz"
 	"austin-v2/app/msgpusher/internal/conf"
 	"austin-v2/app/msgpusher/internal/data"
-	"austin-v2/app/msgpusher/internal/sender"
+	"austin-v2/app/msgpusher/internal/process"
 	"austin-v2/app/msgpusher/internal/server"
 	"austin-v2/app/msgpusher/internal/service"
 
@@ -19,6 +19,13 @@ import (
 )
 
 // wireApp init kratos application.
-func wireApp(*conf.Server, *conf.Data, log.Logger) (*kratos.App, func(), error) {
-	panic(wire.Build(server.ProviderSet, data.ProviderSet, biz.ProviderSet, service.ProviderSet, sender.ProviderSet, newApp))
+func wireApp(*conf.Server, *conf.Registry, *conf.Data, log.Logger) (*kratos.App, func(), error) {
+	panic(wire.Build(
+		server.ServerProviderSet,
+		data.DataProviderSet,
+		biz.BizProviderSet,
+		service.ServiceProviderSet,
+		process.ProcessProviderSet,
+		newApp,
+	))
 }

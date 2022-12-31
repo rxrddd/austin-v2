@@ -12,6 +12,6 @@ func NewImContentModel() *ImContentModel {
 	return &ImContentModel{}
 }
 
-func (m ImContentModel) BuilderContent(messageTemplate domain.MessageTemplate, messageParam types.MessageParam) interface{} {
+func (m ImContentModel) BuilderContent(messageTemplate *domain.MessageTemplate, messageParam types.MessageParam) interface{} {
 	return m
 }

@@ -17,7 +17,7 @@ func NewEnterpriseWeChatContentModel() *EnterpriseWeChatContentModel {
 	return &EnterpriseWeChatContentModel{}
 }
 
-func (d EnterpriseWeChatContentModel) BuilderContent(messageTemplate domain.MessageTemplate, messageParam types.MessageParam) interface{} {
+func (d EnterpriseWeChatContentModel) BuilderContent(messageTemplate *domain.MessageTemplate, messageParam types.MessageParam) interface{} {
 	variables := messageParam.Variables
 	var content EnterpriseWeChatContentModel
 	_ = json.Unmarshal([]byte(messageTemplate.MsgContent), &content)

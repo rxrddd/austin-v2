@@ -16,7 +16,7 @@ func NewEmailContentModel() *EmailContentModel {
 	return &EmailContentModel{}
 }
 
-func (d EmailContentModel) BuilderContent(messageTemplate domain.MessageTemplate, messageParam types.MessageParam) interface{} {
+func (d EmailContentModel) BuilderContent(messageTemplate *domain.MessageTemplate, messageParam types.MessageParam) interface{} {
 	variables := messageParam.Variables
 	var content EmailContentModel
 	_ = json.Unmarshal([]byte(messageTemplate.MsgContent), &content)

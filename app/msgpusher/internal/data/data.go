@@ -17,12 +17,11 @@ import (
 	"gorm.io/driver/mysql"
 )
 
-// ProviderSet is data providers.
-var ProviderSet = wire.NewSet(
+// DataProviderSet is data providers.
+var DataProviderSet = wire.NewSet(
 	NewBroker,
 	NewData,
-	NewGreeterRepo,
-	NewDiscovery,
+	NewMessageTemplateRepo,
 	NewRegistrar,
 	NewRedisCmd,
 	NewMysqlCmd,
@@ -32,16 +31,23 @@ var ProviderSet = wire.NewSet(
 type Data struct {
 	// TODO wrapped database client
 	broker broker.Broker
+	db     *gorm.DB
 }
 
 // NewData .
-func NewData(c *conf.Data, logger log.Logger, broker broker.Broker) (*Data, func(), error) {
+func NewData(
+	c *conf.Data,
+	logger log.Logger,
+	broker broker.Broker,
+	db *gorm.DB,
+) (*Data, func(), error) {
 	cleanup := func() {
 		log.NewHelper(logger).Info("closing the data resources")
 		_ = broker.Disconnect()
 	}
 	return &Data{
 		broker: broker,
+		db:     db,
 	}, cleanup, nil
 }
 

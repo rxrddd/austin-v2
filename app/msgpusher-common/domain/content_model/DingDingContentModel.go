@@ -17,7 +17,7 @@ func NewDingDingContentModel() *DingDingContentModel {
 	return &DingDingContentModel{}
 }
 
-func (d DingDingContentModel) BuilderContent(messageTemplate domain.MessageTemplate, messageParam types.MessageParam) interface{} {
+func (d DingDingContentModel) BuilderContent(messageTemplate *domain.MessageTemplate, messageParam types.MessageParam) interface{} {
 	variables := messageParam.Variables
 	var content DingDingContentModel
 	_ = json.Unmarshal([]byte(messageTemplate.MsgContent), &content)

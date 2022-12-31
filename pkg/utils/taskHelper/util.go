@@ -1,6 +1,9 @@
 package taskHelper
 
 import (
+	"austin-v2/app/msgpusher-common/enums/channelType"
+	"austin-v2/app/msgpusher-common/enums/messageType"
+	"austin-v2/pkg/types"
 	"fmt"
 	"github.com/spf13/cast"
 	"strings"
@@ -29,4 +32,14 @@ func ReplaceByMap(origin string, replaces map[string]string) string {
 		origin = strings.Replace(origin, "{$"+k+"}", v, -1)
 	}
 	return origin
+}
+
+func GetGroupIdByTaskInfo(info types.TaskInfo) string {
+	channelCodeEn := channelType.TypeCodeEn[info.SendChannel]
+	msgCodeEn := messageType.TypeCodeEn[info.MsgType]
+	return channelCodeEn + "." + msgCodeEn
+}
+
+func GetMqKey(channel, msgType string) string {
+	return fmt.Sprintf("austin.biz.%s.%s", channel, msgType)
 }

@@ -12,6 +12,6 @@ func NewMiniProgramContentModel() *MiniProgramContentModel {
 	return &MiniProgramContentModel{}
 }
 
-func (m MiniProgramContentModel) BuilderContent(messageTemplate domain.MessageTemplate, messageParam types.MessageParam) interface{} {
+func (m MiniProgramContentModel) BuilderContent(messageTemplate *domain.MessageTemplate, messageParam types.MessageParam) interface{} {
 	return m
 }

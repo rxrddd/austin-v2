@@ -21,7 +21,7 @@ func NewSmsContentModel() *SmsContentModel {
 messageParam 入参
 messageTemplate 模板数据库配置
 */
-func (s SmsContentModel) BuilderContent(messageTemplate domain.MessageTemplate, messageParam types.MessageParam) interface{} {
+func (s SmsContentModel) BuilderContent(messageTemplate *domain.MessageTemplate, messageParam types.MessageParam) interface{} {
 	variables := messageParam.Variables
 	var content SmsContentModel
 	_ = json.Unmarshal([]byte(messageTemplate.MsgContent), &content)

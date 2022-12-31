@@ -10,7 +10,6 @@ import (
 	"austin-v2/app/msgpusher/internal/biz"
 	"austin-v2/app/msgpusher/internal/conf"
 	"austin-v2/app/msgpusher/internal/data"
-	"austin-v2/app/msgpusher/internal/sender"
 	"austin-v2/app/msgpusher/internal/server"
 	"austin-v2/app/msgpusher/internal/service"
 	"github.com/go-kratos/kratos/v2"
@@ -20,22 +19,12 @@ import (
 // Injectors from wire.go:
 
 // wireApp init kratos application.
-func wireApp(confServer *conf.Server, confData *conf.Data, logger log.Logger) (*kratos.App, func(), error) {
-	broker := data.NewBroker(confData, logger)
-	dataData, cleanup, err := data.NewData(confData, logger, broker)
-	if err != nil {
-		return nil, nil, err
-	}
-	greeterRepo := data.NewGreeterRepo(dataData, logger)
-	greeterUsecase := biz.NewGreeterUsecase(greeterRepo, logger)
-	sms := sender.NewSms()
-	sms2 := sender.NewSms2()
-	v := sender.SenderList(sms, sms2)
-	handleUsecase := biz.NewHandleUsecase(logger, v)
-	msgPusherService := service.NewMsgPusherService(greeterUsecase, handleUsecase, broker, logger)
+func wireApp(confServer *conf.Server, registry *conf.Registry, confData *conf.Data, logger log.Logger) (*kratos.App, func(), error) {
+	msgPusherUseCase := biz.NewMsgPusherUseCase(logger)
+	msgPusherService := service.NewMsgPusherService(msgPusherUseCase, logger)
 	grpcServer := server.NewGRPCServer(confServer, msgPusherService, logger)
-	app := newApp(logger, grpcServer)
+	registrar := data.NewRegistrar(registry)
+	app := newApp(logger, grpcServer, registrar)
 	return app, func() {
-		cleanup()
 	}, nil
 }

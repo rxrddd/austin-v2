@@ -12,6 +12,6 @@ func NewPushContentModel() *PushContentModel {
 	return &PushContentModel{}
 }
 
-func (d PushContentModel) BuilderContent(messageTemplate domain.MessageTemplate, messageParam types.MessageParam) interface{} {
+func (d PushContentModel) BuilderContent(messageTemplate *domain.MessageTemplate, messageParam types.MessageParam) interface{} {
 	return d
 }

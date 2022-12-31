@@ -19,7 +19,7 @@ func NewOfficialAccountsContentModel() *OfficialAccountsContentModel {
 	return &OfficialAccountsContentModel{}
 }
 
-func (d OfficialAccountsContentModel) BuilderContent(messageTemplate domain.MessageTemplate, messageParam types.MessageParam) interface{} {
+func (d OfficialAccountsContentModel) BuilderContent(messageTemplate *domain.MessageTemplate, messageParam types.MessageParam) interface{} {
 	variables := messageParam.Variables
 	var content OfficialAccountsContentModel
 	_ = json.Unmarshal([]byte(messageTemplate.MsgContent), &content)

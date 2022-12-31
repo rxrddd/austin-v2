@@ -5,7 +5,7 @@ import (
 )
 
 type BuilderContent interface {
-	BuilderContent(messageTemplate MessageTemplate, messageParam types.MessageParam) interface{}
+	BuilderContent(messageTemplate *MessageTemplate, messageParam types.MessageParam) interface{}
 }
 
 type MessageTemplate struct {
