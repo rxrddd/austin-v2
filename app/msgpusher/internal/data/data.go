@@ -70,18 +70,6 @@ func NewBroker(c *conf.Data, logger log.Logger) broker.Broker {
 	return b
 }
 
-func NewDiscovery(conf *conf.Registry) registry.Discovery {
-	point := conf.Etcd.Address
-	client, err := etcdclient.New(etcdclient.Config{
-		Endpoints: []string{point},
-	})
-	if err != nil {
-		panic(err)
-	}
-	r := etcd.New(client)
-	return r
-}
-
 func NewRegistrar(conf *conf.Registry) registry.Registrar {
 	point := conf.Etcd.Address
 	client, err := etcdclient.New(etcdclient.Config{

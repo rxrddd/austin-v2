@@ -8,6 +8,7 @@ import (
 	"austin-v2/pkg/utils/taskHelper"
 	"context"
 	"encoding/json"
+	"fmt"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/tx7do/kratos-transport/broker"
 	"github.com/tx7do/kratos-transport/broker/rabbitmq"
@@ -26,14 +27,15 @@ func NewSendMqAction(b broker.Broker,
 	}
 }
 
-func (p *SendMqAction) Process(_ context.Context, sendTaskModel *types.SendTaskModel, messageTemplate model.MessageTemplate) error {
+func (p *SendMqAction) Process(_ context.Context, sendTaskModel *types.SendTaskModel, _ model.MessageTemplate) error {
 	marshal, err := json.Marshal(sendTaskModel.TaskInfo)
 	if err != nil {
 		return err
 	}
 	channel := channelType.TypeCodeEn[sendTaskModel.TaskInfo[0].SendChannel]
 	msgType := messageType.TypeCodeEn[sendTaskModel.TaskInfo[0].MsgType]
-	return p.b.Publish("austin.biz.routing", marshal,
+	fmt.Println(`queue`, taskHelper.GetMqKey(channel, msgType))
+	return p.b.Publish("", marshal,
 		rabbitmq.WithPublishDeclareQueue(
 			taskHelper.GetMqKey(channel, msgType),
 			true,

@@ -14,7 +14,7 @@ func NewPreParamCheckAction() *PreParamCheckAction {
 	return &PreParamCheckAction{}
 }
 
-func (p *PreParamCheckAction) Process(_ context.Context, sendTaskModel *types.SendTaskModel, messageTemplate model.MessageTemplate) error {
+func (p *PreParamCheckAction) Process(_ context.Context, sendTaskModel *types.SendTaskModel, _ model.MessageTemplate) error {
 
 	if sendTaskModel.MessageTemplateId == 0 || len(sendTaskModel.MessageParamList) <= 0 {
 		return errors.Wrapf(clientParamsErr, "PreParamCheckAction sendTaskModel:%v", sendTaskModel)

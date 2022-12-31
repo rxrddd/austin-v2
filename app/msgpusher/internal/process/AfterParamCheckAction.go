@@ -18,7 +18,7 @@ func NewAfterParamCheckAction() *AfterParamCheckAction {
 	return &AfterParamCheckAction{}
 }
 
-func (p *AfterParamCheckAction) Process(_ context.Context, sendTaskModel *types.SendTaskModel, messageTemplate model.MessageTemplate) error {
+func (p *AfterParamCheckAction) Process(_ context.Context, sendTaskModel *types.SendTaskModel, _ model.MessageTemplate) error {
 	// 1. 过滤掉不合法的手机号
 	if sendTaskModel.TaskInfo[0].IdType == idType.Phone && sendTaskModel.TaskInfo[0].SendChannel == channelType.Sms {
 		var newTask []types.TaskInfo
