@@ -1,0 +1,16 @@
+service:
+  name: austin-v2.msgpusher-worker.service
+  version: v1
+data:
+  database:
+    driver: mysql
+    source: root:123456@tcp(192.168.0.103:3306)/kratos-admin?parseTime=true&collation=utf8mb4_unicode_ci&loc=Asia%2FShanghai&charset=utf8mb4
+  redis:
+    addr: "127.0.0.1:6379"
+    password: "123456"
+    read_timeout: "0.2s"
+    write_timeout: "0.2s"
+  rabbitmq:
+      URL: "amqp://guest:guest@127.0.0.1:5672/"
+etcd:
+  address: 192.168.0.103:2379

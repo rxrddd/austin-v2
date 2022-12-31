@@ -3,16 +3,16 @@ package main
 import (
 	"austin-v2/pkg/utils/stringHelper"
 	"flag"
+	"github.com/tx7do/kratos-transport/transport/rabbitmq"
 	"os"
 
-	"austin-v2/app/msgpusher/internal/conf"
+	"austin-v2/app/msgpusher-worker/internal/conf"
 
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/config"
 	"github.com/go-kratos/kratos/v2/config/file"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware/tracing"
-	"github.com/go-kratos/kratos/v2/transport/grpc"
 )
 
 // go build -ldflags "-X main.Version=x.y.z"
@@ -31,7 +31,7 @@ func init() {
 	flag.StringVar(&flagconf, "conf", "../../configs", "config path, eg: -conf config.yaml")
 }
 
-func newApp(logger log.Logger, gs *grpc.Server) *kratos.App {
+func newApp(logger log.Logger, rs *rabbitmq.Server) *kratos.App {
 	return kratos.New(
 		kratos.ID(id),
 		kratos.Name(Name),
@@ -39,7 +39,7 @@ func newApp(logger log.Logger, gs *grpc.Server) *kratos.App {
 		kratos.Metadata(map[string]string{}),
 		kratos.Logger(logger),
 		kratos.Server(
-			gs,
+			rs,
 		),
 	)
 }
@@ -75,7 +75,7 @@ func main() {
 		"trace.id", tracing.TraceID(),
 		"span.id", tracing.SpanID(),
 	)
-	app, cleanup, err := wireApp(bc.Server, bc.Data, logger)
+	app, cleanup, err := wireApp(bc.Data, logger)
 	if err != nil {
 		panic(err)
 	}

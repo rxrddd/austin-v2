@@ -10,6 +10,7 @@ import (
 	"austin-v2/app/msgpusher/internal/biz"
 	"austin-v2/app/msgpusher/internal/conf"
 	"austin-v2/app/msgpusher/internal/data"
+	"austin-v2/app/msgpusher/internal/sender"
 	"austin-v2/app/msgpusher/internal/server"
 	"austin-v2/app/msgpusher/internal/service"
 	"github.com/go-kratos/kratos/v2"
@@ -20,22 +21,19 @@ import (
 
 // wireApp init kratos application.
 func wireApp(confServer *conf.Server, confData *conf.Data, logger log.Logger) (*kratos.App, func(), error) {
-	broker, cleanup, err := data.NewBroker(confData, logger)
+	broker := data.NewBroker(confData, logger)
+	dataData, cleanup, err := data.NewData(confData, logger, broker)
 	if err != nil {
-		return nil, nil, err
-	}
-	dataData, cleanup2, err := data.NewData(confData, logger, broker)
-	if err != nil {
-		cleanup()
 		return nil, nil, err
 	}
 	greeterRepo := data.NewGreeterRepo(dataData, logger)
 	greeterUsecase := biz.NewGreeterUsecase(greeterRepo, logger)
-	msgPusherService := service.NewMsgPusherService(greeterUsecase, broker, logger)
+	handle := sender.NewHandle(logger, broker)
+	handleUsecase := biz.NewHandleUsecase(logger, handle)
+	msgPusherService := service.NewMsgPusherService(greeterUsecase, handleUsecase, broker, logger)
 	grpcServer := server.NewGRPCServer(confServer, msgPusherService, logger)
 	app := newApp(logger, grpcServer)
 	return app, func() {
-		cleanup2()
 		cleanup()
 	}, nil
 }

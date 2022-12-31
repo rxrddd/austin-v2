@@ -1,18 +1,15 @@
 package data
 
 import (
-	"austin-v2/app/msgpusher/internal/conf"
+	"austin-v2/app/msgpusher-worker/internal/conf"
 	"context"
-	"github.com/go-kratos/kratos/contrib/registry/etcd/v2"
-	"github.com/go-kratos/kratos/v2/registry"
 	"github.com/tx7do/kratos-transport/broker"
 	"github.com/tx7do/kratos-transport/broker/rabbitmq"
-	etcdclient "go.etcd.io/etcd/client/v3"
 	"gorm.io/gorm"
 	"time"
 
 	"github.com/go-kratos/kratos/v2/log"
-	"github.com/go-redis/redis"
+	"github.com/go-redis/redis/v8"
 	"github.com/google/wire"
 	"gorm.io/driver/mysql"
 )
@@ -21,27 +18,36 @@ import (
 var ProviderSet = wire.NewSet(
 	NewBroker,
 	NewData,
-	NewGreeterRepo,
-	NewDiscovery,
-	NewRegistrar,
 	NewRedisCmd,
 	NewMysqlCmd,
+	NewMessageTemplateRepo,
 )
 
 // Data .
 type Data struct {
-	// TODO wrapped database client
 	broker broker.Broker
+	rds    redis.Cmdable
+	db     *gorm.DB
 }
 
 // NewData .
-func NewData(c *conf.Data, logger log.Logger, broker broker.Broker) (*Data, func(), error) {
+func NewData(
+	c *conf.Data,
+	logger log.Logger,
+	broker broker.Broker,
+	rds redis.Cmdable,
+	db *gorm.DB,
+) (*Data, func(), error) {
 	cleanup := func() {
 		log.NewHelper(logger).Info("closing the data resources")
 		_ = broker.Disconnect()
+		s, _ := db.DB()
+		s.Close()
 	}
 	return &Data{
 		broker: broker,
+		rds:    rds,
+		db:     db,
 	}, cleanup, nil
 }
 
@@ -62,30 +68,6 @@ func NewBroker(c *conf.Data, logger log.Logger) broker.Broker {
 	}
 	log.NewHelper(logger).Info("NewBroker " + b.Name())
 	return b
-}
-
-func NewDiscovery(conf *conf.Registry) registry.Discovery {
-	point := conf.Etcd.Address
-	client, err := etcdclient.New(etcdclient.Config{
-		Endpoints: []string{point},
-	})
-	if err != nil {
-		panic(err)
-	}
-	r := etcd.New(client)
-	return r
-}
-
-func NewRegistrar(conf *conf.Registry) registry.Registrar {
-	point := conf.Etcd.Address
-	client, err := etcdclient.New(etcdclient.Config{
-		Endpoints: []string{point},
-	})
-	if err != nil {
-		panic(err)
-	}
-	r := etcd.New(client)
-	return r
 }
 
 func NewRedisCmd(conf *conf.Data, logger log.Logger) redis.Cmdable {
