@@ -13,6 +13,7 @@ var ServiceProviderSet = wire.NewSet(
 	NewDeduplicationRuleService,
 	NewTaskService,
 	limit.NewSimpleLimitService,
+	limit.NewSlideWindowLimitService,
 	limit.NewLimiterManager,
 	deduplication.NewContentDeduplicationService,
 	deduplication.NewFrequencyDeduplicationService,

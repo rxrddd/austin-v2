@@ -7,7 +7,7 @@ import (
 )
 
 type HandleManager struct {
-	hsMap map[string]types.IHandler
+	mMap map[string]types.IHandler
 }
 
 func NewHandleManager(
@@ -21,15 +21,15 @@ func NewHandleManager(
 }
 
 func (hs *HandleManager) Route(channel string) (types.IHandler, error) {
-	if h, ok := hs.hsMap[channel]; ok {
+	if h, ok := hs.mMap[channel]; ok {
 		return h, nil
 	}
-	return nil, errors.New("unknown handle")
+	return nil, errors.New("unknown handle " + channel)
 }
 
 func (hs *HandleManager) register(h types.IHandler) {
-	if hs.hsMap == nil {
-		hs.hsMap = make(map[string]types.IHandler)
+	if hs.mMap == nil {
+		hs.mMap = make(map[string]types.IHandler)
 	}
-	hs.hsMap[h.Name()] = h
+	hs.mMap[h.Name()] = h
 }

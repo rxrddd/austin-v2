@@ -21,6 +21,7 @@ var DataProviderSet = wire.NewSet(
 	NewRedisCmd,
 	NewMysqlCmd,
 	NewMessageTemplateRepo,
+	NewSendAccountRepo,
 )
 
 // Data .

@@ -6,7 +6,7 @@ import (
 )
 
 type DeduplicationManager struct {
-	lMap map[string]types.IDeduplicationService
+	mMap map[string]types.IDeduplicationService
 }
 
 func NewDeduplicationManager(
@@ -20,15 +20,15 @@ func NewDeduplicationManager(
 }
 
 func (hs *DeduplicationManager) Route(code string) (types.IDeduplicationService, error) {
-	if h, ok := hs.lMap[code]; ok {
+	if h, ok := hs.mMap[code]; ok {
 		return h, nil
 	}
-	return nil, errors.New("unknown handle")
+	return nil, errors.New("unknown deduplication " + code)
 }
 
 func (hs *DeduplicationManager) register(h types.IDeduplicationService) {
-	if hs.lMap == nil {
-		hs.lMap = make(map[string]types.IDeduplicationService)
+	if hs.mMap == nil {
+		hs.mMap = make(map[string]types.IDeduplicationService)
 	}
-	hs.lMap[h.Name()] = h
+	hs.mMap[h.Name()] = h
 }

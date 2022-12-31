@@ -1,8 +1,8 @@
 package groups
 
 import (
-	"austin-v2/app/msgpusher-worker/internal/enums/channelType"
-	"austin-v2/app/msgpusher-worker/internal/enums/messageType"
+	"austin-v2/app/msgpusher-common/enums/channelType"
+	"austin-v2/app/msgpusher-common/enums/messageType"
 )
 
 func GetAllGroupIds() []string {

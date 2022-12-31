@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"austin-v2/app/msgpusher-worker/internal/enums/channelType"
+	"austin-v2/app/msgpusher-common/enums/channelType"
 	"austin-v2/pkg/types"
 	"context"
 	"fmt"

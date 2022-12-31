@@ -6,27 +6,29 @@ import (
 )
 
 type LimiterManager struct {
-	lMap map[string]types.ILimitService
+	mMap map[string]types.ILimitService
 }
 
 func NewLimiterManager(
 	sl *SimpleLimitService,
+	sw *SlideWindowLimitService,
 ) *LimiterManager {
 	h := &LimiterManager{}
 	h.register(sl)
+	h.register(sw)
 	return h
 }
 
 func (hs *LimiterManager) Route(code string) (types.ILimitService, error) {
-	if h, ok := hs.lMap[code]; ok {
+	if h, ok := hs.mMap[code]; ok {
 		return h, nil
 	}
-	return nil, errors.New("unknown handle")
+	return nil, errors.New("unknown limiter " + code)
 }
 
 func (hs *LimiterManager) register(h types.ILimitService) {
-	if hs.lMap == nil {
-		hs.lMap = make(map[string]types.ILimitService)
+	if hs.mMap == nil {
+		hs.mMap = make(map[string]types.ILimitService)
 	}
-	hs.lMap[h.Name()] = h
+	hs.mMap[h.Name()] = h
 }

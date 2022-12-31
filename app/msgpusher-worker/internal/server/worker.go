@@ -1,10 +1,10 @@
 package server
 
 import (
+	"austin-v2/app/msgpusher-common/enums/channelType"
+	"austin-v2/app/msgpusher-common/enums/groups"
+	"austin-v2/app/msgpusher-common/enums/messageType"
 	"austin-v2/app/msgpusher-worker/internal/conf"
-	"austin-v2/app/msgpusher-worker/internal/enums/channelType"
-	"austin-v2/app/msgpusher-worker/internal/enums/groups"
-	"austin-v2/app/msgpusher-worker/internal/enums/messageType"
 	"austin-v2/app/msgpusher-worker/internal/sender"
 	"austin-v2/app/msgpusher-worker/internal/service"
 	"austin-v2/pkg/types"
