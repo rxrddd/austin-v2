@@ -34,7 +34,7 @@ func NewMqServer(
 	for _, groupId := range groups.GetAllGroupIds() {
 		fmt.Println(`subscriber`, fmt.Sprintf("austin.biz.%s", groupId))
 		_ = srv.RegisterSubscriber(context.Background(),
-			"",
+			fmt.Sprintf("austin.biz.%s", groupId),
 			logic.registerMessageHandler(logic.onMassage),
 			messageCreator,
 			broker.WithQueueName(fmt.Sprintf("austin.biz.%s", groupId)),

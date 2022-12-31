@@ -35,7 +35,7 @@ func (p *SendMqAction) Process(_ context.Context, sendTaskModel *types.SendTaskM
 	channel := channelType.TypeCodeEn[sendTaskModel.TaskInfo[0].SendChannel]
 	msgType := messageType.TypeCodeEn[sendTaskModel.TaskInfo[0].MsgType]
 	fmt.Println(`queue`, taskHelper.GetMqKey(channel, msgType))
-	return p.b.Publish("", marshal,
+	return p.b.Publish(taskHelper.GetMqKey(channel, msgType), marshal,
 		rabbitmq.WithPublishDeclareQueue(
 			taskHelper.GetMqKey(channel, msgType),
 			true,
