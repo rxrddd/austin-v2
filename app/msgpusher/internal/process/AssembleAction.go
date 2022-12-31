@@ -2,34 +2,29 @@ package process
 
 import (
 	"austin-v2/app/msgpusher-common/domain/content_model"
-	"austin-v2/app/msgpusher/internal/biz"
+	"austin-v2/app/msgpusher/internal/data/model"
 	"austin-v2/pkg/types"
 	"austin-v2/pkg/utils/taskHelper"
 	"austin-v2/pkg/utils/transformHelper"
 	"context"
-	"github.com/pkg/errors"
 	"strings"
 )
 
 type AssembleAction struct {
-	uc *biz.MessageTemplateUseCase
+	//uc *biz.MessageTemplateUseCase
 }
 
 func NewAssembleAction(
-	uc *biz.MessageTemplateUseCase,
+//uc *biz.MessageTemplateUseCase,
 ) *AssembleAction {
 	return &AssembleAction{
-		uc: uc,
+		//uc: uc,
 	}
 }
 
-func (p *AssembleAction) Process(ctx context.Context, sendTaskModel *types.SendTaskModel) error {
+func (p *AssembleAction) Process(ctx context.Context, sendTaskModel *types.SendTaskModel, messageTemplate model.MessageTemplate) error {
 	messageParamList := sendTaskModel.MessageParamList
 
-	messageTemplate, err := p.uc.One(ctx, sendTaskModel.MessageTemplateId)
-	if err != nil {
-		return errors.Wrapf(sendErr, "查询模板异常 err:%v 模板id:%d", err, sendTaskModel.MessageTemplateId)
-	}
 	contentModel := content_model.GetBuilderContentBySendChannel(messageTemplate.SendChannel)
 
 	var newTaskList []types.TaskInfo

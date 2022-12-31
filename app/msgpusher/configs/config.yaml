@@ -1,5 +1,5 @@
 service:
-  name: austin-v2.administrator.service
+  name: austin-v2.msgpusher.service
   version: v1
 trace:
   endpoint: http://127.0.0.1:14268/api/traces
@@ -10,7 +10,7 @@ server:
 data:
   database:
     driver: mysql
-    source: root:123456@tcp(192.168.0.103:3306)/kratos-admin?parseTime=true&collation=utf8mb4_unicode_ci&loc=Asia%2FShanghai&charset=utf8mb4
+    source: root:123456@tcp(127.0.0.1:3306)/kratos-admin?parseTime=true&collation=utf8mb4_unicode_ci&loc=Asia%2FShanghai&charset=utf8mb4
   redis:
     addr: "127.0.0.1:6379"
     password: "123456"
@@ -19,4 +19,4 @@ data:
   rabbitmq:
       URL: "amqp://guest:guest@127.0.0.1:5672/"
 etcd:
-  address: 192.168.0.103:2379
+  address: 192.168.0.105:2379

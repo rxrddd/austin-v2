@@ -30,7 +30,7 @@ func (m MessageTemplate) TableName() string {
 	return "message_template"
 }
 
-func (m *MessageTemplate) Temp2Domain() *domain.MessageTemplate {
+func (m MessageTemplate) Temp2Domain() *domain.MessageTemplate {
 	return &domain.MessageTemplate{
 		ID:                  m.ID,
 		Name:                m.Name,

@@ -1,6 +1,7 @@
 package process
 
 import (
+	"austin-v2/app/msgpusher/internal/data/model"
 	"austin-v2/pkg/types"
 	"context"
 	"github.com/pkg/errors"
@@ -13,7 +14,7 @@ func NewPreParamCheckAction() *PreParamCheckAction {
 	return &PreParamCheckAction{}
 }
 
-func (p *PreParamCheckAction) Process(_ context.Context, sendTaskModel *types.SendTaskModel) error {
+func (p *PreParamCheckAction) Process(_ context.Context, sendTaskModel *types.SendTaskModel, messageTemplate model.MessageTemplate) error {
 
 	if sendTaskModel.MessageTemplateId == 0 || len(sendTaskModel.MessageParamList) <= 0 {
 		return errors.Wrapf(clientParamsErr, "PreParamCheckAction sendTaskModel:%v", sendTaskModel)

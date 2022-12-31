@@ -10,6 +10,7 @@ import (
 	"austin-v2/app/msgpusher/internal/biz"
 	"austin-v2/app/msgpusher/internal/conf"
 	"austin-v2/app/msgpusher/internal/data"
+	"austin-v2/app/msgpusher/internal/process"
 	"austin-v2/app/msgpusher/internal/server"
 	"austin-v2/app/msgpusher/internal/service"
 	"github.com/go-kratos/kratos/v2"
@@ -20,11 +21,25 @@ import (
 
 // wireApp init kratos application.
 func wireApp(confServer *conf.Server, registry *conf.Registry, confData *conf.Data, logger log.Logger) (*kratos.App, func(), error) {
-	msgPusherUseCase := biz.NewMsgPusherUseCase(logger)
+	afterParamCheckAction := process.NewAfterParamCheckAction()
+	assembleAction := process.NewAssembleAction()
+	preParamCheckAction := process.NewPreParamCheckAction()
+	broker := data.NewBroker(confData, logger)
+	sendMqAction := process.NewSendMqAction(broker, logger)
+	businessProcess := process.NewBusinessProcess(afterParamCheckAction, assembleAction, preParamCheckAction, sendMqAction)
+	db := data.NewMysqlCmd(confData, logger)
+	dataData, cleanup, err := data.NewData(confData, logger, broker, db)
+	if err != nil {
+		return nil, nil, err
+	}
+	iMessageTemplateRepo := data.NewMessageTemplateRepo(dataData, logger)
+	messageTemplateUseCase := biz.NewMessageTemplateUseCase(iMessageTemplateRepo, logger)
+	msgPusherUseCase := biz.NewMsgPusherUseCase(logger, businessProcess, messageTemplateUseCase)
 	msgPusherService := service.NewMsgPusherService(msgPusherUseCase, logger)
 	grpcServer := server.NewGRPCServer(confServer, msgPusherService, logger)
 	registrar := data.NewRegistrar(registry)
 	app := newApp(logger, grpcServer, registrar)
 	return app, func() {
+		cleanup()
 	}, nil
 }

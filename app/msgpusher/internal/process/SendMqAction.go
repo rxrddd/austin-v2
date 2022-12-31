@@ -3,6 +3,7 @@ package process
 import (
 	"austin-v2/app/msgpusher-common/enums/channelType"
 	"austin-v2/app/msgpusher-common/enums/messageType"
+	"austin-v2/app/msgpusher/internal/data/model"
 	"austin-v2/pkg/types"
 	"austin-v2/pkg/utils/taskHelper"
 	"context"
@@ -25,7 +26,7 @@ func NewSendMqAction(b broker.Broker,
 	}
 }
 
-func (p *SendMqAction) Process(_ context.Context, sendTaskModel *types.SendTaskModel) error {
+func (p *SendMqAction) Process(_ context.Context, sendTaskModel *types.SendTaskModel, messageTemplate model.MessageTemplate) error {
 	marshal, err := json.Marshal(sendTaskModel.TaskInfo)
 	if err != nil {
 		return err

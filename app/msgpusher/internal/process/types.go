@@ -1,6 +1,7 @@
 package process
 
 import (
+	"austin-v2/app/msgpusher/internal/data/model"
 	"austin-v2/pkg/types"
 	"context"
 )
@@ -17,16 +18,16 @@ func NewBusinessProcess(
 ) *BusinessProcess {
 	return &BusinessProcess{
 		process: []Process{
-			apc,
-			ass,
-			ppc,
-			sma,
+			ppc, //前置参数校验
+			ass, //拼装参数
+			apc, //后置参数检查
+			sma, //发送到mq
 		},
 	}
 }
-func (p *BusinessProcess) Process(ctx context.Context, sendTaskModel *types.SendTaskModel) error {
+func (p *BusinessProcess) Process(ctx context.Context, sendTaskModel *types.SendTaskModel, messageTemplate model.MessageTemplate) error {
 	for _, pr := range p.process {
-		err := pr.Process(ctx, sendTaskModel)
+		err := pr.Process(ctx, sendTaskModel, messageTemplate)
 		if err != nil {
 			return err
 		}
@@ -34,13 +35,6 @@ func (p *BusinessProcess) Process(ctx context.Context, sendTaskModel *types.Send
 	return nil
 }
 
-func (p *BusinessProcess) AddProcess(pr ...Process) error {
-	if len(pr) > 0 {
-		p.process = append(p.process, pr...)
-	}
-	return nil
-}
-
 type Process interface {
-	Process(ctx context.Context, sendTaskModel *types.SendTaskModel) error
+	Process(ctx context.Context, sendTaskModel *types.SendTaskModel, messageTemplate model.MessageTemplate) error
 }

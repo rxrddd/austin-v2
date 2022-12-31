@@ -3,6 +3,7 @@ package process
 import (
 	"austin-v2/app/msgpusher-common/enums/channelType"
 	"austin-v2/app/msgpusher-common/enums/idType"
+	"austin-v2/app/msgpusher/internal/data/model"
 	"austin-v2/pkg/types"
 	"austin-v2/pkg/utils/taskHelper"
 	"context"
@@ -17,7 +18,7 @@ func NewAfterParamCheckAction() *AfterParamCheckAction {
 	return &AfterParamCheckAction{}
 }
 
-func (p *AfterParamCheckAction) Process(_ context.Context, sendTaskModel *types.SendTaskModel) error {
+func (p *AfterParamCheckAction) Process(_ context.Context, sendTaskModel *types.SendTaskModel, messageTemplate model.MessageTemplate) error {
 	// 1. 过滤掉不合法的手机号
 	if sendTaskModel.TaskInfo[0].IdType == idType.Phone && sendTaskModel.TaskInfo[0].SendChannel == channelType.Sms {
 		var newTask []types.TaskInfo
