@@ -1,4 +1,4 @@
-package service
+package srv
 
 import (
 	"austin-v2/pkg/types"

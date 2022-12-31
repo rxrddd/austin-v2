@@ -16,6 +16,7 @@ import (
 	"austin-v2/app/msgpusher-worker/internal/service"
 	"austin-v2/app/msgpusher-worker/internal/service/deduplication"
 	"austin-v2/app/msgpusher-worker/internal/service/limiter"
+	"austin-v2/app/msgpusher-worker/internal/service/srv"
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/log"
 )
@@ -37,8 +38,8 @@ func wireApp(confData *conf.Data, logger log.Logger) (*kratos.App, func(), error
 	sendAccountUseCase := biz.NewSendAccountUseCase(iSendAccountRepo, logger)
 	emailHandler := handler.NewEmailHandler(logger, cmdable, sendAccountUseCase)
 	handleManager := sender.NewHandleManager(smsHandler, emailHandler)
-	discardMessageService := service.NewDiscardMessageService(logger, cmdable)
-	shieldService := service.NewShieldService(logger, cmdable)
+	discardMessageService := srv.NewDiscardMessageService(logger, cmdable)
+	shieldService := srv.NewShieldService(logger, cmdable)
 	iMessageTemplateRepo := data.NewMessageTemplateRepo(dataData, logger)
 	messageTemplateUseCase := biz.NewMessageTemplateUseCase(iMessageTemplateRepo, logger)
 	simpleLimitService := limit.NewSimpleLimitService(logger, cmdable)
@@ -47,7 +48,7 @@ func wireApp(confData *conf.Data, logger log.Logger) (*kratos.App, func(), error
 	frequencyDeduplicationService := deduplication.NewFrequencyDeduplicationService(limiterManager)
 	contentDeduplicationService := deduplication.NewContentDeduplicationService(limiterManager)
 	deduplicationManager := deduplication.NewDeduplicationManager(frequencyDeduplicationService, contentDeduplicationService)
-	deduplicationRuleService := service.NewDeduplicationRuleService(logger, cmdable, messageTemplateUseCase, deduplicationManager)
+	deduplicationRuleService := srv.NewDeduplicationRuleService(logger, cmdable, messageTemplateUseCase, deduplicationManager)
 	taskService := service.NewTaskService(discardMessageService, shieldService, deduplicationRuleService)
 	rabbitmqServer := server.NewMqServer(confData, logger, broker, taskExecutor, handleManager, taskService)
 	app := newApp(logger, rabbitmqServer)
