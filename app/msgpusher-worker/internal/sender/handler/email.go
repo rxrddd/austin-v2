@@ -12,15 +12,18 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-redis/redis/v8"
 	"github.com/pkg/errors"
+	"golang.org/x/time/rate"
 	"gopkg.in/gomail.v2"
+	"time"
 )
 
 type EmailHandler struct {
 	BaseHandler
 
-	logger *log.Helper
-	rds    redis.Cmdable
-	sc     *biz.SendAccountUseCase
+	logger  *log.Helper
+	rds     redis.Cmdable
+	sc      *biz.SendAccountUseCase
+	limiter *rate.Limiter
 }
 
 func NewEmailHandler(
@@ -29,9 +32,10 @@ func NewEmailHandler(
 	sc *biz.SendAccountUseCase,
 ) *EmailHandler {
 	return &EmailHandler{
-		logger: log.NewHelper(log.With(logger, "module", "sender/sms")),
-		rds:    rds,
-		sc:     sc,
+		logger:  log.NewHelper(log.With(logger, "module", "sender/sms")),
+		rds:     rds,
+		sc:      sc,
+		limiter: rate.NewLimiter(rate.Every(time.Second*3), 1),
 	}
 }
 
@@ -63,4 +67,7 @@ func (h *EmailHandler) Execute(ctx context.Context, taskInfo *types.TaskInfo) (e
 		return errors.Wrap(err, "emailHandler DialAndSend err")
 	}
 	return nil
+}
+func (h *EmailHandler) Allow(ctx context.Context, _ *types.TaskInfo) bool {
+	return h.limiter.AllowN(time.Now(), 1)
 }

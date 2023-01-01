@@ -1,6 +1,9 @@
 package types
 
-import "context"
+import (
+	"context"
+	"encoding/json"
+)
 
 type TaskInfo struct {
 	MessageTemplateId int64        `json:"messageTemplateId"`
@@ -16,6 +19,11 @@ type TaskInfo struct {
 	TemplateSn        string       `json:"templateSn"`                            // 发送消息的模版ID
 	SmsChannel        string       `gorm:"column:sms_channel" json:"sms_channel"` // 短信渠道 send_channel=30的时候有用
 	MessageParam      MessageParam `json:"messageParamList"`
+}
+
+func (t *TaskInfo) String() string {
+	marshal, _ := json.Marshal(t)
+	return string(marshal)
 }
 
 type ContentModel struct {
@@ -36,5 +44,5 @@ type MessageParam struct {
 type IHandler interface {
 	Name() string
 	Execute(ctx context.Context, taskInfo *TaskInfo) error
-	Allow(ctx context.Context) bool
+	Allow(ctx context.Context, taskInfo *TaskInfo) bool
 }

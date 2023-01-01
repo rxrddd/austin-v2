@@ -79,14 +79,12 @@ func (m *MqHandler) onMassage(ctx context.Context, topic string, headers broker.
 	l := log.NewHelper(log.With(m.logger, "module", "MqHandler/onMassage"))
 
 	for _, taskInfo := range *taskList {
-		l.Error("task_info", taskInfo)
 		task := &taskInfo
 		channel := channelType.TypeCodeEn[task.SendChannel]
 		msgType := messageType.TypeCodeEn[task.MsgType]
 		err := m.executor.Submit(ctx, fmt.Sprintf("%s.%s", channel, msgType), sender.NewTask(task, m.hs, m.logger, m.taskSvc))
 		if err != nil {
-
-			l.Errorf(topic+" on massage err: %v", err, "task_list", taskList)
+			l.Errorf(topic+" on massage err: %v task_info: %s", err, taskInfo)
 		}
 	}
 	return nil

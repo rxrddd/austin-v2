@@ -27,8 +27,7 @@ func NewDiscardMessageService(logger log.Logger, rds redis.Cmdable) *DiscardMess
 func (l *DiscardMessageService) IsDiscard(ctx context.Context, taskInfo *types.TaskInfo) bool {
 	discardMessageTemplateIds, err := l.rds.SMembers(ctx, discardMessageKey).Result()
 	if err != nil {
-		l.logger.Errorf("discard message service smembers err: %v", err,
-			"discardMessageTemplateIds", discardMessageTemplateIds)
+		l.logger.Errorf("discard message service smembers err: %v ", err)
 		return false
 	}
 	if len(discardMessageTemplateIds) == 0 {
