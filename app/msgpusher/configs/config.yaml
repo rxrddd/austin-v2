@@ -19,4 +19,4 @@ data:
   rabbitmq:
       URL: "amqp://guest:guest@127.0.0.1:5672/"
 etcd:
-  address: 192.168.0.105:2379
+  address: 192.168.0.107:2379

@@ -51,7 +51,8 @@ func wireApp(confData *conf.Data, logger log.Logger) (*kratos.App, func(), error
 	deduplicationRuleService := srv.NewDeduplicationRuleService(logger, cmdable, messageTemplateUseCase, deduplicationManager)
 	taskService := service.NewTaskService(discardMessageService, shieldService, deduplicationRuleService)
 	rabbitmqServer := server.NewMqServer(confData, logger, broker, taskExecutor, handleManager, taskService)
-	app := newApp(logger, rabbitmqServer)
+	cronTask := server.NewCronServer(logger, broker, cmdable)
+	app := newApp(logger, rabbitmqServer, cronTask)
 	return app, func() {
 		cleanup()
 	}, nil
