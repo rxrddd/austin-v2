@@ -4,7 +4,7 @@ import (
 	"austin-v2/app/authorization/internal/conf"
 	"github.com/casbin/casbin/v2"
 	"github.com/go-kratos/kratos/contrib/registry/etcd/v2"
-	"github.com/go-redis/redis"
+	"github.com/go-redis/redis/v8"
 	etcdclient "go.etcd.io/etcd/client/v3"
 
 	"github.com/go-kratos/kratos/v2/log"

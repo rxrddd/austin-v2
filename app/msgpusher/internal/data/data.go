@@ -12,17 +12,16 @@ import (
 	"time"
 
 	"github.com/go-kratos/kratos/v2/log"
-	"github.com/go-redis/redis"
+	"github.com/go-redis/redis/v8"
 	"github.com/google/wire"
 	"gorm.io/driver/mysql"
 )
 
-// ProviderSet is data providers.
-var ProviderSet = wire.NewSet(
+// DataProviderSet is data providers.
+var DataProviderSet = wire.NewSet(
 	NewBroker,
 	NewData,
-	NewGreeterRepo,
-	NewDiscovery,
+	NewMessageTemplateRepo,
 	NewRegistrar,
 	NewRedisCmd,
 	NewMysqlCmd,
@@ -32,20 +31,28 @@ var ProviderSet = wire.NewSet(
 type Data struct {
 	// TODO wrapped database client
 	broker broker.Broker
+	db     *gorm.DB
 }
 
 // NewData .
-func NewData(c *conf.Data, logger log.Logger, broker broker.Broker) (*Data, func(), error) {
+func NewData(
+	c *conf.Data,
+	logger log.Logger,
+	broker broker.Broker,
+	db *gorm.DB,
+) (*Data, func(), error) {
 	cleanup := func() {
 		log.NewHelper(logger).Info("closing the data resources")
+		_ = broker.Disconnect()
 	}
 	return &Data{
 		broker: broker,
+		db:     db,
 	}, cleanup, nil
 }
 
 // NewBroker .
-func NewBroker(c *conf.Data, logger log.Logger) (broker.Broker, func(), error) {
+func NewBroker(c *conf.Data, logger log.Logger) broker.Broker {
 
 	ctx := context.Background()
 	b := rabbitmq.NewBroker(
@@ -57,28 +64,10 @@ func NewBroker(c *conf.Data, logger log.Logger) (broker.Broker, func(), error) {
 
 	if err := b.Connect(); err != nil {
 		log.Error(`err`, err)
-	}
-
-	log.NewHelper(logger).Info("NewBroker " + b.Name())
-
-	cleanup := func() {
-		log.NewHelper(logger).Info("closing the data resources NewBroker")
-		_ = b.Disconnect()
-	}
-
-	return b, cleanup, nil
-}
-
-func NewDiscovery(conf *conf.Registry) registry.Discovery {
-	point := conf.Etcd.Address
-	client, err := etcdclient.New(etcdclient.Config{
-		Endpoints: []string{point},
-	})
-	if err != nil {
 		panic(err)
 	}
-	r := etcd.New(client)
-	return r
+	log.NewHelper(logger).Info("NewBroker " + b.Name())
+	return b
 }
 
 func NewRegistrar(conf *conf.Registry) registry.Registrar {
@@ -103,7 +92,7 @@ func NewRedisCmd(conf *conf.Data, logger log.Logger) redis.Cmdable {
 		DialTimeout:  time.Second * 2,
 		PoolSize:     10,
 	})
-	err := client.Ping().Err()
+	err := client.Ping(context.Background()).Err()
 	if err != nil {
 		logs.Fatalf("redis connect error: %v", err)
 	}

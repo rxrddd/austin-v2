@@ -10,6 +10,7 @@ import (
 	"austin-v2/app/msgpusher/internal/biz"
 	"austin-v2/app/msgpusher/internal/conf"
 	"austin-v2/app/msgpusher/internal/data"
+	"austin-v2/app/msgpusher/internal/process"
 	"austin-v2/app/msgpusher/internal/server"
 	"austin-v2/app/msgpusher/internal/service"
 	"github.com/go-kratos/kratos/v2"
@@ -19,23 +20,26 @@ import (
 // Injectors from wire.go:
 
 // wireApp init kratos application.
-func wireApp(confServer *conf.Server, confData *conf.Data, logger log.Logger) (*kratos.App, func(), error) {
-	broker, cleanup, err := data.NewBroker(confData, logger)
+func wireApp(confServer *conf.Server, registry *conf.Registry, confData *conf.Data, logger log.Logger) (*kratos.App, func(), error) {
+	afterParamCheckAction := process.NewAfterParamCheckAction()
+	assembleAction := process.NewAssembleAction()
+	preParamCheckAction := process.NewPreParamCheckAction()
+	broker := data.NewBroker(confData, logger)
+	sendMqAction := process.NewSendMqAction(broker, logger)
+	businessProcess := process.NewBusinessProcess(afterParamCheckAction, assembleAction, preParamCheckAction, sendMqAction)
+	db := data.NewMysqlCmd(confData, logger)
+	dataData, cleanup, err := data.NewData(confData, logger, broker, db)
 	if err != nil {
 		return nil, nil, err
 	}
-	dataData, cleanup2, err := data.NewData(confData, logger, broker)
-	if err != nil {
-		cleanup()
-		return nil, nil, err
-	}
-	greeterRepo := data.NewGreeterRepo(dataData, logger)
-	greeterUsecase := biz.NewGreeterUsecase(greeterRepo, logger)
-	msgPusherService := service.NewMsgPusherService(greeterUsecase, broker, logger)
+	iMessageTemplateRepo := data.NewMessageTemplateRepo(dataData, logger)
+	messageTemplateUseCase := biz.NewMessageTemplateUseCase(iMessageTemplateRepo, logger)
+	msgPusherUseCase := biz.NewMsgPusherUseCase(logger, businessProcess, messageTemplateUseCase)
+	msgPusherService := service.NewMsgPusherService(msgPusherUseCase, logger)
 	grpcServer := server.NewGRPCServer(confServer, msgPusherService, logger)
-	app := newApp(logger, grpcServer)
+	registrar := data.NewRegistrar(registry)
+	app := newApp(logger, grpcServer, registrar)
 	return app, func() {
-		cleanup2()
 		cleanup()
 	}, nil
 }

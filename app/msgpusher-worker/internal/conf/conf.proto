@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+package kratos.api;
+
+import "google/protobuf/duration.proto";
+
+option go_package = "austin-v2/app/administrator/internal/conf;conf";
+
+message Bootstrap {
+  Service service = 1;
+  Data data = 4;
+}
+
+message Service {
+  string name = 1;
+  string version = 2;
+}
+
+message Data {
+  message Database {
+    string driver = 1;
+    string source = 2;
+  }
+  message Redis {
+    string network = 1;
+    string addr = 2;
+    string password = 3;
+    google.protobuf.Duration read_timeout = 4;
+    google.protobuf.Duration write_timeout = 5;
+  }
+  message RabbitMq {
+    string URL = 1;
+  }
+  Database database = 1;
+  Redis redis = 2;
+  RabbitMq rabbitmq = 3;
+}
+
+
+
+
