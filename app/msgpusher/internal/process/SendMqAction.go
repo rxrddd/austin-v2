@@ -8,7 +8,6 @@ import (
 	"austin-v2/pkg/utils/taskHelper"
 	"context"
 	"encoding/json"
-	"fmt"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/tx7do/kratos-transport/broker"
 	"github.com/tx7do/kratos-transport/broker/rabbitmq"
@@ -34,12 +33,19 @@ func (p *SendMqAction) Process(_ context.Context, sendTaskModel *types.SendTaskM
 	}
 	channel := channelType.TypeCodeEn[sendTaskModel.TaskInfo[0].SendChannel]
 	msgType := messageType.TypeCodeEn[sendTaskModel.TaskInfo[0].MsgType]
-	fmt.Println(`queue`, taskHelper.GetMqKey(channel, msgType))
+
+	//自己调试queue是否需要自动删除
+	durableQueue := false
+	autoDelete := true
+
+	//durableQueue := true
+	//autoDelete := false
+
 	return p.b.Publish(taskHelper.GetMqKey(channel, msgType), marshal,
 		rabbitmq.WithPublishDeclareQueue(
 			taskHelper.GetMqKey(channel, msgType),
-			true,
-			false,
+			durableQueue,
+			autoDelete,
 			nil,
 			nil,
 		),

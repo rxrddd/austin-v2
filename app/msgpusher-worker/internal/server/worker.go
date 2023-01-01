@@ -25,6 +25,7 @@ func NewMqServer(
 	hs *sender.HandleManager,
 	taskSvc *service.TaskService,
 ) *rabbitmq.Server {
+
 	srv := rabbitmq.NewServer(
 		rabbitmq.WithAddress([]string{c.Rabbitmq.URL}),
 		rabbitmq.WithCodec("json"),
@@ -36,15 +37,16 @@ func NewMqServer(
 		_ = srv.RegisterSubscriber(context.Background(),
 			fmt.Sprintf("austin.biz.%s", groupId),
 			logic.registerMessageHandler(logic.onMassage),
-			messageCreator,
+			logic.messageCreator,
 			broker.WithQueueName(fmt.Sprintf("austin.biz.%s", groupId)),
-			brokermq.WithDurableQueue(),
+			//brokermq.WithDurableQueue(), //queue不自动删除
+			brokermq.WithAutoDeleteQueue(), //queue自动删除
 			brokermq.WithAckOnSuccess(),
 		)
 	}
+
 	return srv
 }
-func messageCreator() broker.Any { return &[]types.TaskInfo{} }
 
 type MessageHandler func(_ context.Context, topic string, headers broker.Headers, msg *[]types.TaskInfo) error
 
@@ -71,6 +73,7 @@ func NewMqHandler(
 		taskSvc:  taskSvc,
 	}
 }
+func (m *MqHandler) messageCreator() broker.Any { return &[]types.TaskInfo{} }
 
 func (m *MqHandler) onMassage(ctx context.Context, topic string, headers broker.Headers, taskList *[]types.TaskInfo) error {
 	l := log.NewHelper(log.With(m.logger, "module", "MqHandler/onMassage"))
