@@ -2,6 +2,7 @@ package data
 
 import (
 	"austin-v2/app/msgpusher/internal/conf"
+	"austin-v2/pkg/utils/mqHelper"
 	"context"
 	"github.com/go-kratos/kratos/contrib/registry/etcd/v2"
 	"github.com/go-kratos/kratos/v2/registry"
@@ -25,13 +26,14 @@ var DataProviderSet = wire.NewSet(
 	NewRegistrar,
 	NewRedisCmd,
 	NewMysqlCmd,
+	mqHelper.NewMqHelper,
 )
 
 // Data .
 type Data struct {
-	// TODO wrapped database client
-	broker broker.Broker
-	db     *gorm.DB
+	mqHelper *mqHelper.MqHelper
+	broker   broker.Broker
+	db       *gorm.DB
 }
 
 // NewData .
@@ -39,6 +41,7 @@ func NewData(
 	c *conf.Data,
 	logger log.Logger,
 	broker broker.Broker,
+	mqHelper *mqHelper.MqHelper,
 	db *gorm.DB,
 ) (*Data, func(), error) {
 	cleanup := func() {
@@ -46,8 +49,8 @@ func NewData(
 		_ = broker.Disconnect()
 	}
 	return &Data{
-		broker: broker,
-		db:     db,
+		mqHelper: mqHelper,
+		db:       db,
 	}, cleanup, nil
 }
 

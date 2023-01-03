@@ -2,6 +2,7 @@ package data
 
 import (
 	"austin-v2/app/msgpusher-worker/internal/conf"
+	"austin-v2/pkg/utils/mqHelper"
 	"context"
 	"github.com/tx7do/kratos-transport/broker"
 	"github.com/tx7do/kratos-transport/broker/rabbitmq"
@@ -22,13 +23,14 @@ var DataProviderSet = wire.NewSet(
 	NewMysqlCmd,
 	NewMessageTemplateRepo,
 	NewSendAccountRepo,
+	mqHelper.NewMqHelper,
 )
 
 // Data .
 type Data struct {
-	broker broker.Broker
-	rds    redis.Cmdable
-	db     *gorm.DB
+	mqHelper *mqHelper.MqHelper
+	rds      redis.Cmdable
+	db       *gorm.DB
 }
 
 // NewData .
@@ -36,6 +38,7 @@ func NewData(
 	c *conf.Data,
 	logger log.Logger,
 	broker broker.Broker,
+	mqHelper *mqHelper.MqHelper,
 	rds redis.Cmdable,
 	db *gorm.DB,
 ) (*Data, func(), error) {
@@ -46,9 +49,9 @@ func NewData(
 		s.Close()
 	}
 	return &Data{
-		broker: broker,
-		rds:    rds,
-		db:     db,
+		mqHelper: mqHelper,
+		rds:      rds,
+		db:       db,
 	}, cleanup, nil
 }
 
