@@ -20,9 +20,9 @@ austin-go项目的v2版本
 
 go-zero : [https://github.com/zeromicro/go-zero](https://github.com/zeromicro/go-zero)
 
-kratos: [https://github.com/go-krato](https://github.com/go-kratos/kratos)
+kratos: [https://github.com/go-krato/krato](https://github.com/go-kratos/kratos)
 
-austin : [https://github.com/go-krato](https://gitee.com/zhongfucheng/austin)
+austin : [https://gitee.com/zhongfucheng/austin](https://gitee.com/zhongfucheng/austin)
 
 ants : [https://github.com/panjf2000/ants](https://github.com/panjf2000/ants)
 
