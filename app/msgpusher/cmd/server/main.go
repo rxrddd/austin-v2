@@ -4,6 +4,7 @@ import (
 	"austin-v2/pkg/utils/stringHelper"
 	"flag"
 	"github.com/go-kratos/kratos/v2/registry"
+	"github.com/go-kratos/kratos/v2/transport/http"
 	"os"
 
 	"austin-v2/app/msgpusher/internal/conf"
@@ -32,7 +33,7 @@ func init() {
 	flag.StringVar(&flagconf, "conf", "../../configs", "config path, eg: -conf config.yaml")
 }
 
-func newApp(logger log.Logger, gs *grpc.Server, rr registry.Registrar) *kratos.App {
+func newApp(logger log.Logger, gs *grpc.Server, hs *http.Server, rr registry.Registrar) *kratos.App {
 	return kratos.New(
 		kratos.ID(id),
 		kratos.Name(Name),
@@ -41,6 +42,7 @@ func newApp(logger log.Logger, gs *grpc.Server, rr registry.Registrar) *kratos.A
 		kratos.Logger(logger),
 		kratos.Server(
 			gs,
+			hs,
 		),
 		kratos.Registrar(rr),
 	)

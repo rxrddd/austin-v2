@@ -11,7 +11,7 @@
  Target Server Version : 80030
  File Encoding         : 65001
 
- Date: 28/12/2022 21:13:09
+ Date: 03/01/2023 21:41:01
 */
 
 SET NAMES utf8mb4;
@@ -310,6 +310,68 @@ INSERT INTO `casbin_rule` VALUES (390, 'p', '超级管理员', '/api.admin.v1.Ad
 COMMIT;
 
 -- ----------------------------
+-- Table structure for message_template
+-- ----------------------------
+DROP TABLE IF EXISTS `message_template`;
+CREATE TABLE `message_template` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '标题',
+  `audit_status` tinyint NOT NULL DEFAULT '0' COMMENT '当前消息审核状态： 10.待审核 20.审核成功 30.被拒绝',
+  `id_type` tinyint NOT NULL DEFAULT '0' COMMENT '消息的发送ID类型：10. userId 20.did 30.手机号 40.openId 50.email 60.企业微信userId',
+  `send_channel` tinyint NOT NULL DEFAULT '0' COMMENT '消息发送渠道：10.IM 20.Push 30.短信 40.Email 50.公众号 60.小程序 70.企业微信',
+  `template_type` tinyint NOT NULL DEFAULT '0' COMMENT '10.运营类 20.技术类接口调用',
+  `msg_type` tinyint NOT NULL DEFAULT '0' COMMENT '10.通知类消息 20.营销类消息 30.验证码类消息',
+  `shield_type` tinyint NOT NULL DEFAULT '0' COMMENT '10.夜间不屏蔽 20.夜间屏蔽 30.夜间屏蔽(次日早上9点发送)',
+  `msg_content` varchar(600) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '消息内容 占位符用{$var}表示',
+  `send_account` tinyint NOT NULL DEFAULT '0' COMMENT '发送账号 一个渠道下可存在多个账号',
+  `creator` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '创建者',
+  `updator` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '更新者',
+  `auditor` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '审核人',
+  `team` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '业务方团队',
+  `proposer` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '业务方',
+  `is_deleted` tinyint NOT NULL DEFAULT '0' COMMENT '是否删除：0.不删除 1.删除',
+  `created` int NOT NULL DEFAULT '0' COMMENT '创建时间',
+  `updated` int NOT NULL DEFAULT '0' COMMENT '更新时间',
+  `deduplication_config` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '数据去重配置',
+  `template_sn` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '发送消息的模版ID',
+  `sms_channel` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '短信渠道 send_channel=30的时候有用  tencent腾讯云  aliyun阿里云 yunpian云片',
+  PRIMARY KEY (`id`),
+  KEY `idx_channel` (`send_channel`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='消息模板信息';
+
+-- ----------------------------
+-- Records of message_template
+-- ----------------------------
+BEGIN;
+INSERT INTO `message_template` VALUES (1, '买一送十活动', 10, 30, 30, 20, 20, 30, '{\"content\":\"恭喜你:{$content}\",\"url\":\"\",\"title\":\"\"}', 10, 'Java3y', 'Java3y', '3y', '公众号Java3y', '三歪', 0, 1646274112, 1646275242, '', '', '');
+INSERT INTO `message_template` VALUES (2, '校招信息', 10, 50, 40, 20, 10, 0, '{\"content\":\"你已成功获取到offer 内容:{$content}\",\"url\":\"\",\"title\":\"招聘通知\"}', 1, 'Java3y', 'Java3y', '3y', '公众号Java3y', '鸡蛋', 0, 1646274195, 1646274195, '', '', '');
+INSERT INTO `message_template` VALUES (3, '验证码通知', 10, 30, 30, 20, 30, 0, '{\"content\":\"{$content}\",\"url\":\"\",\"title\":\"\"}', 10, 'Java3y', 'Java3y', '3y', '公众号Java3y', '孙悟空', 0, 1646275213, 1646275213, '', '', '');
+INSERT INTO `message_template` VALUES (4, '微信测试通知', 10, 40, 50, 20, 10, 0, '{\"content\":\"{$content}\",\"url\":\"\",\"title\":\"\"}', 2, '', '', '', '', '', 0, 1646275213, 1646275213, '', '', '');
+INSERT INTO `message_template` VALUES (5, '钉钉测试通知', 10, 40, 70, 20, 10, 0, '{\"content\":\"钉钉测试消息:\\n内容:{$content}\",\"url\":\"\",\"title\":\"\"}', 3, '', '', '', '', '', 0, 1646275213, 1646275213, '', '', '');
+COMMIT;
+
+-- ----------------------------
+-- Table structure for send_account
+-- ----------------------------
+DROP TABLE IF EXISTS `send_account`;
+CREATE TABLE `send_account` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `send_chanel` varchar(255) NOT NULL DEFAULT '' COMMENT '发送渠道',
+  `config` varchar(2000) NOT NULL DEFAULT '' COMMENT '账户配置',
+  `title` varchar(255) NOT NULL DEFAULT '' COMMENT '账号名称',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- ----------------------------
+-- Records of send_account
+-- ----------------------------
+BEGIN;
+INSERT INTO `send_account` VALUES (1, '40', '{\"host\":\"smtp.qq.com\",\"port\":25,\"username\":\"test@qq.com\",\"password\":\"tesxxxx\"}', '邮箱账号');
+INSERT INTO `send_account` VALUES (2, '50', '{\"app_id\":\"app_id\",\"app_secret\":\"app_secret\",\"token\":\"weixin\"}', '微信公众号配置');
+INSERT INTO `send_account` VALUES (3, '80', '{\"access_token\":\"access_token\",\"secret\":\"secret\"}', '钉钉自定义机器人');
+COMMIT;
+
+-- ----------------------------
 -- Table structure for sys_administrator
 -- ----------------------------
 DROP TABLE IF EXISTS `sys_administrator`;
@@ -335,10 +397,11 @@ CREATE TABLE `sys_administrator` (
 
 -- ----------------------------
 -- Records of sys_administrator
--- ----------------------------BEGIN;
-INSERT INTO `sys_administrator` VALUES (18, 'admin', 'b9819e53ed8ea2b2b422ff1d2f1317ca', 'e701bf4e804804773099b4b20130d418', '18158445331', '卡牌', 'https://austin-v2.oss-cn-hangzhou.aliyuncs.com/3441660123117_.pic.jpg', 1, '超级管理员', '2022-12-07 17:05:08', '127.0.0.1:62201', '2022-08-17 16:15:17', '2022-11-22 17:41:38', '');
-INSERT INTO `sys_administrator` VALUES (27, 'test', '8ab138656a71b1e001aa12cc7298f901', 'cb1461e3e59ec7a2237bf5f5fa105ab5', '18158445332', '测试', 'https://austin-v2.oss-cn-hangzhou.aliyuncs.com/3441660123117_.pic.jpg', 1, '测试管理员', '2022-12-07 17:05:50', '127.0.0.1:59530', '2022-12-07 11:28:48', '2022-12-07 11:28:48', '');
-INSERT INTO `sys_administrator` VALUES (28, 'guest', 'a5ac55c657800544fa68377d4bb64505', 'dabba3032e7d0c51c48e7ca794e589b8', '18158445333', '游客', 'https://austin-v2.oss-cn-hangzhou.aliyuncs.com/3441660123117_.pic.jpg', 1, '游客', '2022-12-07 17:06:15', '127.0.0.1:59572', '2022-12-07 11:29:26', '2022-12-07 11:29:26', '');
+-- ----------------------------
+BEGIN;
+INSERT INTO `sys_administrator` VALUES (18, 'admin', 'b9819e53ed8ea2b2b422ff1d2f1317ca', 'e701bf4e804804773099b4b20130d418', '18158445331', '卡牌', 'https://kratos-base-project.oss-cn-hangzhou.aliyuncs.com/3441660123117_.pic.jpg', 1, '超级管理员', '2022-12-07 17:05:08', '127.0.0.1:62201', '2022-08-17 16:15:17', '2022-11-22 17:41:38', '');
+INSERT INTO `sys_administrator` VALUES (27, 'test', '8ab138656a71b1e001aa12cc7298f901', 'cb1461e3e59ec7a2237bf5f5fa105ab5', '18158445332', '测试', 'https://kratos-base-project.oss-cn-hangzhou.aliyuncs.com/3441660123117_.pic.jpg', 1, '测试管理员', '2022-12-07 17:05:50', '127.0.0.1:59530', '2022-12-07 11:28:48', '2022-12-07 11:28:48', '');
+INSERT INTO `sys_administrator` VALUES (28, 'guest', 'a5ac55c657800544fa68377d4bb64505', 'dabba3032e7d0c51c48e7ca794e589b8', '18158445333', '游客', 'https://kratos-base-project.oss-cn-hangzhou.aliyuncs.com/3441660123117_.pic.jpg', 1, '游客', '2022-12-07 17:06:15', '127.0.0.1:59572', '2022-12-07 11:29:26', '2022-12-07 11:29:26', '');
 COMMIT;
 
 SET FOREIGN_KEY_CHECKS = 1;

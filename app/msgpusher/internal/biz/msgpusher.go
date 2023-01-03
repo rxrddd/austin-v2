@@ -5,10 +5,10 @@ import (
 	"austin-v2/app/msgpusher/internal/process"
 	"austin-v2/pkg/types"
 	"context"
-	"encoding/json"
 	"fmt"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/pkg/errors"
+	//"google.golang.org/protobuf/types/known/structpb"
 )
 
 type MsgPusherUseCase struct {
@@ -32,23 +32,14 @@ func (s *MsgPusherUseCase) Send(ctx context.Context, in *pb.SendRequest) (resp *
 	if in.MessageParam == nil {
 		return nil, errors.Wrapf(errors.New("客户端参数错误1"), "in:%v", in)
 	}
-	variables := make(map[string]interface{})
-	extra := make(map[string]interface{})
-	err = json.Unmarshal([]byte(in.MessageParam.Variables), &variables)
-	if err != nil {
-		return nil, errors.Wrapf(errors.New("客户端参数错误2"), "in:%v", in)
-	}
-	err = json.Unmarshal([]byte(in.MessageParam.Extra), &extra)
-	if err != nil {
-		return nil, errors.Wrapf(errors.New("客户端参数解析错误"), "in:%v", in)
-	}
+
 	var sendTaskModel = &types.SendTaskModel{
 		MessageTemplateId: in.MessageTemplateId,
 		MessageParamList: []types.MessageParam{
 			{
 				Receiver:  in.MessageParam.Receiver,
-				Variables: variables,
-				Extra:     extra,
+				Variables: in.MessageParam.Variables.AsMap(),
+				Extra:     in.MessageParam.Extra.AsMap(),
 			},
 		},
 	}

@@ -39,8 +39,9 @@ func wireApp(confServer *conf.Server, registry *conf.Registry, confData *conf.Da
 	msgPusherUseCase := biz.NewMsgPusherUseCase(logger, businessProcess, messageTemplateUseCase)
 	msgPusherService := service.NewMsgPusherService(msgPusherUseCase, logger)
 	grpcServer := server.NewGRPCServer(confServer, msgPusherService, logger)
+	httpServer := server.NewHTTPServer(confServer, msgPusherService, logger)
 	registrar := data.NewRegistrar(registry)
-	app := newApp(logger, grpcServer, registrar)
+	app := newApp(logger, grpcServer, httpServer, registrar)
 	return app, func() {
 		cleanup()
 	}, nil
