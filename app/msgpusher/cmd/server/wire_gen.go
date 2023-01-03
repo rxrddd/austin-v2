@@ -13,6 +13,7 @@ import (
 	"austin-v2/app/msgpusher/internal/process"
 	"austin-v2/app/msgpusher/internal/server"
 	"austin-v2/app/msgpusher/internal/service"
+	"austin-v2/pkg/utils/mqHelper"
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/log"
 )
@@ -25,10 +26,11 @@ func wireApp(confServer *conf.Server, registry *conf.Registry, confData *conf.Da
 	assembleAction := process.NewAssembleAction()
 	preParamCheckAction := process.NewPreParamCheckAction()
 	broker := data.NewBroker(confData, logger)
-	sendMqAction := process.NewSendMqAction(broker, logger)
+	mqHelperMqHelper := mqHelper.NewMqHelper(broker)
+	sendMqAction := process.NewSendMqAction(mqHelperMqHelper, logger)
 	businessProcess := process.NewBusinessProcess(afterParamCheckAction, assembleAction, preParamCheckAction, sendMqAction)
 	db := data.NewMysqlCmd(confData, logger)
-	dataData, cleanup, err := data.NewData(confData, logger, broker, db)
+	dataData, cleanup, err := data.NewData(confData, logger, broker, mqHelperMqHelper, db)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -37,8 +39,9 @@ func wireApp(confServer *conf.Server, registry *conf.Registry, confData *conf.Da
 	msgPusherUseCase := biz.NewMsgPusherUseCase(logger, businessProcess, messageTemplateUseCase)
 	msgPusherService := service.NewMsgPusherService(msgPusherUseCase, logger)
 	grpcServer := server.NewGRPCServer(confServer, msgPusherService, logger)
+	httpServer := server.NewHTTPServer(confServer, msgPusherService, logger)
 	registrar := data.NewRegistrar(registry)
-	app := newApp(logger, grpcServer, registrar)
+	app := newApp(logger, grpcServer, httpServer, registrar)
 	return app, func() {
 		cleanup()
 	}, nil

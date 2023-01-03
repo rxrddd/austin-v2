@@ -1,11 +1,13 @@
 ```
 {
-  "Code": "Hello",
-  "MessageTemplateId": 1,
-  "MessageParam": {
-    "Receiver": "13541514612",
-    "Variables": "{\"content\":\"恭喜你:{$content}\"}",
-    "Extra": "{}"
-  }
+    "code": "Hello",
+    "messageTemplateId": 1,
+    "messageParam": {
+        "receiver": "13541514611",
+        "variables": {
+            "content": "张三你好"
+        },
+        "extra": {}
+    }
 }
 ```

@@ -7,6 +7,9 @@ server:
   grpc:
     addr: 0.0.0.0:9000
     timeout: 1s
+  http:
+    addr: 0.0.0.0:8001
+    timeout: 1s
 data:
   database:
     driver: mysql
@@ -19,4 +22,4 @@ data:
   rabbitmq:
       URL: "amqp://guest:guest@127.0.0.1:5672/"
 etcd:
-  address: 192.168.0.105:2379
+  address: 127.0.0.1:2379

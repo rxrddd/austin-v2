@@ -13,7 +13,133 @@ austin-go项目的v2版本
 #### 项目描述
 
 1. 基于kratos/grpc/ants/rabbitmq/mysql/redis 写的一个聚合消息推送平台
-  
+1. 开发时:
+```
+cd austin-v2/app/msgpusher && kratos run //启动grpc和http接口
+
+cd austin-v2/app/msgpusher-worker && kratos run //启动消费端
+```
+
+1. 如需要测试去重服务则修改`message_template`表中的`deduplication_config`字段
+```
+{"deduplication_10":{"num":1,"time":300},"deduplication_20":{"num":5}}
+```
+5. 使用示例
+> 邮件消息
+```
+curl --location --request POST 'http://localhost:8888/send' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "code": "send",
+    "messageParam": {
+        "receiver": "test@qq.com",
+        "variables": {
+            "title": "测试操作",
+            "content": "Hello <b>Bob</b> and <i>Cora</i>!"
+        }
+    },
+    "messageTemplateId": 2
+}'
+```
+
+> 微信公众号消息
+```
+curl --location --request POST 'http://localhost:8888/send' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "code": "send",
+    "messageParam": {
+        "receiver": "openId",
+        "variables": {
+            "map": {
+                "name":"张三12333"
+            },
+            "url": "https://www.baidu.com/"
+        }
+    },
+    "messageTemplateId": 4
+}'
+
+//参数带颜色的
+curl --location --request POST 'http://localhost:8888/send' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "code": "send",
+    "messageParam": {
+        "receiver": "openId",
+        "variables": {
+            "map": {
+                "name":"张三12333|#0000FF"
+            },
+            "url": "https://www.baidu.com/"
+        }
+    },
+    "messageTemplateId": 4
+}'
+```
+
+> 钉钉自定义机器人
+```
+//艾特某些手机号
+curl --location --request POST 'http://localhost:8888/send' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "code": "send",
+    "messageParam": {
+        "receiver": "13588888888,13588888887",
+        "variables": {
+            "content": "测试\n换行"
+        }
+    },
+    "messageTemplateId": 5
+}'
+
+//艾特全部人
+curl --location --request POST 'http://localhost:8888/send' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "code": "send",
+    "messageParam": {
+        "receiver": "@all",
+        "variables": {
+            "content": "测试\n换行"
+        }
+    },
+    "messageTemplateId": 5
+}'
+```
+
+
+
+
+#### 目录说明
+
+```
+.
+├── Makefile
+├── README.md
+├── api   //grpc 接口定义
+├── app  //项目代码
+│   ├── administrator //用户信息,登录
+│   ├── authorization //授权
+│   ├── files //文件上传oss
+│   ├── msgpusher //msgpusher的rpc和http接口
+│   ├── msgpusher-common //公共文件
+│   ├── msgpusher-worker //消费端
+│   └── project
+│       └── admin  //后端接口项目
+├── deploy  //部署文件
+├── dev.md
+├── docs  //文档
+├── go.mod
+├── go.sum
+├── openapi.yaml
+├── pkg  //公共包
+└── third_party //三方包 谷歌啥的
+
+```
+
+
 
 
 #### Thanks

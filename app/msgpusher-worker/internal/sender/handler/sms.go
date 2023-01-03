@@ -3,6 +3,7 @@ package handler
 import (
 	"austin-v2/app/msgpusher-common/enums/channelType"
 	"austin-v2/pkg/types"
+	"austin-v2/pkg/utils/timeHelper"
 	"context"
 	"fmt"
 	"github.com/go-kratos/kratos/v2/log"
@@ -31,6 +32,6 @@ func (h *SmsHandler) Name() string {
 }
 
 func (h *SmsHandler) Execute(ctx context.Context, taskInfo *types.TaskInfo) (err error) {
-	fmt.Println("sms sender")
+	fmt.Println("sms sender " + timeHelper.CurrentTimeYMDHIS())
 	return nil
 }
