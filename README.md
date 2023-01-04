@@ -1,4 +1,4 @@
-# austin-v2 austin-go项目的v2版本
+# 基于kratos 的聚合消息推送平台
 
 #### 介绍
 austin-go项目的v2版本
