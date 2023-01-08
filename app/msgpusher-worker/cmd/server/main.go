@@ -3,7 +3,6 @@ package main
 import (
 	"austin-v2/app/msgpusher-worker/internal/server"
 	"austin-v2/pkg/utils/stringHelper"
-	"errors"
 	"flag"
 	"github.com/tx7do/kratos-transport/transport/rabbitmq"
 	"os"
@@ -77,13 +76,6 @@ func main() {
 		"service.version", Version,
 		"trace.id", tracing.TraceID(),
 		"span.id", tracing.SpanID(),
-	)
-	msgIds := []int64{1, 2, 3, 4}
-	var err error = errors.New("xxxx")
-
-	log.NewHelper(logger).Error("OfficialAccountHandler send success",
-		"msgIds", msgIds,
-		"err", err,
 	)
 
 	app, cleanup, err := wireApp(bc.Data, logger)

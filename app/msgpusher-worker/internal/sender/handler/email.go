@@ -66,6 +66,7 @@ func (h *EmailHandler) Execute(ctx context.Context, taskInfo *types.TaskInfo) (e
 	//}
 	//return nil
 }
+
 func (h *EmailHandler) Allow(ctx context.Context, _ *types.TaskInfo) bool {
 	return h.limiter.AllowN(time.Now(), 1)
 }
