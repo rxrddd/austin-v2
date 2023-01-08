@@ -6,9 +6,9 @@ import (
 	"austin-v2/app/msgpusher-worker/internal/biz"
 	"austin-v2/app/msgpusher-worker/internal/data/model"
 	"austin-v2/app/msgpusher-worker/internal/pkg/utils/accountHelper"
+	"austin-v2/pkg/mq"
 	"austin-v2/pkg/types"
 	"austin-v2/pkg/utils/contentHelper"
-	"austin-v2/pkg/utils/mqHelper"
 	"austin-v2/pkg/utils/stringHelper"
 	"austin-v2/pkg/utils/timeHelper"
 	"context"
@@ -25,13 +25,13 @@ import (
 
 type YunPian struct {
 	logger   *log.Helper
-	mqHelper *mqHelper.MqHelper
+	mqHelper mq.IMessagingClient
 	sc       *biz.SendAccountUseCase
 }
 
 func NewYunPin(
 	logger log.Logger,
-	mqHelper *mqHelper.MqHelper,
+	mqHelper mq.IMessagingClient,
 	sc *biz.SendAccountUseCase,
 ) *YunPian {
 	return &YunPian{
@@ -90,9 +90,10 @@ func (h *YunPian) Send(ctx context.Context, taskInfo *types.TaskInfo) (err error
 		records = append(records, h.smsRecord(resp, taskInfo.MessageTemplateId, receiver, content))
 
 	}
-	err = h.mqHelper.PublishTopic("sms.record", records)
+	marshal, _ := json.Marshal(records)
+	err = h.mqHelper.Publish(marshal, "sms.record")
 	if err != nil {
-		h.logger.WithContext(ctx).Errorw("msg", "aliyun send publish topic err", "err", err)
+		h.logger.WithContext(ctx).Errorw("msg", "yun pian send publish  err", "err", err)
 	}
 
 	return nil
@@ -130,6 +131,8 @@ func (h *YunPian) smsRecord(response *YunPianResp, messageTemplateId int64, phon
 		Phone:             cast.ToInt64(phoneNumber),
 		MsgContent:        content.ReplaceContent,
 		Status:            10,
+		ChargingNum:       response.Count,
+		Fee:               response.Fee,
 		SendDate:          cast.ToInt32(time.Now().Format(timeHelper.DateYMD)),
 		Created:           cast.ToInt32(time.Now().Unix()),
 		RequestId:         cast.ToString(response.Sid),

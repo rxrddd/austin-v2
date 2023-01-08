@@ -4,8 +4,8 @@ import (
 	"austin-v2/app/msgpusher-common/enums/channelType"
 	"austin-v2/app/msgpusher-common/enums/messageType"
 	"austin-v2/app/msgpusher-worker/internal/service/srv"
+	"austin-v2/pkg/mq"
 	"austin-v2/pkg/types"
-	"austin-v2/pkg/utils/mqHelper"
 	"austin-v2/pkg/utils/taskHelper"
 	"context"
 	"encoding/json"
@@ -16,14 +16,14 @@ import (
 
 type CronTask struct {
 	logger   *log.Helper
-	mqHelper *mqHelper.MqHelper
+	mqHelper mq.IMessagingClient
 	rds      redis.Cmdable
 	c        *cron.Cron
 }
 
 func NewCronServer(
 	logger log.Logger,
-	mqHelper *mqHelper.MqHelper,
+	mqHelper mq.IMessagingClient,
 	rds redis.Cmdable,
 ) *CronTask {
 	return &CronTask{
@@ -77,7 +77,7 @@ func (l *CronTask) nightShieldHandler() {
 		channel := channelType.TypeCodeEn[taskInfo.SendChannel]
 		msgType := messageType.TypeCodeEn[taskInfo.MsgType]
 		marshal, _ := json.Marshal([]types.TaskInfo{taskInfo})
-		err = l.mqHelper.PublishTopic(taskHelper.GetMqKey(channel, msgType), marshal)
+		err = l.mqHelper.Publish(marshal, taskHelper.GetMqKey(channel, msgType))
 		if err != nil {
 			l.logger.Errorf("nightShieldHandler Publish taskInfo err:%v taskInfo: %s ", err, string(marshal))
 		}

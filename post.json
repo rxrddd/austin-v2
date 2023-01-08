@@ -1,0 +1,13 @@
+{
+  "code": "send",
+  "messageParam": {
+    "receiver": "test@qq.com",
+    "variables": {
+      "title": "测试操作",
+      "content": "Hello <b>Bob</b> and <i>Cora</i>!"
+    }
+  },
+  "messageTemplateId": 2
+}
+
+

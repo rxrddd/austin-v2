@@ -18,7 +18,6 @@ import (
 	"austin-v2/app/msgpusher-worker/internal/service/deduplication"
 	"austin-v2/app/msgpusher-worker/internal/service/limiter"
 	"austin-v2/app/msgpusher-worker/internal/service/srv"
-	"austin-v2/pkg/utils/mqHelper"
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/log"
 )
@@ -27,19 +26,18 @@ import (
 
 // wireApp init kratos application.
 func wireApp(confData *conf.Data, logger log.Logger) (*kratos.App, func(), error) {
-	broker := data.NewBroker(confData, logger)
 	taskExecutor := sender.NewTaskExecutor()
 	cmdable := data.NewRedisCmd(confData, logger)
-	mqHelperMqHelper := mqHelper.NewMqHelper(broker)
+	iMessagingClient := data.NewMq(confData, logger)
 	db := data.NewMysqlCmd(confData, logger)
-	dataData, cleanup, err := data.NewData(confData, logger, broker, mqHelperMqHelper, cmdable, db)
+	dataData, cleanup, err := data.NewData(confData, iMessagingClient, logger, cmdable, db)
 	if err != nil {
 		return nil, nil, err
 	}
 	iSendAccountRepo := data.NewSendAccountRepo(dataData, logger)
 	sendAccountUseCase := biz.NewSendAccountUseCase(iSendAccountRepo, logger)
-	yunPian := smsScript.NewYunPin(logger, mqHelperMqHelper, sendAccountUseCase)
-	aliyunSms := smsScript.NewAliyunSms(logger, mqHelperMqHelper, sendAccountUseCase)
+	yunPian := smsScript.NewYunPin(logger, iMessagingClient, sendAccountUseCase)
+	aliyunSms := smsScript.NewAliyunSms(logger, iMessagingClient, sendAccountUseCase)
 	smsManager := smsScript.NewSmsManager(yunPian, aliyunSms)
 	smsHandler := handler.NewSmsHandler(logger, cmdable, smsManager)
 	emailHandler := handler.NewEmailHandler(logger, cmdable, sendAccountUseCase)
@@ -57,10 +55,10 @@ func wireApp(confData *conf.Data, logger log.Logger) (*kratos.App, func(), error
 	deduplicationManager := deduplication.NewDeduplicationManager(frequencyDeduplicationService, contentDeduplicationService)
 	deduplicationRuleService := srv.NewDeduplicationRuleService(logger, cmdable, messageTemplateUseCase, deduplicationManager)
 	taskService := service.NewTaskService(discardMessageService, shieldService, deduplicationRuleService)
-	mqHandler := server.NewMqHandler(logger, broker, taskExecutor, handleManager, taskService, db)
-	rabbitmqServer := server.NewMqServer(confData, mqHandler)
-	cronTask := server.NewCronServer(logger, mqHelperMqHelper, cmdable)
-	app := newApp(logger, rabbitmqServer, cronTask)
+	mqHandler := server.NewMqHandler(logger, taskExecutor, handleManager, taskService, db)
+	rabbitMqServer := server.NewRabbitMqServer(confData, mqHandler, iMessagingClient)
+	cronTask := server.NewCronServer(logger, iMessagingClient, cmdable)
+	app := newApp(logger, rabbitMqServer, cronTask)
 	return app, func() {
 		cleanup()
 	}, nil

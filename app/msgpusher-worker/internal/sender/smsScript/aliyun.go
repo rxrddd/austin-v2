@@ -6,9 +6,9 @@ import (
 	"austin-v2/app/msgpusher-worker/internal/biz"
 	"austin-v2/app/msgpusher-worker/internal/data/model"
 	"austin-v2/app/msgpusher-worker/internal/pkg/utils/accountHelper"
+	"austin-v2/pkg/mq"
 	"austin-v2/pkg/types"
 	"austin-v2/pkg/utils/contentHelper"
-	"austin-v2/pkg/utils/mqHelper"
 	"austin-v2/pkg/utils/stringHelper"
 	"austin-v2/pkg/utils/timeHelper"
 	"context"
@@ -25,13 +25,13 @@ import (
 
 type AliyunSms struct {
 	logger   *log.Helper
-	mqHelper *mqHelper.MqHelper
+	mqHelper mq.IMessagingClient
 	sc       *biz.SendAccountUseCase
 }
 
 func NewAliyunSms(
 	logger log.Logger,
-	mqHelper *mqHelper.MqHelper,
+	mqHelper mq.IMessagingClient,
 	sc *biz.SendAccountUseCase,
 ) *AliyunSms {
 	return &AliyunSms{
@@ -78,10 +78,12 @@ func (h *AliyunSms) Send(ctx context.Context, taskInfo *types.TaskInfo) (err err
 			records = append(records, h.smsRecord(response, taskInfo.MessageTemplateId, receiver, content))
 		}
 	}
-	err = h.mqHelper.PublishTopic("sms.record", records)
+	marshal, _ := json.Marshal(records)
+	err = h.mqHelper.Publish(marshal, "sms.record")
 	if err != nil {
-		h.logger.WithContext(ctx).Errorw("msg", "aliyun send publish topic err", "err", err)
+		h.logger.WithContext(ctx).Errorw("msg", "aliyun send publish err", "err", err)
 	}
+
 	return nil
 }
 func (h *AliyunSms) smsRecord(response *smsapi.SendSmsResponse, messageTemplateId int64, phoneNumber string, content content_model.SmsContentModel) model.SmsRecord {
