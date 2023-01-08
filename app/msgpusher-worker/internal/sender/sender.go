@@ -8,6 +8,7 @@ import (
 // SenderProviderSet is biz providers.
 var SenderProviderSet = wire.NewSet(
 	handler.NewSmsHandler,
+	handler.NewOfficialAccountHandler,
 	handler.NewEmailHandler,
 	NewHandleManager,
 	NewTaskExecutor,

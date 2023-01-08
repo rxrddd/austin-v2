@@ -23,7 +23,6 @@ func NewSendAccountRepo(data *Data, logger log.Logger) ISendAccountRepo {
 }
 
 func (a *SendAccountRepo) One(ctx context.Context, id int64) (item *model.SendAccount, err error) {
-	//key := fmt.Sprintf("messagetemplate_%d", id)
-	err = a.data.db.WithContext(ctx).Where("id", id).Limit(1).Find(item).Error
+	err = a.data.db.WithContext(ctx).Where("id", id).Limit(1).Find(&item).Error
 	return item, err
 }

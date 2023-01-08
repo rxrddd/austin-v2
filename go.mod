@@ -8,13 +8,14 @@ require (
 	github.com/alibabacloud-go/tea v1.1.19
 	github.com/aliyun/aliyun-oss-go-sdk v2.2.6+incompatible
 	github.com/go-kratos/kratos/v2 v2.5.3
-	github.com/go-redis/redis v6.15.9+incompatible
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/golang-jwt/jwt/v4 v4.4.3
 	github.com/google/wire v0.5.0
 	github.com/gorilla/handlers v1.5.1
 	github.com/panjf2000/ants/v2 v2.7.1
 	github.com/pkg/errors v0.9.1
+	github.com/robfig/cron/v3 v3.0.1
+	github.com/silenceper/wechat/v2 v2.1.4
 	github.com/spf13/cast v1.5.0
 	github.com/tx7do/kratos-transport v1.0.5
 	github.com/tx7do/kratos-transport/broker/rabbitmq v0.0.0-20221220110912-9db1b79d385c
@@ -26,7 +27,6 @@ require (
 	google.golang.org/genproto v0.0.0-20221227171554-f9683d7f8bef
 	google.golang.org/grpc v1.51.0
 	google.golang.org/protobuf v1.28.1
-	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df
 	gorm.io/driver/mysql v1.3.3
 	gorm.io/gorm v1.23.4
 )
@@ -83,7 +83,7 @@ require (
 	go.uber.org/multierr v1.8.0 // indirect
 	golang.org/x/sys v0.3.0 // indirect
 	golang.org/x/text v0.5.0 // indirect
-	golang.org/x/time v0.3.0 // indirect
+	golang.org/x/time v0.3.0
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	gorm.io/driver/postgres v1.3.4 // indirect
 	gorm.io/driver/sqlserver v1.3.2 // indirect
@@ -95,10 +95,14 @@ require (
 )
 
 require (
+	github.com/bradfitz/gomemcache v0.0.0-20220106215444-fb4bf637b56d // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
-	github.com/robfig/cron/v3 v3.0.1 // indirect
+	github.com/fatih/structs v1.1.0 // indirect
+	github.com/sirupsen/logrus v1.9.0 // indirect
+	github.com/tidwall/gjson v1.14.1 // indirect
+	github.com/tidwall/match v1.1.1 // indirect
+	github.com/tidwall/pretty v1.2.0 // indirect
 	go.uber.org/goleak v1.1.12 // indirect
-	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
 	gopkg.in/ini.v1 v1.66.2 // indirect
 )
 

@@ -5,10 +5,11 @@ import (
 	authorizationV1 "austin-v2/api/authorization/v1"
 	filesServiceV1 "austin-v2/api/files/v1"
 	"austin-v2/app/project/admin/internal/conf"
+	"context"
 	"github.com/go-kratos/kratos/contrib/registry/etcd/v2"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/registry"
-	"github.com/go-redis/redis"
+	"github.com/go-redis/redis/v8"
 	"github.com/google/wire"
 	etcdclient "go.etcd.io/etcd/client/v3"
 	"time"
@@ -97,7 +98,7 @@ func NewRedisCmd(conf *conf.Data, logger log.Logger) redis.Cmdable {
 		DialTimeout:  time.Second * 2,
 		PoolSize:     10,
 	})
-	err := client.Ping().Err()
+	err := client.Ping(context.Background()).Err()
 	if err != nil {
 		logs.Fatalf("redis connect error: %v", err)
 	}

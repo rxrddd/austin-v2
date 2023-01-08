@@ -7,6 +7,7 @@ import (
 	"github.com/tx7do/kratos-transport/broker"
 	"github.com/tx7do/kratos-transport/broker/rabbitmq"
 	"gorm.io/gorm"
+	logger2 "gorm.io/gorm/logger"
 	"time"
 
 	"github.com/go-kratos/kratos/v2/log"
@@ -92,7 +93,9 @@ func NewRedisCmd(conf *conf.Data, logger log.Logger) redis.Cmdable {
 
 func NewMysqlCmd(conf *conf.Data, logger log.Logger) *gorm.DB {
 	logs := log.NewHelper(log.With(logger, "module", "administrator-service/data/mysql"))
-	db, err := gorm.Open(mysql.Open(conf.Database.Source), &gorm.Config{})
+	db, err := gorm.Open(mysql.Open(conf.Database.Source), &gorm.Config{
+		Logger: logger2.Default.LogMode(logger2.Info),
+	})
 	if err != nil {
 		logs.Fatalf("mysql connect error: %v", err)
 	}

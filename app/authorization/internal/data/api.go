@@ -9,7 +9,6 @@ import (
 	"encoding/json"
 	"errors"
 	"gorm.io/gorm"
-	"strconv"
 	"time"
 
 	kerrors "github.com/go-kratos/kratos/v2/errors"
@@ -61,22 +60,9 @@ func (a AuthorizationRepo) GetApiList(ctx context.Context, page int64, pageSize 
 	cacheParams := params
 	cacheParams["page"] = page
 	cacheParams["pageSize"] = pageSize
-	cacheKey := redisHelper.GetRedisCacheKeyByParams(a.data.Module+":"+childModuleAPI+":", cacheParams)
-	countCacheKey := cacheKey + ":count"
 
 	var response []*biz.Api
 	var list []entity2.Api
-
-	// 查看缓存
-	if cache := a.GetRedisCache(cacheKey); cache != "" {
-		countStr := a.GetRedisCache(countCacheKey)
-		count, _ := strconv.ParseInt(countStr, 10, 64)
-		if err := json.Unmarshal([]byte(cache), &response); err == nil {
-			return response, count, nil
-		} else {
-			a.log.Error("ListAdministrator()", err)
-		}
-	}
 
 	conn := a.data.db.Model(&entity2.Api{})
 
@@ -113,10 +99,6 @@ func (a AuthorizationRepo) GetApiList(ctx context.Context, page int64, pageSize 
 			UpdatedAt: v.UpdatedAt.Format("2006-01-02 15:04:05"),
 		})
 	}
-	// 返回数据
-	jsonResponse, _ := json.Marshal(response)
-	_ = redisHelper.SaveRedisCache(a.data.redisCli, cacheKey, string(jsonResponse))
-	_ = redisHelper.SaveRedisCache(a.data.redisCli, countCacheKey, strconv.FormatInt(count, 10))
 	return response, count, nil
 }
 
