@@ -37,5 +37,9 @@ func (h *SmsHandler) Name() string {
 
 func (h *SmsHandler) Execute(ctx context.Context, taskInfo *types.TaskInfo) (err error) {
 	fmt.Println("sms sender " + timeHelper.CurrentTimeYMDHIS())
+	//多短信渠道发送方式 没有测试号目前没法测试
+	//route, _ := h.smsManager.Route(taskInfo.SmsChannel)
+	//route, _ := h.smsManager.Route("yunpian")
+	//route.Send(ctx,taskInfo)
 	return nil
 }
