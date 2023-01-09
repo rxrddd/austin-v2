@@ -3,8 +3,8 @@ package smsScript
 import (
 	"austin-v2/app/msgpusher-common/domain/account"
 	"austin-v2/app/msgpusher-common/domain/content_model"
+	"austin-v2/app/msgpusher-common/model"
 	"austin-v2/app/msgpusher-worker/internal/biz"
-	"austin-v2/app/msgpusher-worker/internal/data/model"
 	"austin-v2/app/msgpusher-worker/internal/pkg/utils/accountHelper"
 	"austin-v2/pkg/mq"
 	"austin-v2/pkg/types"
