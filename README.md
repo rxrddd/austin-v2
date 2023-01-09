@@ -1,14 +1,14 @@
-# austin-v2 austin-go项目的v2版本
+# 基于kratos 的聚合消息推送平台
 
 #### 介绍
 austin-go项目的v2版本
 
 > v1版本
-#### github地址:`https://github.com/rxrddd/austin-go`
-#### gitee地址:`https://gitee.com/AbelZou/austin-go`
+#### github地址：[https://github.com/rxrddd/austin-go](https://github.com/rxrddd/austin-go)
+#### gitee地址：[https://gitee.com/AbelZou/austin-go](https://gitee.com/AbelZou/austin-go)
 
 > v2版本
-#### github地址:`https://github.com/rxrddd/austin-v2`
+#### github地址：[https://github.com/rxrddd/austin-v2](https://github.com/rxrddd/austin-v2)
 
 #### 项目描述
 
@@ -144,16 +144,15 @@ curl --location --request POST 'http://localhost:8888/send' \
 
 #### Thanks
 
-go-zero : [https://github.com/zeromicro/go-zero](https://github.com/zeromicro/go-zero)
 
-kratos: [https://github.com/go-krato/krato](https://github.com/go-kratos/kratos)
+kratos：[https://github.com/go-krato/krato](https://github.com/go-kratos/kratos)
 
-austin : [https://gitee.com/zhongfucheng/austin](https://gitee.com/zhongfucheng/austin)
+austin：[https://gitee.com/zhongfucheng/austin](https://gitee.com/zhongfucheng/austin)
 
-ants : [https://github.com/panjf2000/ants](https://github.com/panjf2000/ants)
+ants：[https://github.com/panjf2000/ants](https://github.com/panjf2000/ants)
 
-gomail : [https://gopkg.in/gomail.v2](https://gopkg.in/gomail.v2)
+gomail：[https://gopkg.in/gomail.v2](https://gopkg.in/gomail.v2)
 
-wechat : [https://github.com/silenceper/wechat](https://github.com/silenceper/wechat)
+wechat：[https://github.com/silenceper/wechat](https://github.com/silenceper/wechat)
 
-ding : [https://github.com/wanghuiyt/ding](https://github.com/wanghuiyt/ding)
+ding：[https://github.com/wanghuiyt/ding](https://github.com/wanghuiyt/ding)
