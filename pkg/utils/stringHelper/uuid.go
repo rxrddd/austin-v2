@@ -9,3 +9,10 @@ func GenerateUUID() string {
 	snowflakeId := node.Generate().String()
 	return snowflakeId
 }
+func NextID() int64 {
+	// 应用id 生成雪花随机数
+	node, _ := snowflake.NewNode(1)
+	// 生成雪花id 读取其中的9位
+	snowflakeId := node.Generate().Int64()
+	return snowflakeId
+}

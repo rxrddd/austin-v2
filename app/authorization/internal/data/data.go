@@ -2,14 +2,14 @@ package data
 
 import (
 	"austin-v2/app/authorization/internal/conf"
+	"context"
 	"github.com/casbin/casbin/v2"
 	"github.com/go-kratos/kratos/contrib/registry/etcd/v2"
-	"github.com/go-redis/redis/v8"
-	etcdclient "go.etcd.io/etcd/client/v3"
-
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/registry"
+	"github.com/go-redis/redis/v8"
 	"github.com/google/wire"
+	etcdclient "go.etcd.io/etcd/client/v3"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"time"
@@ -82,7 +82,7 @@ func NewRedisCmd(conf *conf.Data, logger log.Logger) redis.Cmdable {
 		DialTimeout:  time.Second * 2,
 		PoolSize:     10,
 	})
-	err := client.Ping().Err()
+	err := client.Ping(context.Background()).Err()
 	if err != nil {
 		logs.Fatalf("redis connect error: %v", err)
 	}
@@ -91,7 +91,9 @@ func NewRedisCmd(conf *conf.Data, logger log.Logger) redis.Cmdable {
 
 func NewMysqlCmd(conf *conf.Data, logger log.Logger) *gorm.DB {
 	logs := log.NewHelper(log.With(logger, "module", "authorization-service/data/mysql"))
-	db, err := gorm.Open(mysql.Open(conf.Database.Source), &gorm.Config{})
+	db, err := gorm.Open(mysql.Open(conf.Database.Source), &gorm.Config{
+		//Logger:logger2.Default.LogMode(logger2.Info),
+	})
 	if err != nil {
 		logs.Fatalf("mysql connect error: %v", err)
 	}

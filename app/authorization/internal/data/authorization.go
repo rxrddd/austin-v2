@@ -54,5 +54,5 @@ func GetCasbinEnforcer() *casbin.Enforcer {
 
 // GetRedisCache 获取信息缓存
 func (a AuthorizationRepo) GetRedisCache(key string) string {
-	return a.data.redisCli.Get(key).Val()
+	return a.data.redisCli.Get(context.Background(), key).Val()
 }

@@ -46,3 +46,7 @@ type IHandler interface {
 	Execute(ctx context.Context, taskInfo *TaskInfo) error
 	Allow(ctx context.Context, taskInfo *TaskInfo) bool
 }
+type ISmsScript interface {
+	Name() string
+	Send(ctx context.Context, taskInfo *TaskInfo) error
+}

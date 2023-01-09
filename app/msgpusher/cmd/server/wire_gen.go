@@ -13,7 +13,6 @@ import (
 	"austin-v2/app/msgpusher/internal/process"
 	"austin-v2/app/msgpusher/internal/server"
 	"austin-v2/app/msgpusher/internal/service"
-	"austin-v2/pkg/utils/mqHelper"
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/log"
 )
@@ -25,12 +24,11 @@ func wireApp(confServer *conf.Server, registry *conf.Registry, confData *conf.Da
 	afterParamCheckAction := process.NewAfterParamCheckAction()
 	assembleAction := process.NewAssembleAction()
 	preParamCheckAction := process.NewPreParamCheckAction()
-	broker := data.NewBroker(confData, logger)
-	mqHelperMqHelper := mqHelper.NewMqHelper(broker)
-	sendMqAction := process.NewSendMqAction(mqHelperMqHelper, logger)
+	iMessagingClient := data.NewMq(confData, logger)
+	sendMqAction := process.NewSendMqAction(iMessagingClient, logger)
 	businessProcess := process.NewBusinessProcess(afterParamCheckAction, assembleAction, preParamCheckAction, sendMqAction)
 	db := data.NewMysqlCmd(confData, logger)
-	dataData, cleanup, err := data.NewData(confData, logger, broker, mqHelperMqHelper, db)
+	dataData, cleanup, err := data.NewData(confData, logger, iMessagingClient, db)
 	if err != nil {
 		return nil, nil, err
 	}

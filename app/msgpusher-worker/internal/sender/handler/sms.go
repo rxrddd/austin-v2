@@ -2,6 +2,7 @@ package handler
 
 import (
 	"austin-v2/app/msgpusher-common/enums/channelType"
+	"austin-v2/app/msgpusher-worker/internal/sender/smsScript"
 	"austin-v2/pkg/types"
 	"austin-v2/pkg/utils/timeHelper"
 	"context"
@@ -13,17 +14,20 @@ import (
 type SmsHandler struct {
 	BaseHandler
 
-	logger *log.Helper
-	rds    redis.Cmdable
+	logger     *log.Helper
+	rds        redis.Cmdable
+	smsManager *smsScript.SmsManager
 }
 
 func NewSmsHandler(
 	logger log.Logger,
 	rds redis.Cmdable,
+	smsManager *smsScript.SmsManager,
 ) *SmsHandler {
 	return &SmsHandler{
-		logger: log.NewHelper(log.With(logger, "module", "sender/sms")),
-		rds:    rds,
+		logger:     log.NewHelper(log.With(logger, "module", "sender/sms")),
+		rds:        rds,
+		smsManager: smsManager,
 	}
 }
 
@@ -33,5 +37,9 @@ func (h *SmsHandler) Name() string {
 
 func (h *SmsHandler) Execute(ctx context.Context, taskInfo *types.TaskInfo) (err error) {
 	fmt.Println("sms sender " + timeHelper.CurrentTimeYMDHIS())
+	//多短信渠道发送方式 没有测试号目前没法测试
+	//route, _ := h.smsManager.Route(taskInfo.SmsChannel)
+	//route, _ := h.smsManager.Route("yunpian")
+	//route.Send(ctx,taskInfo)
 	return nil
 }
