@@ -45,4 +45,4 @@ auth:
   
   m = g(r.sub, p.sub) && keyMatch2(r.obj, p.obj) && regexMatch(r.act, p.act)"
 etcd:
-  address: 192.168.0.103:2379
+  address: 192.168.0.102:2379

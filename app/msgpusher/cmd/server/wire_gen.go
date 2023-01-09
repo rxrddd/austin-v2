@@ -24,11 +24,11 @@ func wireApp(confServer *conf.Server, registry *conf.Registry, confData *conf.Da
 	afterParamCheckAction := process.NewAfterParamCheckAction()
 	assembleAction := process.NewAssembleAction()
 	preParamCheckAction := process.NewPreParamCheckAction()
-	broker := data.NewBroker(confData, logger)
-	sendMqAction := process.NewSendMqAction(broker, logger)
+	iMessagingClient := data.NewMq(confData, logger)
+	sendMqAction := process.NewSendMqAction(iMessagingClient, logger)
 	businessProcess := process.NewBusinessProcess(afterParamCheckAction, assembleAction, preParamCheckAction, sendMqAction)
 	db := data.NewMysqlCmd(confData, logger)
-	dataData, cleanup, err := data.NewData(confData, logger, broker, db)
+	dataData, cleanup, err := data.NewData(confData, logger, iMessagingClient, db)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -37,8 +37,9 @@ func wireApp(confServer *conf.Server, registry *conf.Registry, confData *conf.Da
 	msgPusherUseCase := biz.NewMsgPusherUseCase(logger, businessProcess, messageTemplateUseCase)
 	msgPusherService := service.NewMsgPusherService(msgPusherUseCase, logger)
 	grpcServer := server.NewGRPCServer(confServer, msgPusherService, logger)
+	httpServer := server.NewHTTPServer(confServer, msgPusherService, logger)
 	registrar := data.NewRegistrar(registry)
-	app := newApp(logger, grpcServer, registrar)
+	app := newApp(logger, grpcServer, httpServer, registrar)
 	return app, func() {
 		cleanup()
 	}, nil

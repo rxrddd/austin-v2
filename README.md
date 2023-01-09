@@ -1,158 +1,158 @@
-# Kratos Base Project
+# 基于kratos 的聚合消息推送平台
 
-本项目为一个使用 [kratos框架](https://github.com/go-kratos/kratos) 创建的，基础的微服务项目模板，
-以便于后续快速开发。
+#### 介绍
+austin-go项目的v2版本
 
-目前已经实现管理后台管理员和权限系统，已经实现按钮、接口级权限. 
+> v1版本
+#### github地址：[https://github.com/rxrddd/austin-go](https://github.com/rxrddd/austin-go)
+#### gitee地址：[https://gitee.com/AbelZou/austin-go](https://gitee.com/AbelZou/austin-go)
 
-[演示地址](http://kratos.niu12.com/#/system/adminstrator)
+> v2版本
+#### github地址：[https://github.com/rxrddd/austin-v2](https://github.com/rxrddd/austin-v2)
 
-[项目前端地址](https://austin-v2-frontend)
+#### 项目描述
 
-PS:演示数据由定时任务服务，每10分钟初始化恢复demo数据库，可能会导致你的数据丢失
-## 项目目录
-
+1. 基于kratos/grpc/ants/rabbitmq/mysql/redis 写的一个聚合消息推送平台
+1. 开发时:
 ```
-├── api // api proto文件和生成文件
-├── app // 服务集合
-│   ├── administrator // 管理员服务
-│   ├── authorization // 权限服务
-│   ├── jobs // 分布式定时任务
-│   ├── └── initDB // 初始化数据库
-│   └── project // api接口服务
-│       └── // api接口服务
-├── deploy // 部署文件
-├── pkg // 自定义包
-├── third_party // 第三方包
+cd austin-v2/app/msgpusher && kratos run //启动grpc和http接口
+
+cd austin-v2/app/msgpusher-worker && kratos run //启动消费端
 ```
 
-#### 管理后台服务
-- [x]  管理后台
-
-#### 管理员服务
-- [x]  登录退出
-- [x]  管理员管理
-
-#### 权限服务
-- [x]  角色管理
-- [x]  菜单管理
-- [x]  权限管理
-- [x]  api管理
-
-#### 文件服务
-- [x]  文件上传(后端直传)
-- [x]  前端直传(获取token)
-
-#### 通知服务
-- [ ] 短信服务
-- [ ] 邮件服务
-
-
-#### 运行方式
-
-##### 组件
-管理后台web框架: vue-element-admin
-
-服务注册与发现： ETCD
-
-链路追踪：jaeger
-
-数据库：mysql
-
-缓存：redis
-
-orm: GORM
-
-
-
-### 安装
-##### 数据库
-1.导入sql
+1. 如需要测试去重服务则修改`message_template`表中的`deduplication_config`字段
 ```
-文件位于docs/initSql
+{"deduplication_10":{"num":1,"time":300},"deduplication_20":{"num":5}}
+```
+5. 使用示例
+> 邮件消息
+```
+curl --location --request POST 'http://localhost:8888/send' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "code": "send",
+    "messageParam": {
+        "receiver": "test@qq.com",
+        "variables": {
+            "title": "测试操作",
+            "content": "Hello <b>Bob</b> and <i>Cora</i>!"
+        }
+    },
+    "messageTemplateId": 2
+}'
 ```
 
-##### 后端
-1.下载
+> 微信公众号消息
 ```
-$ go clone austin-v2
+curl --location --request POST 'http://localhost:8888/send' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "code": "send",
+    "messageParam": {
+        "receiver": "openId",
+        "variables": {
+            "map": {
+                "name":"张三12333"
+            },
+            "url": "https://www.baidu.com/"
+        }
+    },
+    "messageTemplateId": 4
+}'
+
+//参数带颜色的
+curl --location --request POST 'http://localhost:8888/send' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "code": "send",
+    "messageParam": {
+        "receiver": "openId",
+        "variables": {
+            "map": {
+                "name":"张三12333|#0000FF"
+            },
+            "url": "https://www.baidu.com/"
+        }
+    },
+    "messageTemplateId": 4
+}'
 ```
 
-2.安装依赖
+> 钉钉自定义机器人
 ```
-$ cd austin-v2 && go mod tidy
+//艾特某些手机号
+curl --location --request POST 'http://localhost:8888/send' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "code": "send",
+    "messageParam": {
+        "receiver": "13588888888,13588888887",
+        "variables": {
+            "content": "测试\n换行"
+        }
+    },
+    "messageTemplateId": 5
+}'
+
+//艾特全部人
+curl --location --request POST 'http://localhost:8888/send' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "code": "send",
+    "messageParam": {
+        "receiver": "@all",
+        "variables": {
+            "content": "测试\n换行"
+        }
+    },
+    "messageTemplateId": 5
+}'
 ```
 
-3.设置配置 以管理员服务为例, 配置文件位于service/configs/  初始化sql文件位于 docs/initSql
+
+
+
+#### 目录说明
+
 ```
-$ vim ./app/administrator/service/configs/config.yaml
+.
+├── Makefile
+├── README.md
+├── api   //grpc 接口定义
+├── app  //项目代码
+│   ├── administrator //用户信息,登录
+│   ├── authorization //授权
+│   ├── files //文件上传oss
+│   ├── msgpusher //msgpusher的rpc和http接口
+│   ├── msgpusher-common //公共文件
+│   ├── msgpusher-worker //消费端
+│   └── project
+│       └── admin  //后端接口项目
+├── deploy  //部署文件
+├── dev.md
+├── docs  //文档
+├── go.mod
+├── go.sum
+├── openapi.yaml
+├── pkg  //公共包
+└── third_party //三方包 谷歌啥的
+
 ```
 
-4.运行项目
-```
-$ kratos run
-```
 
-##### 前端
-1.安装依赖
-```
-$ cd web && npm install
-```
 
-2.启动项目
-```
-$ npm run dev
-```
 
-### 部署(docker)
-##### 后端
-可以参考kratos部署 (https://go-kratos.dev/docs/devops/docker)
+#### Thanks
 
-1.服务部署 以管理员服务为例 app/
-```
-$ cd app/administrator/service
-```
-2.make打包docker镜像
-```
-# PS:如果是打包admin镜像 app/project/admin/service 请执行 make dockerAdmin
-$ make docker
-```
-3.运行容器 
-```
-# 注意端口映射设置， docker部署容器9000端口， 本地开发端口不能全是9000
-docker run -p 9000:9000 --name austin-v2-administrator --restart=always -v /data/project/austin-v2/app/administrator/service/configs:/data/conf -d austin-v2/administrator-service:0.1.0
-```
-##### 前端
-1.进入前端目录
-```
-$ cd web
-```
-2.编译
-```
-$ npm run build:prod
-```
-3.将dist文件夹上传至服务器
 
-##### nginx示例
-```
-server {
-  listen 80;
-  listen [::]:80;
-  server_name kratos.niu12.com;
-  index index.html;
-  root /data/project/austin-v2/web/dist;
+kratos：[https://github.com/go-krato/krato](https://github.com/go-kratos/kratos)
 
-  # 管理后台接口转发代理
-  location  /api/ {
-  # nginx代理设置Header
-      proxy_set_header            X-real-ip $remote_addr;
+austin：[https://gitee.com/zhongfucheng/austin](https://gitee.com/zhongfucheng/austin)
 
-      proxy_pass                  http://127.0.0.1:8000/;
-  }
+ants：[https://github.com/panjf2000/ants](https://github.com/panjf2000/ants)
 
-}
-```
+gomail：[https://gopkg.in/gomail.v2](https://gopkg.in/gomail.v2)
 
-* 有任何建议，请扫码添加我微信进行交流。
+wechat：[https://github.com/silenceper/wechat](https://github.com/silenceper/wechat)
 
-![扫码提建议](https://austin-v2.oss-cn-hangzhou.aliyuncs.com/f8f5dacdf87cf358c98c9eb60ce2a13.jpg)
+ding：[https://github.com/wanghuiyt/ding](https://github.com/wanghuiyt/ding)

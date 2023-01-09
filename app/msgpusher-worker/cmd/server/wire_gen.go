@@ -12,6 +12,7 @@ import (
 	"austin-v2/app/msgpusher-worker/internal/data"
 	"austin-v2/app/msgpusher-worker/internal/sender"
 	"austin-v2/app/msgpusher-worker/internal/sender/handler"
+	"austin-v2/app/msgpusher-worker/internal/sender/smsScript"
 	"austin-v2/app/msgpusher-worker/internal/server"
 	"austin-v2/app/msgpusher-worker/internal/service"
 	"austin-v2/app/msgpusher-worker/internal/service/deduplication"
@@ -25,19 +26,23 @@ import (
 
 // wireApp init kratos application.
 func wireApp(confData *conf.Data, logger log.Logger) (*kratos.App, func(), error) {
-	broker := data.NewBroker(confData, logger)
 	taskExecutor := sender.NewTaskExecutor()
 	cmdable := data.NewRedisCmd(confData, logger)
-	smsHandler := handler.NewSmsHandler(logger, cmdable)
+	iMessagingClient := data.NewMq(confData, logger)
 	db := data.NewMysqlCmd(confData, logger)
-	dataData, cleanup, err := data.NewData(confData, logger, broker, cmdable, db)
+	dataData, cleanup, err := data.NewData(confData, iMessagingClient, logger, cmdable, db)
 	if err != nil {
 		return nil, nil, err
 	}
 	iSendAccountRepo := data.NewSendAccountRepo(dataData, logger)
 	sendAccountUseCase := biz.NewSendAccountUseCase(iSendAccountRepo, logger)
+	yunPian := smsScript.NewYunPin(logger, iMessagingClient, sendAccountUseCase)
+	aliyunSms := smsScript.NewAliyunSms(logger, iMessagingClient, sendAccountUseCase)
+	smsManager := smsScript.NewSmsManager(yunPian, aliyunSms)
+	smsHandler := handler.NewSmsHandler(logger, cmdable, smsManager)
 	emailHandler := handler.NewEmailHandler(logger, cmdable, sendAccountUseCase)
-	handleManager := sender.NewHandleManager(smsHandler, emailHandler)
+	officialAccountHandler := handler.NewOfficialAccountHandler(logger, cmdable, sendAccountUseCase)
+	handleManager := sender.NewHandleManager(smsHandler, emailHandler, officialAccountHandler)
 	discardMessageService := srv.NewDiscardMessageService(logger, cmdable)
 	shieldService := srv.NewShieldService(logger, cmdable)
 	iMessageTemplateRepo := data.NewMessageTemplateRepo(dataData, logger)
@@ -50,8 +55,10 @@ func wireApp(confData *conf.Data, logger log.Logger) (*kratos.App, func(), error
 	deduplicationManager := deduplication.NewDeduplicationManager(frequencyDeduplicationService, contentDeduplicationService)
 	deduplicationRuleService := srv.NewDeduplicationRuleService(logger, cmdable, messageTemplateUseCase, deduplicationManager)
 	taskService := service.NewTaskService(discardMessageService, shieldService, deduplicationRuleService)
-	rabbitmqServer := server.NewMqServer(confData, logger, broker, taskExecutor, handleManager, taskService)
-	app := newApp(logger, rabbitmqServer)
+	mqHandler := server.NewMqHandler(logger, taskExecutor, handleManager, taskService, db)
+	rabbitMqServer := server.NewRabbitMqServer(confData, mqHandler, iMessagingClient)
+	cronTask := server.NewCronServer(logger, iMessagingClient, cmdable)
+	app := newApp(logger, rabbitMqServer, cronTask)
 	return app, func() {
 		cleanup()
 	}, nil

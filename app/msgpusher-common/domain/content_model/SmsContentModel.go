@@ -8,8 +8,8 @@ import (
 )
 
 type SmsContentModel struct {
-	Content        string `json:"content"` //原始模板 您的验证码是{$code}，{$min}分钟内有效。请勿向他人泄露。如果非本人操作，可忽略本消息。
-	ReplaceContent string `json:"content"` //替换后的模板 您的验证码是1011，15分钟内有效。请勿向他人泄露。如果非本人操作，可忽略本消息。
+	Content        string `json:"content"`         //原始模板 您的验证码是{$code}，{$min}分钟内有效。请勿向他人泄露。如果非本人操作，可忽略本消息。
+	ReplaceContent string `json:"replace_content"` //替换后的模板 您的验证码是1011，15分钟内有效。请勿向他人泄露。如果非本人操作，可忽略本消息。
 	Url            string `json:"url"`
 }
 

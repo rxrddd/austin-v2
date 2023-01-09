@@ -13,10 +13,12 @@ type HandleManager struct {
 func NewHandleManager(
 	sms *handler.SmsHandler,
 	email *handler.EmailHandler,
+	officialAccount *handler.OfficialAccountHandler,
 ) *HandleManager {
 	h := &HandleManager{}
 	h.register(sms)
 	h.register(email)
+	h.register(officialAccount)
 	return h
 }
 

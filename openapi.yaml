@@ -6,7 +6,7 @@ info:
     title: MsgPusher API
     version: 0.0.1
 paths:
-    /msg_pusher/v1/batch_send:
+    /msgpusher/v1/batch_send:
         post:
             tags:
                 - MsgPusher
@@ -30,7 +30,7 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /msg_pusher/v1/send:
+    /msgpusher/v1/send:
         post:
             tags:
                 - MsgPusher
@@ -59,12 +59,12 @@ components:
         BatchSendRequest:
             type: object
             properties:
-                Code:
+                code:
                     type: string
-                MessageTemplateId:
+                messageTemplateId:
                     type: integer
                     format: int64
-                MessageParam:
+                messageParam:
                     type: array
                     items:
                         $ref: '#/components/schemas/MessageParam'
@@ -79,26 +79,26 @@ components:
         MessageParam:
             type: object
             properties:
-                Receiver:
+                receiver:
                     type: string
-                Variables:
-                    type: string
-                Extra:
-                    type: string
+                variables:
+                    type: object
+                extra:
+                    type: object
         SendRequest:
             type: object
             properties:
-                Code:
+                code:
                     type: string
-                MessageTemplateId:
+                messageTemplateId:
                     type: integer
                     format: int64
-                MessageParam:
+                messageParam:
                     $ref: '#/components/schemas/MessageParam'
         SendResponse:
             type: object
             properties:
-                Code:
+                code:
                     type: string
         Status:
             type: object

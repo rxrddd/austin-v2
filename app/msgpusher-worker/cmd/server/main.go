@@ -1,9 +1,9 @@
 package main
 
 import (
+	"austin-v2/app/msgpusher-worker/internal/server"
 	"austin-v2/pkg/utils/stringHelper"
 	"flag"
-	"github.com/tx7do/kratos-transport/transport/rabbitmq"
 	"os"
 
 	"austin-v2/app/msgpusher-worker/internal/conf"
@@ -31,7 +31,7 @@ func init() {
 	flag.StringVar(&flagconf, "conf", "../../configs", "config path, eg: -conf config.yaml")
 }
 
-func newApp(logger log.Logger, rs *rabbitmq.Server) *kratos.App {
+func newApp(logger log.Logger, rs *server.RabbitMqServer, cs *server.CronTask) *kratos.App {
 	return kratos.New(
 		kratos.ID(id),
 		kratos.Name(Name),
@@ -40,6 +40,7 @@ func newApp(logger log.Logger, rs *rabbitmq.Server) *kratos.App {
 		kratos.Logger(logger),
 		kratos.Server(
 			rs,
+			cs,
 		),
 	)
 }
@@ -75,6 +76,7 @@ func main() {
 		"trace.id", tracing.TraceID(),
 		"span.id", tracing.SpanID(),
 	)
+
 	app, cleanup, err := wireApp(bc.Data, logger)
 	if err != nil {
 		panic(err)
