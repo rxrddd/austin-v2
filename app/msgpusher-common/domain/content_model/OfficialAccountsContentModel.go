@@ -3,7 +3,7 @@ package content_model
 import (
 	"austin-v2/app/msgpusher-common/domain"
 	"austin-v2/pkg/types"
-	"austin-v2/pkg/utils/taskHelper"
+	"fmt"
 	"github.com/spf13/cast"
 )
 
@@ -20,10 +20,7 @@ func NewOfficialAccountsContentModel() *OfficialAccountsContentModel {
 func (d OfficialAccountsContentModel) BuilderContent(messageTemplate *domain.MessageTemplate, messageParam types.MessageParam) interface{} {
 	variables := messageParam.Variables
 	var content OfficialAccountsContentModel
-	newVariables := getStringVariables(variables)
-	if v, ok := newVariables["url"]; ok && v != "" {
-		content.Url = taskHelper.GenerateUrl(v, messageTemplate.ID, messageTemplate.TemplateType)
-	}
+	fmt.Println(`variables`, variables)
 	content.Map = cast.ToStringMapString(variables["map"])
 	content.TemplateSn = messageTemplate.TemplateSn
 	return content

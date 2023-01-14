@@ -12,8 +12,8 @@ type TaskExecutor struct {
 	pool map[string]*ants.Pool
 }
 
+// NewTaskExecutor 初始化所有的链接池
 func NewTaskExecutor() *TaskExecutor {
-	//初始化所有的链接池
 	groupIds := groups.GetAllGroupIds()
 	pool := make(map[string]*ants.Pool)
 	size := runtime.NumCPU() * 2
@@ -29,7 +29,7 @@ func NewTaskExecutor() *TaskExecutor {
 	return &TaskExecutor{pool: pool}
 }
 
-//把任务提交到对应的池子内
+// Submit 把任务提交到对应的池子内
 func (t *TaskExecutor) Submit(ctx context.Context, groupId string, run TaskRun) error {
 	return t.pool[groupId].Submit(func() {
 		run.Run(ctx)

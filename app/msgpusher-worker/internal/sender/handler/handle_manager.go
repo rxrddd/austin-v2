@@ -24,7 +24,7 @@ func NewHandleManager(
 }
 
 func (hm *HandleManager) Get(key string) (resp types.IHandler, err error) {
-	if h, err := hm.manager.Get(key); err != nil {
+	if h, err := hm.manager.Get(key); err == nil {
 		return h.(types.IHandler), nil
 	}
 	return nil, err

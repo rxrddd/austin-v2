@@ -49,12 +49,12 @@ curl --location --request POST 'http://localhost:8888/send' \
 --data-raw '{
     "code": "send",
     "messageParam": {
-        "receiver": "openId",
+        "receiver": "okEEF6WB92HO14qdy0Nosq62OVyY",
         "variables": {
             "map": {
-                "name":"张三12333"
-            },
-            "url": "https://www.baidu.com/"
+                "order_no": "DD12345678", //模板参数
+                "time": "2022-01-11 10:00:00" //模板参数
+            }
         }
     },
     "messageTemplateId": 4
@@ -70,8 +70,7 @@ curl --location --request POST 'http://localhost:8888/send' \
         "variables": {
             "map": {
                 "name":"张三12333|#0000FF"
-            },
-            "url": "https://www.baidu.com/"
+            }
         }
     },
     "messageTemplateId": 4

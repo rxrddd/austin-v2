@@ -24,7 +24,6 @@ func NewAssembleAction(
 
 func (p *AssembleAction) Process(ctx context.Context, sendTaskModel *types.SendTaskModel, messageTemplate model.MessageTemplate) error {
 	messageParamList := sendTaskModel.MessageParamList
-
 	contentModel := content_model.GetBuilderContentBySendChannel(messageTemplate.SendChannel)
 
 	var newTaskList []types.TaskInfo

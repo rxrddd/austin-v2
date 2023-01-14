@@ -9,6 +9,7 @@ import (
 	"austin-v2/pkg/utils/accountHelper"
 	"austin-v2/pkg/utils/contentHelper"
 	"context"
+	"fmt"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-redis/redis/v8"
 	"github.com/pkg/errors"
@@ -67,7 +68,7 @@ func (h *OfficialAccountHandler) Execute(ctx context.Context, taskInfo *types.Ta
 	templateSn := content.TemplateSn
 	url := content.Url
 	params := make(map[string]*message.TemplateDataItem, len(content.Map))
-
+	fmt.Println(`content.Map`, content.Map)
 	for key, val := range content.Map {
 		color := ""
 		value := ""

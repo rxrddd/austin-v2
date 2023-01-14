@@ -24,7 +24,7 @@ func NewDeduplicationManager(
 }
 
 func (dm *DeduplicationManager) Get(key string) (resp types.IDeduplicationService, err error) {
-	if h, err := dm.manager.Get(key); err != nil {
+	if h, err := dm.manager.Get(key); err == nil {
 		return h.(types.IDeduplicationService), nil
 	}
 	return nil, err
