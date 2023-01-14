@@ -1,34 +1,29 @@
 package smsScript
 
 import (
+	"austin-v2/pkg/manager"
 	"austin-v2/pkg/types"
-	"errors"
 )
 
 type SmsManager struct {
-	mMap map[string]types.ISmsScript
+	manager *manager.Manager
 }
 
 func NewSmsManager(
 	yunpian *YunPian,
 	aliyun *AliyunSms,
 ) *SmsManager {
-	h := &SmsManager{}
-	h.register(yunpian)
-	h.register(aliyun)
-	return h
+	return &SmsManager{
+		manager: manager.NewManager(
+			yunpian,
+			aliyun,
+		),
+	}
 }
 
-func (hs *SmsManager) Route(code string) (types.ISmsScript, error) {
-	if h, ok := hs.mMap[code]; ok {
-		return h, nil
+func (hm *SmsManager) Get(key string) (resp types.ISmsScript, err error) {
+	if h, err := hm.manager.Get(key); err != nil {
+		return h.(types.ISmsScript), nil
 	}
-	return nil, errors.New("unknown sms script " + code)
-}
-
-func (hs *SmsManager) register(h types.ISmsScript) {
-	if hs.mMap == nil {
-		hs.mMap = make(map[string]types.ISmsScript)
-	}
-	hs.mMap[h.Name()] = h
+	return nil, err
 }

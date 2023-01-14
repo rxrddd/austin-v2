@@ -16,7 +16,7 @@ type ContentDeduplicationService struct {
 }
 
 func NewContentDeduplicationService(manager *limit.LimiterManager) *ContentDeduplicationService {
-	l, err := manager.Route(types.LimitSimple)
+	l, err := manager.Get(types.LimitSimple)
 	if err != nil {
 		panic(err)
 	}

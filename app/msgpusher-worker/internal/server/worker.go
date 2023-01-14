@@ -5,8 +5,10 @@ import (
 	"austin-v2/app/msgpusher-common/enums/groups"
 	"austin-v2/app/msgpusher-common/enums/messageType"
 	"austin-v2/app/msgpusher-common/model"
+	"austin-v2/app/msgpusher-worker/internal/biz"
 	"austin-v2/app/msgpusher-worker/internal/conf"
 	"austin-v2/app/msgpusher-worker/internal/sender"
+	"austin-v2/app/msgpusher-worker/internal/sender/handler"
 	"austin-v2/app/msgpusher-worker/internal/service"
 	"austin-v2/pkg/mq"
 	"austin-v2/pkg/types"
@@ -15,8 +17,6 @@ import (
 	"fmt"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/streadway/amqp"
-	"github.com/tx7do/kratos-transport/broker"
-	"gorm.io/gorm"
 )
 
 type RabbitMqServer struct {
@@ -25,7 +25,7 @@ type RabbitMqServer struct {
 }
 
 func NewRabbitMqServer(
-	c *conf.Data,
+	_ *conf.Data,
 	logic *MqHandler,
 	mqHelper mq.IMessagingClient,
 ) *RabbitMqServer {
@@ -51,26 +51,25 @@ func (l *RabbitMqServer) Stop(context.Context) error {
 
 type MqHandler struct {
 	logger   log.Logger
-	broker   broker.Broker
 	executor *sender.TaskExecutor
-	hs       *sender.HandleManager
+	hs       *handler.HandleManager
 	taskSvc  *service.TaskService
-	db       *gorm.DB
+	suc      *biz.SmsRecordUseCase
 }
 
 func NewMqHandler(
 	logger log.Logger,
 	executor *sender.TaskExecutor,
-	hs *sender.HandleManager,
+	hs *handler.HandleManager,
 	taskSvc *service.TaskService,
-	db *gorm.DB,
+	suc *biz.SmsRecordUseCase,
 ) *MqHandler {
 	return &MqHandler{
 		logger:   logger,
 		executor: executor,
 		hs:       hs,
 		taskSvc:  taskSvc,
-		db:       db,
+		suc:      suc,
 	}
 }
 
@@ -86,12 +85,15 @@ func (m *MqHandler) onMassage(delivery amqp.Delivery) {
 			l.Errorf(" on massage err: %v task_info: %s", err, task)
 		}
 	}
-	delivery.Ack(false)
+	_ = delivery.Ack(false)
 }
 
 func (m *MqHandler) smsRecord(delivery amqp.Delivery) {
 	var smsRecord []*model.SmsRecord
 	_ = json.Unmarshal(delivery.Body, &smsRecord)
-	m.db.Model(smsRecord).CreateInBatches(smsRecord, 500)
-	delivery.Ack(false)
+	l := log.NewHelper(log.With(m.logger, "module", "MqHandler/sms-record"))
+	if err := m.suc.Create(context.Background(), smsRecord); err != nil {
+		l.Errorf(" sms record err: %v body: %s", err, string(delivery.Body))
+	}
+	_ = delivery.Ack(false)
 }

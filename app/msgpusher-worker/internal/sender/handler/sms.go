@@ -35,11 +35,11 @@ func (h *SmsHandler) Name() string {
 	return channelType.TypeCodeEn[channelType.Sms]
 }
 
-func (h *SmsHandler) Execute(ctx context.Context, taskInfo *types.TaskInfo) (err error) {
+func (h *SmsHandler) Execute(_ context.Context, _ *types.TaskInfo) (err error) {
 	fmt.Println("sms sender " + timeHelper.CurrentTimeYMDHIS())
 	//多短信渠道发送方式 没有测试号目前没法测试
-	//route, _ := h.smsManager.Route(taskInfo.SmsChannel)
-	//route, _ := h.smsManager.Route("yunpian")
+	//route, _ := h.smsManager.Get(taskInfo.SmsChannel)
+	//route, _ := h.smsManager.Get("yunpian")
 	//route.Send(ctx,taskInfo)
 	return nil
 }

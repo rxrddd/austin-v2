@@ -55,7 +55,7 @@ func (l *DeduplicationRuleService) Duplication(ctx context.Context, taskInfo *ty
 	}
 
 	for key, value := range deduplicationConfig {
-		route, err := l.deduplicationManager.Route(key)
+		route, err := l.deduplicationManager.Get(key)
 		//表示没匹配到对于的执行器
 		if err != nil {
 			continue
