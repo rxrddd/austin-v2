@@ -6,19 +6,20 @@ import (
 )
 
 type TaskInfo struct {
-	MessageTemplateId int64        `json:"messageTemplateId"`
-	BusinessId        int64        `json:"businessId"`
+	RequestId         string       `json:"request_id"`
+	MessageTemplateId int64        `json:"message_template_id"`
+	BusinessId        int64        `json:"business_id"`
 	Receiver          []string     `json:"receiver"` //先去重
-	IdType            int          `json:"idType"`
-	SendChannel       int          `json:"sendChannel"`
-	TemplateType      int          `json:"templateType"`
-	MsgType           int          `json:"msgType"`
-	ShieldType        int          `json:"shieldType"`
-	ContentModel      interface{}  `json:"contentModel"`
-	SendAccount       int          `json:"sendAccount"`                           //发消息使用的账号
-	TemplateSn        string       `json:"templateSn"`                            // 发送消息的模版ID
-	SmsChannel        string       `gorm:"column:sms_channel" json:"sms_channel"` // 短信渠道 send_channel=30的时候有用
-	MessageParam      MessageParam `json:"messageParamList"`
+	IdType            int          `json:"id_type"`
+	SendChannel       int          `json:"send_channel"`
+	TemplateType      int          `json:"template_type"`
+	MsgType           int          `json:"msg_type"`
+	ShieldType        int          `json:"shield_type"`
+	ContentModel      interface{}  `json:"content_model"`
+	SendAccount       int64        `json:"send_account"`
+	TemplateSn        string       `json:"template_sn"`
+	SmsChannel        string       `json:"sms_channel"`
+	MessageParam      MessageParam `json:"message_param"`
 }
 
 func (t *TaskInfo) String() string {
@@ -30,9 +31,10 @@ type ContentModel struct {
 }
 
 type SendTaskModel struct {
-	MessageTemplateId int64          `json:"messageTemplateId"`
-	MessageParamList  []MessageParam `json:"messageParamList"`
-	TaskInfo          []TaskInfo     `json:"taskInfo"`
+	RequestId         string         `json:"request_id"`
+	MessageTemplateId int64          `json:"message_template_id"`
+	MessageParamList  []MessageParam `json:"message_param_list"`
+	TaskInfo          []TaskInfo     `json:"task_info"`
 }
 
 type MessageParam struct {

@@ -7,8 +7,8 @@ import (
 	"fmt"
 )
 
-func GetAccount(ctx context.Context, sc IAccount, sendAccount int, v interface{}) error {
-	one, err := sc.One(ctx, int64(sendAccount))
+func GetAccount(ctx context.Context, sc IAccount, sendAccount int64, v interface{}) error {
+	one, err := sc.One(ctx, sendAccount)
 	if err != nil {
 		return err
 	}

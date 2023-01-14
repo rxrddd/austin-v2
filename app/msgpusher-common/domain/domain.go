@@ -19,7 +19,7 @@ type MessageTemplate struct {
 	MsgType             int    `json:"msg_type"`             // 10.通知类消息 20.营销类消息 30.验证码类消息
 	ShieldType          int    `json:"shield_type"`          // 10.夜间不屏蔽 20.夜间屏蔽 30.夜间屏蔽(次日早上9点发送)
 	MsgContent          string `json:"msg_content"`          // 消息内容 占位符用{$var}表示
-	SendAccount         int    `json:"send_account"`         // 发送账号 一个渠道下可存在多个账号
+	SendAccount         int64  `json:"send_account"`         // 发送账号 一个渠道下可存在多个账号
 	Creator             string `json:"creator"`              // 创建者
 	Updator             string `json:"updator"`              // 更新者
 	Auditor             string `json:"auditor"`              // 审核人

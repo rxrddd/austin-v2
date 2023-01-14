@@ -30,6 +30,7 @@ func (p *AssembleAction) Process(ctx context.Context, sendTaskModel *types.SendT
 	for _, param := range messageParamList {
 
 		curTask := types.TaskInfo{
+			RequestId:         sendTaskModel.RequestId,
 			MessageTemplateId: messageTemplate.ID,
 			BusinessId:        taskHelper.GenerateBusinessId(messageTemplate.ID, messageTemplate.TemplateType),
 			Receiver:          transformHelper.ArrayStringUniq(strings.Split(param.Receiver, ",")),
