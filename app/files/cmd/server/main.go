@@ -5,7 +5,6 @@ import (
 	"austin-v2/pkg/utils/stringHelper"
 	"flag"
 	"github.com/go-kratos/kratos/v2/registry"
-	"go.opentelemetry.io/otel/sdk/resource"
 	"os"
 
 	"github.com/go-kratos/kratos/v2"
@@ -14,9 +13,6 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware/tracing"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
-	"go.opentelemetry.io/otel/exporters/jaeger"
-	tracesdk "go.opentelemetry.io/otel/sdk/trace"
-	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
 )
 
 // go build -ldflags "-X main.Version=x.y.z"
@@ -66,7 +62,6 @@ func main() {
 		),
 	)
 	defer c.Close()
-
 	if err := c.Load(); err != nil {
 		panic(err)
 	}
@@ -75,7 +70,6 @@ func main() {
 	if err := c.Scan(&bc); err != nil {
 		panic(err)
 	}
-
 	Name = bc.Service.Name
 	Version = bc.Service.Version
 	// 应用id 生成雪花随机数
@@ -86,18 +80,8 @@ func main() {
 	if err := c.Scan(&rc); err != nil {
 		panic(err)
 	}
-	exp, err := jaeger.New(jaeger.WithCollectorEndpoint(jaeger.WithEndpoint(bc.Trace.Endpoint)))
-	if err != nil {
-		panic(err)
-	}
-	tp := tracesdk.NewTracerProvider(
-		tracesdk.WithBatcher(exp),
-		tracesdk.WithResource(resource.NewSchemaless(
-			semconv.ServiceNameKey.String(Name),
-		)),
-	)
 
-	app, cleanup, err := wireApp(bc.Server, &rc, bc.Data, bc.Auth, logger, tp)
+	app, cleanup, err := wireApp(bc.Server, &rc, bc.Data, bc.Auth, logger)
 	if err != nil {
 		panic(err)
 	}
