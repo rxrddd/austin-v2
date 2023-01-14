@@ -4,7 +4,12 @@ import (
 	"austin-v2/app/msgpusher-common/model"
 	"context"
 	"encoding/json"
-	"fmt"
+	"errors"
+)
+
+var (
+	AccountNotFindError   = errors.New("未找到账号")
+	AccountUnmarshalError = errors.New("账号解析错误")
 )
 
 func GetAccount(ctx context.Context, sc IAccount, sendAccount int64, v interface{}) error {
@@ -13,12 +18,12 @@ func GetAccount(ctx context.Context, sc IAccount, sendAccount int64, v interface
 		return err
 	}
 	if one == nil {
-		return fmt.Errorf("获取账号异常 sendAccount: %d", sendAccount)
+		return AccountNotFindError
 	}
 
 	err = json.Unmarshal([]byte(one.Config), &v)
 	if err != nil {
-		return err
+		return AccountUnmarshalError
 	}
 	return nil
 }

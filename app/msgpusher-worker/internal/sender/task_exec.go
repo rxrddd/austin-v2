@@ -7,6 +7,7 @@ import (
 	"austin-v2/pkg/types"
 	"context"
 	"github.com/go-kratos/kratos/v2/log"
+	"time"
 )
 
 type Task struct {
@@ -66,6 +67,8 @@ func (t *Task) Run(ctx context.Context) {
 				}
 				return
 			}
+			t.logger.Infof("requestId:[%s] handle [%s] 触发限流 ", t.taskInfo.RequestId, h.Name())
+			time.Sleep(200 * time.Millisecond)
 		}
 	}
 }

@@ -8,6 +8,7 @@ import (
 type BaseHandler struct {
 }
 
-func (b BaseHandler) Allow(ctx context.Context, taskInfo *types.TaskInfo) bool {
+// Allow 限流方法 默认不限流
+func (b BaseHandler) Allow(_ context.Context, _ *types.TaskInfo) bool {
 	return true
 }

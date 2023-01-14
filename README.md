@@ -50,7 +50,7 @@ curl --location --request POST 'http://localhost:8888/send' \
     "messageParam": {
         "receiver": "okEEF6WB92HO14qdy0Nosq62OVyY",
         "variables": {
-            "map": {
+            "data": {
                 "order_no": "DD12345678", //模板参数
                 "time": "2022-01-11 10:00:00" //模板参数
             }
@@ -66,7 +66,7 @@ curl --location --request POST 'http://localhost:8888/send' \
     "messageParam": {
         "receiver": "openId",
         "variables": {
-            "map": {
+            "data": {
                 "name":"张三12333|#0000FF"
             }
         }

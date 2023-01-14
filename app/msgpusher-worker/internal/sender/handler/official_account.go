@@ -11,7 +11,6 @@ import (
 	"context"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-redis/redis/v8"
-	"github.com/pkg/errors"
 	"github.com/silenceper/wechat/v2"
 	"github.com/silenceper/wechat/v2/cache"
 	offConfig "github.com/silenceper/wechat/v2/officialaccount/config"
@@ -49,9 +48,8 @@ func (h *OfficialAccountHandler) Execute(ctx context.Context, taskInfo *types.Ta
 	contentHelper.GetContentModel(taskInfo.ContentModel, &content)
 	//拼接消息发送
 	var acc account.OfficialAccount
-	err = accountHelper.GetAccount(ctx, h.sc, taskInfo.SendAccount, &acc)
-	if err != nil {
-		return errors.Wrap(err, "OfficialAccountHandler get account err")
+	if err = accountHelper.GetAccount(ctx, h.sc, taskInfo.SendAccount, &acc); err != nil {
+		return err
 	}
 	wc := wechat.NewWechat()
 	cacheImpl := cache.NewMemory()
@@ -66,8 +64,8 @@ func (h *OfficialAccountHandler) Execute(ctx context.Context, taskInfo *types.Ta
 	subscribe := wc.GetOfficialAccount(cfg).GetTemplate()
 	templateSn := content.TemplateSn
 	url := content.Url
-	params := make(map[string]*message.TemplateDataItem, len(content.Map))
-	for key, val := range content.Map {
+	params := make(map[string]*message.TemplateDataItem, len(content.Data))
+	for key, val := range content.Data {
 		color := ""
 		value := ""
 		arr := strings.Split(val, colorSep)
@@ -89,6 +87,13 @@ func (h *OfficialAccountHandler) Execute(ctx context.Context, taskInfo *types.Ta
 			TemplateID: templateSn,
 			URL:        url,
 			Data:       params,
+			MiniProgram: struct {
+				AppID    string `json:"appid"`
+				PagePath string `json:"pagepath"`
+			}(struct {
+				AppID    string
+				PagePath string
+			}{AppID: content.MiniProgram.Appid, PagePath: content.MiniProgram.PagePath}),
 		})
 		if err != nil {
 			h.logger.WithContext(ctx).Errorw(
@@ -101,8 +106,9 @@ func (h *OfficialAccountHandler) Execute(ctx context.Context, taskInfo *types.Ta
 		msgIds = append(msgIds, msgID)
 	}
 	if len(msgIds) > 0 {
-		h.logger.WithContext(ctx).Errorw(
+		h.logger.WithContext(ctx).Infow(
 			"msg", "OfficialAccountHandler send success",
+			"requestId", taskInfo.RequestId,
 			"msgIds", msgIds)
 	}
 	return nil

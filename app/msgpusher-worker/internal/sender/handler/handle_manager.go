@@ -13,12 +13,18 @@ func NewHandleManager(
 	sms *SmsHandler,
 	email *EmailHandler,
 	officialAccount *OfficialAccountHandler,
+	dingDingRobot *DingDingRobotHandler,
+	dingDingWorkNotice *DingDingWorkNoticeHandler,
+	miniProgramH *MiniProgramHandler,
 ) *HandleManager {
 	return &HandleManager{
 		manager: manager.NewManager(
 			sms,
 			email,
 			officialAccount,
+			dingDingRobot,
+			dingDingWorkNotice,
+			miniProgramH,
 		),
 	}
 }
