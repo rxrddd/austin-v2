@@ -15,14 +15,13 @@ func NewHandleManager(
 	email *handler.EmailHandler,
 	officialAccount *handler.OfficialAccountHandler,
 ) *HandleManager {
-	hm := &HandleManager{
+	return &HandleManager{
 		manager: manager.NewManager(
 			sms,
 			email,
 			officialAccount,
 		),
 	}
-	return hm
 }
 
 func (hm *HandleManager) Get(key string) (resp types.IHandler, err error) {
