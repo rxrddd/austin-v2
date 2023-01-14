@@ -42,7 +42,7 @@ func wireApp(confData *conf.Data, logger log.Logger) (*kratos.App, func(), error
 	smsHandler := handler.NewSmsHandler(logger, cmdable, smsManager)
 	emailHandler := handler.NewEmailHandler(logger, cmdable, sendAccountUseCase)
 	officialAccountHandler := handler.NewOfficialAccountHandler(logger, cmdable, sendAccountUseCase)
-	handleManager := sender.NewHandleManager(smsHandler, emailHandler, officialAccountHandler)
+	handleManager := handler.NewHandleManager(smsHandler, emailHandler, officialAccountHandler)
 	discardMessageService := srv.NewDiscardMessageService(logger, cmdable)
 	shieldService := srv.NewShieldService(logger, cmdable)
 	iMessageTemplateRepo := data.NewMessageTemplateRepo(dataData, logger)

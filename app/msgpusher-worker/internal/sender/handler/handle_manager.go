@@ -1,7 +1,6 @@
-package sender
+package handler
 
 import (
-	"austin-v2/app/msgpusher-worker/internal/sender/handler"
 	"austin-v2/pkg/manager"
 	"austin-v2/pkg/types"
 )
@@ -11,9 +10,9 @@ type HandleManager struct {
 }
 
 func NewHandleManager(
-	sms *handler.SmsHandler,
-	email *handler.EmailHandler,
-	officialAccount *handler.OfficialAccountHandler,
+	sms *SmsHandler,
+	email *EmailHandler,
+	officialAccount *OfficialAccountHandler,
 ) *HandleManager {
 	return &HandleManager{
 		manager: manager.NewManager(

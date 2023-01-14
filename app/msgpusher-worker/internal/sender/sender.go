@@ -11,9 +11,9 @@ var SenderProviderSet = wire.NewSet(
 	handler.NewSmsHandler,
 	handler.NewOfficialAccountHandler,
 	handler.NewEmailHandler,
+	handler.NewHandleManager,
 	smsScript.NewYunPin,
 	smsScript.NewAliyunSms,
 	smsScript.NewSmsManager,
-	NewHandleManager,
 	NewTaskExecutor,
 )

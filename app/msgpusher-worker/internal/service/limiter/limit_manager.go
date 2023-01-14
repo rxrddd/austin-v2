@@ -13,13 +13,12 @@ func NewLimiterManager(
 	sl *SimpleLimitService,
 	sw *SlideWindowLimitService,
 ) *LimiterManager {
-	lm := &LimiterManager{
+	return &LimiterManager{
 		manager: manager.NewManager(
 			sl,
 			sw,
 		),
 	}
-	return lm
 }
 func (lm *LimiterManager) Get(key string) (resp types.ILimitService, err error) {
 	if h, err := lm.manager.Get(key); err != nil {

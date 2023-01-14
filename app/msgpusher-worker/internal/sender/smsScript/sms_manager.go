@@ -13,13 +13,12 @@ func NewSmsManager(
 	yunpian *YunPian,
 	aliyun *AliyunSms,
 ) *SmsManager {
-	sm := &SmsManager{
+	return &SmsManager{
 		manager: manager.NewManager(
 			yunpian,
 			aliyun,
 		),
 	}
-	return sm
 }
 
 func (hm *SmsManager) Get(key string) (resp types.ISmsScript, err error) {

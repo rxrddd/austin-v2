@@ -8,6 +8,7 @@ import (
 	"austin-v2/app/msgpusher-worker/internal/biz"
 	"austin-v2/app/msgpusher-worker/internal/conf"
 	"austin-v2/app/msgpusher-worker/internal/sender"
+	"austin-v2/app/msgpusher-worker/internal/sender/handler"
 	"austin-v2/app/msgpusher-worker/internal/service"
 	"austin-v2/pkg/mq"
 	"austin-v2/pkg/types"
@@ -51,7 +52,7 @@ func (l *RabbitMqServer) Stop(context.Context) error {
 type MqHandler struct {
 	logger   log.Logger
 	executor *sender.TaskExecutor
-	hs       *sender.HandleManager
+	hs       *handler.HandleManager
 	taskSvc  *service.TaskService
 	suc      *biz.SmsRecordUseCase
 }
@@ -59,7 +60,7 @@ type MqHandler struct {
 func NewMqHandler(
 	logger log.Logger,
 	executor *sender.TaskExecutor,
-	hs *sender.HandleManager,
+	hs *handler.HandleManager,
 	taskSvc *service.TaskService,
 	suc *biz.SmsRecordUseCase,
 ) *MqHandler {

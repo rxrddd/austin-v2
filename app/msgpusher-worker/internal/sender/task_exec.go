@@ -2,6 +2,7 @@ package sender
 
 import (
 	"austin-v2/app/msgpusher-common/enums/channelType"
+	"austin-v2/app/msgpusher-worker/internal/sender/handler"
 	"austin-v2/app/msgpusher-worker/internal/service"
 	"austin-v2/pkg/types"
 	"context"
@@ -10,7 +11,7 @@ import (
 
 type Task struct {
 	taskInfo *types.TaskInfo
-	manager  *HandleManager
+	manager  *handler.HandleManager
 	logger   *log.Helper
 
 	svc *service.TaskService
@@ -18,7 +19,7 @@ type Task struct {
 
 func NewTask(
 	taskInfo *types.TaskInfo,
-	hm *HandleManager,
+	hm *handler.HandleManager,
 	logger log.Logger,
 	svc *service.TaskService,
 ) *Task {
