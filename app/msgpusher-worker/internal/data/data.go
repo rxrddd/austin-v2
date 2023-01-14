@@ -22,6 +22,7 @@ var DataProviderSet = wire.NewSet(
 	NewMysqlCmd,
 	NewMessageTemplateRepo,
 	NewSendAccountRepo,
+	NewSmsRecordRepo,
 )
 
 // Data .
@@ -32,7 +33,7 @@ type Data struct {
 
 // NewData .
 func NewData(
-	c *conf.Data,
+	_ *conf.Data,
 	mq mq.IMessagingClient,
 	logger log.Logger,
 	rds redis.Cmdable,
@@ -41,7 +42,7 @@ func NewData(
 	cleanup := func() {
 		log.NewHelper(logger).Info("closing the data resources")
 		s, _ := db.DB()
-		s.Close()
+		_ = s.Close()
 		mq.Close()
 	}
 	return &Data{

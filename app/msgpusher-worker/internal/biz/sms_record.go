@@ -7,18 +7,18 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 )
 
-type SendAccountUseCase struct {
-	repo data.ISendAccountRepo
+type SmsRecordUseCase struct {
+	repo data.ISmsRecordRepo
 	log  *log.Helper
 }
 
-func NewSendAccountUseCase(repo data.ISendAccountRepo, logger log.Logger) *SendAccountUseCase {
-	return &SendAccountUseCase{
+func NewSmsRecordUseCase(repo data.ISmsRecordRepo, logger log.Logger) *SmsRecordUseCase {
+	return &SmsRecordUseCase{
 		repo: repo,
 		log:  log.NewHelper(log.With(logger, "module", "biz/send-account-usecase")),
 	}
 }
 
-func (a *SendAccountUseCase) One(ctx context.Context, id int64) (item *model.SendAccount, err error) {
-	return a.repo.One(ctx, id)
+func (s *SmsRecordUseCase) Create(ctx context.Context, items []*model.SmsRecord) error {
+	return s.repo.Create(ctx, items)
 }

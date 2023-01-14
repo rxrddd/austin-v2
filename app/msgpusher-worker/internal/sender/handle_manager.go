@@ -2,12 +2,12 @@ package sender
 
 import (
 	"austin-v2/app/msgpusher-worker/internal/sender/handler"
+	"austin-v2/pkg/manager"
 	"austin-v2/pkg/types"
-	"errors"
 )
 
 type HandleManager struct {
-	mMap map[string]types.IHandler
+	manager *manager.Manager
 }
 
 func NewHandleManager(
@@ -15,23 +15,19 @@ func NewHandleManager(
 	email *handler.EmailHandler,
 	officialAccount *handler.OfficialAccountHandler,
 ) *HandleManager {
-	h := &HandleManager{}
-	h.register(sms)
-	h.register(email)
-	h.register(officialAccount)
-	return h
+	hm := &HandleManager{
+		manager: manager.NewManager(
+			sms,
+			email,
+			officialAccount,
+		),
+	}
+	return hm
 }
 
-func (hs *HandleManager) Route(channel string) (types.IHandler, error) {
-	if h, ok := hs.mMap[channel]; ok {
-		return h, nil
+func (hm *HandleManager) Get(key string) (resp types.IHandler, err error) {
+	if h, err := hm.manager.Get(key); err != nil {
+		return h.(types.IHandler), nil
 	}
-	return nil, errors.New("unknown handle " + channel)
-}
-
-func (hs *HandleManager) register(h types.IHandler) {
-	if hs.mMap == nil {
-		hs.mMap = make(map[string]types.IHandler)
-	}
-	hs.mMap[h.Name()] = h
+	return nil, err
 }

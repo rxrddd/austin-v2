@@ -52,7 +52,7 @@ func (t *Task) Run(ctx context.Context) {
 	// 3. 真正发送消息
 
 	if len(t.taskInfo.Receiver) > 0 {
-		h, err := t.manager.Route(channelType.TypeCodeEn[t.taskInfo.SendChannel])
+		h, err := t.manager.Get(channelType.TypeCodeEn[t.taskInfo.SendChannel])
 		if err != nil {
 			t.logger.Errorf("handle manager route  channel: %s task_info: %s  err: %v", channelType.TypeCodeEn[t.taskInfo.SendChannel], t.taskInfo, err)
 			return

@@ -16,7 +16,7 @@ type FrequencyDeduplicationService struct {
 }
 
 func NewFrequencyDeduplicationService(manager *limit.LimiterManager) *FrequencyDeduplicationService {
-	l, err := manager.Route(types.LimitSlideWindow)
+	l, err := manager.Get(types.LimitSlideWindow)
 	if err != nil {
 		panic(err)
 	}

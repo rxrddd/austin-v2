@@ -1,34 +1,31 @@
 package deduplication
 
 import (
+	"austin-v2/pkg/manager"
 	"austin-v2/pkg/types"
-	"errors"
 )
 
 type DeduplicationManager struct {
-	mMap map[string]types.IDeduplicationService
+	manager *manager.Manager
+	mMap    map[string]types.IDeduplicationService
 }
 
 func NewDeduplicationManager(
 	fds *FrequencyDeduplicationService,
 	cds *ContentDeduplicationService,
 ) *DeduplicationManager {
-	h := &DeduplicationManager{}
-	h.register(fds)
-	h.register(cds)
-	return h
+	dm := &DeduplicationManager{
+		manager: manager.NewManager(
+			fds,
+			cds,
+		),
+	}
+	return dm
 }
 
-func (hs *DeduplicationManager) Route(code string) (types.IDeduplicationService, error) {
-	if h, ok := hs.mMap[code]; ok {
-		return h, nil
+func (dm *DeduplicationManager) Get(key string) (resp types.IDeduplicationService, err error) {
+	if h, err := dm.manager.Get(key); err != nil {
+		return h.(types.IDeduplicationService), nil
 	}
-	return nil, errors.New("unknown deduplication " + code)
-}
-
-func (hs *DeduplicationManager) register(h types.IDeduplicationService) {
-	if hs.mMap == nil {
-		hs.mMap = make(map[string]types.IDeduplicationService)
-	}
-	hs.mMap[h.Name()] = h
+	return nil, err
 }

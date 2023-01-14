@@ -6,23 +6,22 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 )
 
-type ISendAccountRepo interface {
-	One(ctx context.Context, id int64) (item *model.SendAccount, err error)
+type ISmsRecordRepo interface {
+	Create(ctx context.Context, items []*model.SmsRecord) error
 }
 
-type SendAccountRepo struct {
+type smsRecordRepo struct {
 	data *Data
 	log  *log.Helper
 }
 
-func NewSendAccountRepo(data *Data, logger log.Logger) ISendAccountRepo {
-	return &SendAccountRepo{
+func NewSmsRecordRepo(data *Data, logger log.Logger) ISmsRecordRepo {
+	return &smsRecordRepo{
 		data: data,
 		log:  log.NewHelper(log.With(logger, "module", "data/send_account")),
 	}
 }
 
-func (a *SendAccountRepo) One(ctx context.Context, id int64) (item *model.SendAccount, err error) {
-	err = a.data.db.WithContext(ctx).Where("id", id).Limit(1).Find(&item).Error
-	return item, err
+func (s *smsRecordRepo) Create(ctx context.Context, items []*model.SmsRecord) error {
+	return s.data.db.WithContext(ctx).Model(items).CreateInBatches(items, 500).Error
 }
