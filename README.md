@@ -47,7 +47,6 @@ curl --location --request POST 'http://localhost:8888/send' \
 curl --location --request POST 'http://localhost:8888/send' \
 --header 'Content-Type: application/json' \
 --data-raw '{
-    "code": "send",
     "messageParam": {
         "receiver": "okEEF6WB92HO14qdy0Nosq62OVyY",
         "variables": {
@@ -64,7 +63,6 @@ curl --location --request POST 'http://localhost:8888/send' \
 curl --location --request POST 'http://localhost:8888/send' \
 --header 'Content-Type: application/json' \
 --data-raw '{
-    "code": "send",
     "messageParam": {
         "receiver": "openId",
         "variables": {
@@ -83,7 +81,6 @@ curl --location --request POST 'http://localhost:8888/send' \
 curl --location --request POST 'http://localhost:8888/send' \
 --header 'Content-Type: application/json' \
 --data-raw '{
-    "code": "send",
     "messageParam": {
         "receiver": "13588888888,13588888887",
         "variables": {
@@ -97,7 +94,6 @@ curl --location --request POST 'http://localhost:8888/send' \
 curl --location --request POST 'http://localhost:8888/send' \
 --header 'Content-Type: application/json' \
 --data-raw '{
-    "code": "send",
     "messageParam": {
         "receiver": "@all",
         "variables": {
