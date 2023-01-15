@@ -17,7 +17,7 @@ import (
 	"gorm.io/driver/mysql"
 )
 
-// ProviderSet is data providers.
+// DataProviderSet is data providers.
 var DataProviderSet = wire.NewSet(
 	NewMq,
 	NewData,

@@ -23,7 +23,7 @@ func (b BaseHandler) getRecord(taskInfo *types.TaskInfo, receiver string) mongo_
 		ID:                stringHelper.NextID(),
 		MessageTemplateID: taskInfo.MessageTemplateId,
 		RequestID:         taskInfo.RequestId,
-		CreateAt:          timeHelper.CurrentTimeYMDHIS(),
+		CreateAt:          time.Now(),
 		TaskInfo:          jsonHelper.MustToString(taskInfo),
 		Receiver:          receiver,
 		StartConsumeAt:    taskInfo.StartConsumeAt.Format(timeHelper.DateDefaultLayout),

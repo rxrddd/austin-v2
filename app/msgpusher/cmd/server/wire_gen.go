@@ -28,7 +28,8 @@ func wireApp(confServer *conf.Server, registry *conf.Registry, confData *conf.Da
 	sendMqAction := process.NewSendMqAction(iMessagingClient, logger)
 	businessProcess := process.NewBusinessProcess(preParamCheckAction, assembleAction, afterParamCheckAction, sendMqAction)
 	db := data.NewMysqlCmd(confData, logger)
-	dataData, cleanup, err := data.NewData(confData, logger, iMessagingClient, db)
+	cmdable := data.NewRedisCmd(confData, logger)
+	dataData, cleanup, err := data.NewData(confData, logger, iMessagingClient, db, cmdable)
 	if err != nil {
 		return nil, nil, err
 	}

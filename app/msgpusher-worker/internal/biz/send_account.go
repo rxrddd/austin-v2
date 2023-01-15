@@ -19,6 +19,6 @@ func NewSendAccountUseCase(repo data.ISendAccountRepo, logger log.Logger) *SendA
 	}
 }
 
-func (a *SendAccountUseCase) One(ctx context.Context, id int64) (item *model.SendAccount, err error) {
+func (a *SendAccountUseCase) One(ctx context.Context, id int64) (item model.SendAccount, err error) {
 	return a.repo.One(ctx, id)
 }

@@ -17,7 +17,7 @@ func GetAccount(ctx context.Context, sc IAccount, sendAccount int64, v interface
 	if err != nil {
 		return err
 	}
-	if one == nil {
+	if one.ID <= 0 {
 		return AccountNotFindError
 	}
 
@@ -29,5 +29,5 @@ func GetAccount(ctx context.Context, sc IAccount, sendAccount int64, v interface
 }
 
 type IAccount interface {
-	One(ctx context.Context, id int64) (item *model.SendAccount, err error)
+	One(ctx context.Context, id int64) (item model.SendAccount, err error)
 }
