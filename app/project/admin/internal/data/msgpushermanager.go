@@ -243,7 +243,7 @@ func (s *MsgPusherManagerRepo) GetMsgRecord(ctx context.Context, req *pb.MsgReco
 			Receiver:          item.Receiver,
 			MsgId:             item.MsgId,
 			Channel:           item.Channel,
-			Msg:               item.MsgId,
+			Msg:               item.Msg,
 			SendAt:            item.SendAt,
 			CreateAt:          item.CreateAt,
 			SendSinceTime:     item.SendSinceTime,
