@@ -13,18 +13,15 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-redis/redis/v8"
 	"github.com/panjf2000/ants/v2"
+	"github.com/pkg/errors"
 	"github.com/silenceper/wechat/v2"
 	"github.com/silenceper/wechat/v2/cache"
-	offConfig "github.com/silenceper/wechat/v2/officialaccount/config"
-	"github.com/silenceper/wechat/v2/officialaccount/message"
-	"github.com/spf13/cast"
+	miniprogramConfig "github.com/silenceper/wechat/v2/miniprogram/config"
+	"github.com/silenceper/wechat/v2/miniprogram/subscribe"
 	"strings"
 )
 
-const colorSep = "|" //以|分割颜色
-
-//公众号订阅消息
-type OfficialAccountHandler struct {
+type MiniProgramHandler struct {
 	BaseHandler
 	logger *log.Helper
 	rds    redis.Cmdable
@@ -32,45 +29,40 @@ type OfficialAccountHandler struct {
 	mrr    data.IMsgRecordRepo
 }
 
-func NewOfficialAccountHandler(
+func NewMiniProgramHandler(
 	logger log.Logger,
 	rds redis.Cmdable,
 	sc *biz.SendAccountUseCase,
 	mrr data.IMsgRecordRepo,
-) *OfficialAccountHandler {
-	return &OfficialAccountHandler{
-		logger: log.NewHelper(log.With(logger, "module", "sender/sms")),
+) *MiniProgramHandler {
+	return &MiniProgramHandler{
+		logger: log.NewHelper(log.With(logger, "module", "sender/mini-program")),
 		rds:    rds,
 		sc:     sc,
 		mrr:    mrr,
 	}
 }
-func (h *OfficialAccountHandler) Name() string {
-	return channelType.TypeCodeEn[channelType.OfficialAccounts]
-}
 
-func (h *OfficialAccountHandler) Execute(ctx context.Context, taskInfo *types.TaskInfo) (err error) {
-	var content content_model.OfficialAccountsContentModel
+func (h *MiniProgramHandler) Execute(ctx context.Context, taskInfo *types.TaskInfo) (err error) {
+	var content content_model.MiniProgramContentModel
 	contentHelper.GetContentModel(taskInfo.ContentModel, &content)
 	//拼接消息发送
 	var acc account.OfficialAccount
+
 	if err = accountHelper.GetAccount(ctx, h.sc, taskInfo.SendAccount, &acc); err != nil {
-		return err
+		return errors.Wrap(err, "OfficialAccountHandler get account err")
 	}
 	wc := wechat.NewWechat()
 	cacheImpl := cache.NewMemory()
 
-	cfg := &offConfig.Config{
-		AppID:          acc.AppID,
-		AppSecret:      acc.AppSecret,
-		Token:          acc.Token,
-		EncodingAESKey: acc.EncodingAESKey,
-		Cache:          cacheImpl,
+	cfg := &miniprogramConfig.Config{
+		AppID:     acc.AppID,
+		AppSecret: acc.AppSecret,
+		Cache:     cacheImpl,
 	}
-	subscribe := wc.GetOfficialAccount(cfg).GetTemplate()
+	sub := wc.GetMiniProgram(cfg).GetSubscribe()
 	templateSn := content.TemplateSn
-	url := content.Url
-	params := make(map[string]*message.TemplateDataItem, len(content.Data))
+	params := make(map[string]*subscribe.DataItem, len(content.Data))
 	for key, val := range content.Data {
 		color := ""
 		value := ""
@@ -82,51 +74,42 @@ func (h *OfficialAccountHandler) Execute(ctx context.Context, taskInfo *types.Ta
 			value = arr[0]
 			color = arr[1]
 		}
-		params[key] = &message.TemplateDataItem{Value: value, Color: color}
+		params[key] = &subscribe.DataItem{Value: value, Color: color}
 	}
-	var (
-		msgIds  []int64
-		records []interface{}
-	)
+	var records []interface{}
 	for _, receiver := range taskInfo.Receiver {
-		msgID, err := subscribe.Send(&message.TemplateMessage{
-			ToUser:     receiver,
-			TemplateID: templateSn,
-			URL:        url,
-			Data:       params,
-			MiniProgram: struct {
-				AppID    string `json:"appid"`
-				PagePath string `json:"pagepath"`
-			}(struct {
-				AppID    string
-				PagePath string
-			}{AppID: content.MiniProgram.Appid, PagePath: content.MiniProgram.PagePath}),
+		err := sub.Send(&subscribe.Message{
+			ToUser:           receiver,
+			TemplateID:       templateSn,
+			Page:             content.Page,
+			Data:             params,
+			MiniprogramState: content.MiniProgramState,
+			Lang:             content.Lang,
 		})
 		record := h.getRecord(taskInfo, receiver)
-		record.MsgId = cast.ToString(msgID)
 		record.Channel = h.Name()
 
 		if err != nil {
 			h.logger.WithContext(ctx).Errorw(
-				"msg", "OfficialAccountHandler send msg",
+				"msg", "MiniProgramHandler send err",
 				"err", err,
 				"receiver", receiver,
 				"templateSn", templateSn)
 			record.Msg = "推送失败: " + err.Error()
 		} else {
-			msgIds = append(msgIds, msgID)
 			record.Msg = "推送成功"
 		}
 		records = append(records, record)
 	}
-	if len(msgIds) > 0 {
-		h.logger.WithContext(ctx).Infow(
-			"msg", "OfficialAccountHandler send success",
-			"requestId", taskInfo.RequestId,
-			"msgIds", msgIds)
-	}
+	h.logger.WithContext(ctx).Infow(
+		"msg", "MiniProgramHandler send success",
+		"requestId", taskInfo.RequestId)
 	_ = ants.Submit(func() {
 		_ = h.mrr.InsertMany(ctx, records)
 	})
 	return nil
+}
+
+func (h *MiniProgramHandler) Name() string {
+	return channelType.TypeCodeEn[channelType.DingDingWorkNotice]
 }

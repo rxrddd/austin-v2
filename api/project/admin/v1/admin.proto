@@ -37,17 +37,20 @@ service Admin {
 			get : "/admin/v1/getAdministratorInfo"
 		};
 	}
+
 	// 管理员列表
 	rpc GetAdministratorList(ListAdministratorRequest) returns(ListAdministratorReply) {
 		option (google.api.http) = {
 			get : "/admin/v1/getAdministrators"
 		};
 	}
+
 	rpc GetAdministrator(GetAdministratorRequest) returns(AdministratorInfoResponse) {
 		option (google.api.http) = {
 			get : "/admin/v1/getAdministrator"
 		};
 	}
+
 	// 管理员创建
 	rpc CreateAdministrator (CreateAdministratorRequest) returns (AdministratorInfoResponse){
 		option (google.api.http) = {
@@ -55,6 +58,7 @@ service Admin {
 			body : "*"
 		};
 	};
+
 	// 管理员更新
 	rpc UpdateAdministrator (UpdateAdministratorRequest) returns (AdministratorInfoResponse){
 		option (google.api.http) = {
@@ -62,12 +66,14 @@ service Admin {
 			body : "*"
 		};
 	};
+
 	// 管理员删除
 	rpc DeleteAdministrator (DeleteAdministratorRequest) returns (CheckReply){
 		option (google.api.http) = {
 			delete : "/admin/v1/administrator"
 		};
 	};
+
 	// 管理员恢复
 	rpc RecoverAdministrator (RecoverAdministratorRequest) returns (CheckReply){
 		option (google.api.http) = {
@@ -75,6 +81,7 @@ service Admin {
 			body : "*"
 		};
 	};
+
 	// 管理员禁用
 	rpc forbidAdministrator (ForbidAdministratorRequest) returns (CheckReply){
 		option (google.api.http) = {
@@ -82,6 +89,7 @@ service Admin {
 			body : "*"
 		};
 	};
+
 	// 管理员解禁
 	rpc approveAdministrator (ApproveAdministratorRequest) returns (CheckReply){
 		option (google.api.http) = {
@@ -155,6 +163,7 @@ service Admin {
 			get : "/authorization/v1/getPolicies"
 		};
 	};
+
 	// 策略添加授权规则
 	rpc UpdatePolicies (UpdatePoliciesRequest) returns (CheckReply){
 		option (google.api.http) = {
@@ -162,12 +171,14 @@ service Admin {
 			body : "*"
 		};
 	};
+
 	// 所有Api列表
 	rpc GetApiAll (google.protobuf.Empty) returns (GetApiAllReply){
 		option (google.api.http) = {
 			get : "/authorization/v1/apiAll",
 		};
 	};
+
 	// Api列表
 	rpc GetApiList (GetApiListRequest) returns (GetApiListReply){
 		option (google.api.http) = {
@@ -197,12 +208,14 @@ service Admin {
 			delete : "/authorization/v1/api"
 		};
 	};
+
 	// 所有Menu列表
 	rpc GetMenuAll (google.protobuf.Empty) returns (GetMenuTreeReply){
 		option (google.api.http) = {
 			get : "/authorization/v1/menuAll",
 		};
 	};
+
 	// Menu列表
 	rpc GetMenuTree (google.protobuf.Empty) returns (GetMenuTreeReply){
 		option (google.api.http) = {
@@ -276,6 +289,9 @@ service Admin {
 			get : "/files/v1/getOssStsToken"
 		};
 	};
+
+
+
 }
 
 message LoginRequest {

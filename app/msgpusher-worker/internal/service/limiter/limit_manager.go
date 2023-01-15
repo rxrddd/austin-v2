@@ -21,7 +21,7 @@ func NewLimiterManager(
 	}
 }
 func (lm *LimiterManager) Get(key string) (resp types.ILimitService, err error) {
-	if h, err := lm.manager.Get(key); err != nil {
+	if h, err := lm.manager.Get(key); err == nil {
 		return h.(types.ILimitService), nil
 	}
 	return nil, err

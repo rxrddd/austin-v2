@@ -28,7 +28,8 @@ var DataProviderSet = wire.NewSet(
 
 // Data .
 type Data struct {
-	db *gorm.DB
+	db  *gorm.DB
+	rds redis.Cmdable
 }
 
 // NewData .
@@ -37,13 +38,15 @@ func NewData(
 	logger log.Logger,
 	mq mq.IMessagingClient,
 	db *gorm.DB,
+	rds redis.Cmdable,
 ) (*Data, func(), error) {
 	cleanup := func() {
 		log.NewHelper(logger).Info("closing the data resources")
 		mq.Close()
 	}
 	return &Data{
-		db: db,
+		db:  db,
+		rds: rds,
 	}, cleanup, nil
 }
 

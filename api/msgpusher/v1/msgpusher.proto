@@ -9,13 +9,11 @@ option java_multiple_files = true;
 option java_package = "api.msgpusher";
 
 message SendRequest {
-  string code = 1;
   int64 messageTemplateId = 2;
   MessageParam messageParam = 3;
 }
 
 message BatchSendRequest {
-  string code = 1;
   int64 messageTemplateId = 2;
   repeated MessageParam messageParam = 3;
 }
@@ -27,7 +25,7 @@ message MessageParam {
 }
 
 message SendResponse {
-  string code = 1;
+  string request_id = 1;
 }
 
 service MsgPusher {

@@ -11,9 +11,9 @@ type BusinessProcess struct {
 }
 
 func NewBusinessProcess(
-	apc *AfterParamCheckAction,
-	ass *AssembleAction,
 	ppc *PreParamCheckAction,
+	ass *AssembleAction,
+	apc *AfterParamCheckAction,
 	sma *SendMqAction,
 ) *BusinessProcess {
 	return &BusinessProcess{

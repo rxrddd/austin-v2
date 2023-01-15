@@ -21,14 +21,15 @@ import (
 
 // wireApp init kratos application.
 func wireApp(confServer *conf.Server, registry *conf.Registry, confData *conf.Data, logger log.Logger) (*kratos.App, func(), error) {
-	afterParamCheckAction := process.NewAfterParamCheckAction()
-	assembleAction := process.NewAssembleAction()
 	preParamCheckAction := process.NewPreParamCheckAction()
+	assembleAction := process.NewAssembleAction()
+	afterParamCheckAction := process.NewAfterParamCheckAction()
 	iMessagingClient := data.NewMq(confData, logger)
 	sendMqAction := process.NewSendMqAction(iMessagingClient, logger)
-	businessProcess := process.NewBusinessProcess(afterParamCheckAction, assembleAction, preParamCheckAction, sendMqAction)
+	businessProcess := process.NewBusinessProcess(preParamCheckAction, assembleAction, afterParamCheckAction, sendMqAction)
 	db := data.NewMysqlCmd(confData, logger)
-	dataData, cleanup, err := data.NewData(confData, logger, iMessagingClient, db)
+	cmdable := data.NewRedisCmd(confData, logger)
+	dataData, cleanup, err := data.NewData(confData, logger, iMessagingClient, db, cmdable)
 	if err != nil {
 		return nil, nil, err
 	}

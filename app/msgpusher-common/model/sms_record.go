@@ -15,7 +15,7 @@ type SmsRecord struct {
 	SendDate          int32   `gorm:"column:send_date" json:"send_date"`                     // 发送日期：20211112
 	Created           int32   `gorm:"column:created" json:"created"`                         // 创建时间
 	Updated           int32   `gorm:"column:updated" json:"updated"`                         // 更新时间
-	RequestId         string  `gorm:"column:request_id" json:"request_id"`                   // 唯一请求 ID
+	RequestID         string  `gorm:"column:request_id" json:"request_id"`                   // 唯一请求 ID
 	BizId             string  `gorm:"column:biz_id" json:"biz_id"`                           // 业务id
 	SendChannel       string  `gorm:"column:send_channel" json:"send_channel"`               // 短信渠道 tencent腾讯云  aliyun阿里云 yunpian云片
 }

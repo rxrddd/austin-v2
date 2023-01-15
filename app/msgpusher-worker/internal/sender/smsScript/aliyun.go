@@ -9,16 +9,16 @@ import (
 	"austin-v2/pkg/types"
 	"austin-v2/pkg/utils/accountHelper"
 	"austin-v2/pkg/utils/contentHelper"
+	"austin-v2/pkg/utils/jsonHelper"
 	"austin-v2/pkg/utils/stringHelper"
 	"austin-v2/pkg/utils/timeHelper"
 	"context"
-	"encoding/json"
 	"fmt"
 	openapi "github.com/alibabacloud-go/darabonba-openapi/v2/client"
 	smsapi "github.com/alibabacloud-go/dysmsapi-20170525/v3/client"
 	"github.com/alibabacloud-go/tea/tea"
 	"github.com/go-kratos/kratos/v2/log"
-	"github.com/pkg/errors"
+	"github.com/panjf2000/ants/v2"
 	"github.com/spf13/cast"
 	"time"
 )
@@ -45,9 +45,8 @@ func (h *AliyunSms) Name() string {
 }
 func (h *AliyunSms) Send(ctx context.Context, taskInfo *types.TaskInfo) (err error) {
 	var acc account.AliyunSmsAccount
-	err = accountHelper.GetAccount(ctx, h.sc, taskInfo.SendAccount, &acc)
-	if err != nil {
-		return errors.Wrap(err, "yunpian get account err")
+	if err = accountHelper.GetAccount(ctx, h.sc, taskInfo.SendAccount, &acc); err != nil {
+		return err
 	}
 	config := &openapi.Config{
 		AccessKeyId:     &acc.AccessKeyId,
@@ -67,36 +66,42 @@ func (h *AliyunSms) Send(ctx context.Context, taskInfo *types.TaskInfo) (err err
 		request.SetPhoneNumbers(receiver)
 		request.SetSignName(acc.SignName)
 		request.SetTemplateCode(taskInfo.TemplateSn)
-		bytes, _ := json.Marshal(taskInfo.MessageParam.Variables)
+		request.SetTemplateParam(jsonHelper.MustToString(taskInfo.MessageParam.Variables))
 
-		request.SetTemplateParam(string(bytes))
-		response, err := cli.SendSms(request)
-		if err != nil {
-			return fmt.Errorf("Client.Send() error = %v", err)
+		var response *smsapi.SendSmsResponse
+		if response, err = cli.SendSms(request); err != nil {
+			h.logger.WithContext(ctx).Errorw(
+				"msg", "Client.Send() error",
+				"err", err,
+				"receiver", receiver,
+				"request", request.String())
+			continue
 		}
 		if *response.Body.Code == "OK" {
-			records = append(records, h.smsRecord(response, taskInfo.MessageTemplateId, receiver, content))
+			records = append(records, h.smsRecord(response, taskInfo, receiver, content))
 		}
 	}
-	marshal, _ := json.Marshal(records)
-	err = h.mqHelper.Publish(marshal, "sms.record")
-	if err != nil {
-		h.logger.WithContext(ctx).Errorw("msg", "aliyun send publish err", "err", err)
-	}
-
+	_ = ants.Submit(func() {
+		if err = h.mqHelper.Publish(jsonHelper.MustToByte(records), "sms.record"); err != nil {
+			h.logger.WithContext(ctx).Errorw("msg", "aliyun send publish err", "err", err)
+		}
+	})
 	return nil
 }
-func (h *AliyunSms) smsRecord(response *smsapi.SendSmsResponse, messageTemplateId int64, phoneNumber string, content content_model.SmsContentModel) model.SmsRecord {
-	requestId := *response.Body.RequestId
+func (h *AliyunSms) smsRecord(response *smsapi.SendSmsResponse,
+	info *types.TaskInfo,
+	phoneNumber string,
+	content content_model.SmsContentModel,
+) model.SmsRecord {
 	var insert = model.SmsRecord{
 		ID:                stringHelper.NextID(),
-		MessageTemplateID: messageTemplateId,
+		RequestID:         info.RequestId,
+		MessageTemplateID: info.MessageTemplateId,
 		Phone:             cast.ToInt64(phoneNumber),
 		MsgContent:        content.ReplaceContent,
 		Status:            10,
 		SendDate:          cast.ToInt32(time.Now().Format(timeHelper.DateYMD)),
 		Created:           cast.ToInt32(time.Now().Unix()),
-		RequestId:         requestId,
 		BizId:             *response.Body.BizId,
 		SendChannel:       "aliyun",
 	}

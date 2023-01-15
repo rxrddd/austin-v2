@@ -9,7 +9,10 @@ import (
 // SenderProviderSet is biz providers.
 var SenderProviderSet = wire.NewSet(
 	handler.NewSmsHandler,
+	handler.NewDingDingRobotHandler,
+	handler.NewDingDingWorkNoticeHandler,
 	handler.NewOfficialAccountHandler,
+	handler.NewMiniProgramHandler,
 	handler.NewEmailHandler,
 	handler.NewHandleManager,
 	smsScript.NewYunPin,

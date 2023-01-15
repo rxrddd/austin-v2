@@ -9,12 +9,14 @@ import (
 	"austin-v2/pkg/types"
 	"austin-v2/pkg/utils/accountHelper"
 	"austin-v2/pkg/utils/contentHelper"
+	"austin-v2/pkg/utils/jsonHelper"
 	"austin-v2/pkg/utils/stringHelper"
 	"austin-v2/pkg/utils/timeHelper"
 	"context"
 	"encoding/json"
 	"fmt"
 	"github.com/go-kratos/kratos/v2/log"
+	"github.com/panjf2000/ants/v2"
 	"github.com/pkg/errors"
 	"github.com/spf13/cast"
 	"io/ioutil"
@@ -87,14 +89,14 @@ func (h *YunPian) Send(ctx context.Context, taskInfo *types.TaskInfo) (err error
 			continue
 		}
 
-		records = append(records, h.smsRecord(resp, taskInfo.MessageTemplateId, receiver, content))
+		records = append(records, h.smsRecord(resp, taskInfo, receiver, content))
 
 	}
-	marshal, _ := json.Marshal(records)
-	err = h.mqHelper.Publish(marshal, "sms.record")
-	if err != nil {
-		h.logger.WithContext(ctx).Errorw("msg", "yun pian send publish  err", "err", err)
-	}
+	_ = ants.Submit(func() {
+		if err = h.mqHelper.Publish(jsonHelper.MustToByte(records), "sms.record"); err != nil {
+			h.logger.WithContext(ctx).Errorw("msg", "yun pian send publish  err", "err", err)
+		}
+	})
 
 	return nil
 }
@@ -124,10 +126,15 @@ type YunPianResp struct {
 	Sid    int64   `json:"sid"` //短信 id，64 位整型
 }
 
-func (h *YunPian) smsRecord(response *YunPianResp, messageTemplateId int64, phoneNumber string, content content_model.SmsContentModel) model.SmsRecord {
+func (h *YunPian) smsRecord(response *YunPianResp,
+	info *types.TaskInfo,
+	phoneNumber string,
+	content content_model.SmsContentModel,
+) model.SmsRecord {
 	var insert = model.SmsRecord{
 		ID:                stringHelper.NextID(),
-		MessageTemplateID: messageTemplateId,
+		MessageTemplateID: info.MessageTemplateId,
+		RequestID:         info.RequestId,
 		Phone:             cast.ToInt64(phoneNumber),
 		MsgContent:        content.ReplaceContent,
 		Status:            10,
@@ -135,7 +142,6 @@ func (h *YunPian) smsRecord(response *YunPianResp, messageTemplateId int64, phon
 		Fee:               response.Fee,
 		SendDate:          cast.ToInt32(time.Now().Format(timeHelper.DateYMD)),
 		Created:           cast.ToInt32(time.Now().Unix()),
-		RequestId:         cast.ToString(response.Sid),
 		BizId:             cast.ToString(response.Sid),
 		SendChannel:       "aliyun",
 	}

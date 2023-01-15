@@ -2,12 +2,15 @@ package timeHelper
 
 import "time"
 
+const (
+	DateYMD           = "20060102"
+	DateDefaultLayout = "2006-01-02 15:04:05"
+)
+
 // CurrentTimeYMDHIS 获取年月日时分秒
 func CurrentTimeYMDHIS() string {
 	return time.Now().Format("2006-01-02 15:04:05")
 }
-
-const DateYMD = "20060102"
 
 // CurrentTimeYMD 获取年月日
 func CurrentTimeYMD() string {
