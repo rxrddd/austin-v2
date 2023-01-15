@@ -4,6 +4,8 @@ import (
 	"austin-v2/app/project/admin/internal/conf"
 	"austin-v2/pkg/utils/stringHelper"
 	"flag"
+	"github.com/go-kratos/kratos/v2/encoding/json"
+	"google.golang.org/protobuf/encoding/protojson"
 
 	"os"
 
@@ -29,6 +31,11 @@ var (
 
 func init() {
 	flag.StringVar(&flagconf, "conf", "../../configs", "config path, eg: -conf config.yaml")
+
+	json.MarshalOptions = protojson.MarshalOptions{
+		EmitUnpopulated: true, //默认值不忽略
+		UseProtoNames:   true, //使用proto name返回http字段
+	}
 }
 
 func newApp(logger log.Logger, hs *http.Server, rr registry.Registrar) *kratos.App {
