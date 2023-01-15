@@ -31,9 +31,15 @@ message Data {
   message RabbitMq {
     string URL = 1;
   }
+  message MongoDB {
+    string URL = 1;
+    string Username = 2;
+    string Password = 3;
+  }
   Database database = 1;
   Redis redis = 2;
   RabbitMq rabbitmq = 3;
+  MongoDB mongodb = 4;
 }
 
 

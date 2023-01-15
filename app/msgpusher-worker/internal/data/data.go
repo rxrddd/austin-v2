@@ -4,6 +4,9 @@ import (
 	"austin-v2/app/msgpusher-worker/internal/conf"
 	"austin-v2/pkg/mq"
 	"context"
+	"fmt"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"gorm.io/gorm"
 	logger2 "gorm.io/gorm/logger"
 	"time"
@@ -20,15 +23,18 @@ var DataProviderSet = wire.NewSet(
 	NewData,
 	NewRedisCmd,
 	NewMysqlCmd,
+	NewMongoDB,
 	NewMessageTemplateRepo,
 	NewSendAccountRepo,
 	NewSmsRecordRepo,
+	NewMsgRecordRepo,
 )
 
 // Data .
 type Data struct {
-	rds redis.Cmdable
-	db  *gorm.DB
+	rds   redis.Cmdable
+	db    *gorm.DB
+	mongo *mongo.Client
 }
 
 // NewData .
@@ -38,16 +44,19 @@ func NewData(
 	logger log.Logger,
 	rds redis.Cmdable,
 	db *gorm.DB,
+	mongo *mongo.Client,
 ) (*Data, func(), error) {
 	cleanup := func() {
 		log.NewHelper(logger).Info("closing the data resources")
 		s, _ := db.DB()
 		_ = s.Close()
+		_ = mongo.Disconnect(context.Background())
 		mq.Close()
 	}
 	return &Data{
-		rds: rds,
-		db:  db,
+		rds:   rds,
+		db:    db,
+		mongo: mongo,
 	}, cleanup, nil
 }
 
@@ -87,4 +96,27 @@ func NewMysqlCmd(conf *conf.Data, logger log.Logger) *gorm.DB {
 		logs.Fatalf("mysql connect error: %v", err)
 	}
 	return db
+}
+
+func NewMongoDB(conf *conf.Data) *mongo.Client {
+	var mgoCli *mongo.Client
+	var err error
+	clientOptions := options.Client().ApplyURI(conf.Mongodb.URL)
+	if conf.Mongodb.Username != "" && conf.Mongodb.Password != "" {
+		clientOptions.SetAuth(options.Credential{
+			Username: conf.Mongodb.Username,
+			Password: conf.Mongodb.Password,
+		})
+	}
+	// 连接到mongoDB
+	mgoCli, err = mongo.Connect(context.TODO(), clientOptions)
+	if err != nil {
+		panic(fmt.Errorf("mongo connect err %v", err))
+	}
+	// 检查连接
+	err = mgoCli.Ping(context.TODO(), nil)
+	if err != nil {
+		panic(fmt.Errorf("mongo ping err %v", err))
+	}
+	return mgoCli
 }

@@ -30,7 +30,8 @@ func wireApp(confData *conf.Data, logger log.Logger) (*kratos.App, func(), error
 	cmdable := data.NewRedisCmd(confData, logger)
 	iMessagingClient := data.NewMq(confData, logger)
 	db := data.NewMysqlCmd(confData, logger)
-	dataData, cleanup, err := data.NewData(confData, iMessagingClient, logger, cmdable, db)
+	client := data.NewMongoDB(confData)
+	dataData, cleanup, err := data.NewData(confData, iMessagingClient, logger, cmdable, db, client)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -40,11 +41,12 @@ func wireApp(confData *conf.Data, logger log.Logger) (*kratos.App, func(), error
 	aliyunSms := smsScript.NewAliyunSms(logger, iMessagingClient, sendAccountUseCase)
 	smsManager := smsScript.NewSmsManager(yunPian, aliyunSms)
 	smsHandler := handler.NewSmsHandler(logger, cmdable, smsManager)
-	emailHandler := handler.NewEmailHandler(logger, cmdable, sendAccountUseCase)
-	officialAccountHandler := handler.NewOfficialAccountHandler(logger, cmdable, sendAccountUseCase)
-	dingDingRobotHandler := handler.NewDingDingRobotHandler(logger, cmdable, sendAccountUseCase)
+	iMsgRecordRepo := data.NewMsgRecordRepo(dataData, logger)
+	emailHandler := handler.NewEmailHandler(logger, cmdable, sendAccountUseCase, iMsgRecordRepo)
+	officialAccountHandler := handler.NewOfficialAccountHandler(logger, cmdable, sendAccountUseCase, iMsgRecordRepo)
+	dingDingRobotHandler := handler.NewDingDingRobotHandler(logger, cmdable, sendAccountUseCase, iMsgRecordRepo)
 	dingDingWorkNoticeHandler := handler.NewDingDingWorkNoticeHandler(logger, cmdable, sendAccountUseCase)
-	miniProgramHandler := handler.NewMiniProgramHandler(logger, cmdable, sendAccountUseCase)
+	miniProgramHandler := handler.NewMiniProgramHandler(logger, cmdable, sendAccountUseCase, iMsgRecordRepo)
 	handleManager := handler.NewHandleManager(smsHandler, emailHandler, officialAccountHandler, dingDingRobotHandler, dingDingWorkNoticeHandler, miniProgramHandler)
 	discardMessageService := srv.NewDiscardMessageService(logger, cmdable)
 	shieldService := srv.NewShieldService(logger, cmdable)

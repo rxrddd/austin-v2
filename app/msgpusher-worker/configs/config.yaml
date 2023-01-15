@@ -12,4 +12,6 @@ data:
     write_timeout: "0.2s"
   rabbitmq:
       URL: "amqp://guest:guest@127.0.0.1:5672/"
+  mongodb:
+      URL: "mongodb://localhost:27017"
 

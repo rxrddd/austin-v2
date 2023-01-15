@@ -5,16 +5,19 @@ import (
 	"austin-v2/app/msgpusher-common/domain/content_model"
 	"austin-v2/app/msgpusher-common/enums/channelType"
 	"austin-v2/app/msgpusher-worker/internal/biz"
+	"austin-v2/app/msgpusher-worker/internal/data"
 	"austin-v2/pkg/types"
 	"austin-v2/pkg/utils/accountHelper"
 	"austin-v2/pkg/utils/contentHelper"
 	"context"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-redis/redis/v8"
+	"github.com/panjf2000/ants/v2"
 	"github.com/silenceper/wechat/v2"
 	"github.com/silenceper/wechat/v2/cache"
 	offConfig "github.com/silenceper/wechat/v2/officialaccount/config"
 	"github.com/silenceper/wechat/v2/officialaccount/message"
+	"github.com/spf13/cast"
 	"strings"
 )
 
@@ -26,17 +29,20 @@ type OfficialAccountHandler struct {
 	logger *log.Helper
 	rds    redis.Cmdable
 	sc     *biz.SendAccountUseCase
+	mrr    data.IMsgRecordRepo
 }
 
 func NewOfficialAccountHandler(
 	logger log.Logger,
 	rds redis.Cmdable,
 	sc *biz.SendAccountUseCase,
+	mrr data.IMsgRecordRepo,
 ) *OfficialAccountHandler {
 	return &OfficialAccountHandler{
 		logger: log.NewHelper(log.With(logger, "module", "sender/sms")),
 		rds:    rds,
 		sc:     sc,
+		mrr:    mrr,
 	}
 }
 func (h *OfficialAccountHandler) Name() string {
@@ -78,9 +84,10 @@ func (h *OfficialAccountHandler) Execute(ctx context.Context, taskInfo *types.Ta
 		}
 		params[key] = &message.TemplateDataItem{Value: value, Color: color}
 	}
-	var msgIds []int64
-	h.logger.WithContext(ctx).Infof("requestId:%s send start ", taskInfo.RequestId)
-
+	var (
+		msgIds  []int64
+		records []interface{}
+	)
 	for _, receiver := range taskInfo.Receiver {
 		msgID, err := subscribe.Send(&message.TemplateMessage{
 			ToUser:     receiver,
@@ -95,15 +102,22 @@ func (h *OfficialAccountHandler) Execute(ctx context.Context, taskInfo *types.Ta
 				PagePath string
 			}{AppID: content.MiniProgram.Appid, PagePath: content.MiniProgram.PagePath}),
 		})
+		record := h.getRecord(taskInfo, receiver)
+		record.MsgId = cast.ToString(msgID)
+		record.Channel = h.Name()
+
 		if err != nil {
 			h.logger.WithContext(ctx).Errorw(
 				"msg", "OfficialAccountHandler send msg",
 				"err", err,
 				"receiver", receiver,
 				"templateSn", templateSn)
-			continue
+			record.Msg = "推送失败: " + err.Error()
+		} else {
+			msgIds = append(msgIds, msgID)
+			record.Msg = "推送成功"
 		}
-		msgIds = append(msgIds, msgID)
+		records = append(records, record)
 	}
 	if len(msgIds) > 0 {
 		h.logger.WithContext(ctx).Infow(
@@ -111,5 +125,8 @@ func (h *OfficialAccountHandler) Execute(ctx context.Context, taskInfo *types.Ta
 			"requestId", taskInfo.RequestId,
 			"msgIds", msgIds)
 	}
+	_ = ants.Submit(func() {
+		_ = h.mrr.InsertMany(ctx, records)
+	})
 	return nil
 }
