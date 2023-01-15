@@ -28,4 +28,4 @@ auth:
   service_key: "files-service-key"
   api_key: "files-api-key"
 etcd:
-  address: 192.168.0.103:2379
+  address: 127.0.0.1:2379

@@ -4,6 +4,7 @@ import (
 	administratorV1 "austin-v2/api/administrator/v1"
 	authorizationV1 "austin-v2/api/authorization/v1"
 	filesServiceV1 "austin-v2/api/files/v1"
+	msgpushermanagerV1 "austin-v2/api/msgpusher-manager/v1"
 	"austin-v2/app/project/admin/internal/conf"
 	"context"
 	"github.com/go-kratos/kratos/contrib/registry/etcd/v2"
@@ -24,9 +25,11 @@ var ProviderSet = wire.NewSet(
 	NewAdministratorRepo,
 	NewAuthorizationRepo,
 	NewFilesRepo,
+	NewMsgPusherManagerRepo,
 	NewAdministratorServiceClient,
 	NewAuthorizationServiceClient,
 	NewFilesServiceClient,
+	NewMsgPusherManagerClient,
 )
 
 var auth *conf.Auth
@@ -39,11 +42,12 @@ func GetAuthApiKey() string {
 
 // Data .
 type Data struct {
-	log                 *log.Helper
-	redisCli            redis.Cmdable
-	administratorClient administratorV1.AdministratorClient
-	authorizationClient authorizationV1.AuthorizationClient
-	filesClient         filesServiceV1.FilesClient
+	log                    *log.Helper
+	redisCli               redis.Cmdable
+	administratorClient    administratorV1.AdministratorClient
+	authorizationClient    authorizationV1.AuthorizationClient
+	filesClient            filesServiceV1.FilesClient
+	msgPusherManagerClient msgpushermanagerV1.MsgPusherManagerClient
 }
 
 // NewData .
@@ -53,14 +57,16 @@ func NewData(
 	administratorClient administratorV1.AdministratorClient,
 	authorizationClient authorizationV1.AuthorizationClient,
 	filesClient filesServiceV1.FilesClient,
+	msgPusherManagerClient msgpushermanagerV1.MsgPusherManagerClient,
 ) (*Data, error) {
 	l := log.NewHelper(log.With(logger, "module", "data"))
 	return &Data{
-		log:                 l,
-		redisCli:            redisCli,
-		administratorClient: administratorClient,
-		authorizationClient: authorizationClient,
-		filesClient:         filesClient,
+		log:                    l,
+		redisCli:               redisCli,
+		administratorClient:    administratorClient,
+		authorizationClient:    authorizationClient,
+		filesClient:            filesClient,
+		msgPusherManagerClient: msgPusherManagerClient,
 	}, nil
 }
 

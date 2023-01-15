@@ -79,4 +79,9 @@ message Service {
     string endpoint = 1;
   }
   Files files = 5;
+
+  message Msgpushermanager {
+    string endpoint = 1;
+  }
+  Msgpushermanager msgpushermanager = 6;
 }

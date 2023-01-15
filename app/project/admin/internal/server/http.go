@@ -59,7 +59,7 @@ func setHeaderInfo() middleware.Middleware {
 					return nil, errResponse.SetErrByReason(errResponse.ReasonAdministratorUnauthorized)
 				}
 				jwtToken := auths[1]
-				token, _ := data.RedisCli.Get(jwtToken).Result()
+				token, _ := data.RedisCli.Get(ctx, jwtToken).Result()
 				if token == "" {
 					return nil, errResponse.SetErrByReason(errResponse.ReasonAdministratorUnauthorized)
 				}

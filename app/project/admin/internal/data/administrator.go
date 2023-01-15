@@ -16,21 +16,14 @@ import (
 	"time"
 )
 
-//, tp *tracesdk.TracerProvider
-func NewAdministratorServiceClient(ac *conf.Auth, sr *conf.Service, r registry.Discovery) administratorServiceV1.AdministratorClient {
-	// 初始化auth配置
-	auth = ac
-
+func NewAdministratorServiceClient(ah *conf.Auth, sr *conf.Service, r registry.Discovery) administratorServiceV1.AdministratorClient {
+	auth = ah
 	conn, err := grpc.DialInsecure(
 		context.Background(),
 		grpc.WithEndpoint(sr.Administrator.Endpoint),
 		grpc.WithDiscovery(r),
 		grpc.WithMiddleware(
-			//tracing.Client(tracing.WithTracerProvider(tp)),
 			recovery.Recovery(),
-			//jwt.Client(func(token *jwt2.Token) (interface{}, error) {
-			//	return []byte(ac.ServiceKey), nil
-			//}, jwt.WithSigningMethod(jwt2.SigningMethodHS256)),
 		),
 	)
 	if err != nil {
@@ -283,7 +276,7 @@ func (rp AdministratorRepo) GenerateAdministratorToken(ctx context.Context, admi
 	signedString, _ := claims.SignedString([]byte(GetAuthApiKey()))
 	key := encryption.EncodeMD5(signedString)
 	// 生成redis
-	rp.data.redisCli.Set(key, signedString, time.Second*time.Duration(auth.ApiKeyExpire))
+	rp.data.redisCli.Set(ctx, key, signedString, time.Second*time.Duration(auth.ApiKeyExpire))
 	return key, nil
 }
 
@@ -301,7 +294,7 @@ func (rp AdministratorRepo) DestroyAdministratorToken(ctx context.Context, admin
 	key := encryption.EncodeMD5(signedString)
 
 	// 删除redis
-	rp.data.redisCli.Del(key)
+	rp.data.redisCli.Del(ctx, key)
 	return nil
 }
 

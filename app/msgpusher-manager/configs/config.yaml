@@ -1,0 +1,26 @@
+service:
+  name: austin-v2.msgpusher.manager.service
+  version: v1
+trace:
+  endpoint: http://127.0.0.1:14268/api/traces
+server:
+  grpc:
+    addr: 0.0.0.0:10000
+    timeout: 1s
+data:
+  database:
+    driver: mysql
+    source: root:123456@tcp(127.0.0.1:3306)/kratos-admin?parseTime=true&collation=utf8mb4_unicode_ci&loc=Asia%2FShanghai&charset=utf8mb4
+  redis:
+    addr: "127.0.0.1:6379"
+    password: "123456"
+    read_timeout: "0.2s"
+    write_timeout: "0.2s"
+  rabbitmq:
+      URL: "amqp://guest:guest@127.0.0.1:5672/"
+  mongodb:
+    url: "mongodb://localhost:27017"
+    username:
+    password:
+etcd:
+  address: 127.0.0.1:2379

@@ -28,18 +28,14 @@ func NewAuthorizationRepo(data *Data, logger log.Logger) *AuthorizationRepo {
 	}
 }
 
-//, tp *tracesdk.TracerProvider
-func NewAuthorizationServiceClient(ac *conf.Auth, sr *conf.Service, r registry.Discovery) authorizationServiceV1.AuthorizationClient {
+func NewAuthorizationServiceClient(ah *conf.Auth, sr *conf.Service, r registry.Discovery) authorizationServiceV1.AuthorizationClient {
+	auth = ah
 	conn, err := grpc.DialInsecure(
 		context.Background(),
 		grpc.WithEndpoint(sr.Authorization.Endpoint),
 		grpc.WithDiscovery(r),
 		grpc.WithMiddleware(
-			//tracing.Client(tracing.WithTracerProvider(tp)),
 			recovery.Recovery(),
-			//jwt.Client(func(token *jwt2.Token) (interface{}, error) {
-			//	return []byte(ac.ServiceKey), nil
-			//}, jwt.WithSigningMethod(jwt2.SigningMethodHS256)),
 		),
 	)
 	if err != nil {

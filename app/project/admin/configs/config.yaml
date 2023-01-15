@@ -7,6 +7,8 @@ service:
     endpoint: discovery:///austin-v2.authorization.service
   files:
     endpoint: discovery:///austin-v2.files.service
+  msgpushermanager:
+    endpoint: discovery:///austin-v2.msgpusher.manager.service
 trace:
   endpoint: http://127.0.0.1:14268/api/traces
 server:
@@ -45,4 +47,4 @@ auth:
   
   m = g(r.sub, p.sub) && keyMatch2(r.obj, p.obj) && regexMatch(r.act, p.act)"
 etcd:
-  address: 192.168.0.102:2379
+  address: 127.0.0.1:2379
