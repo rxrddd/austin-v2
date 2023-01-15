@@ -1,0 +1,186 @@
+syntax = "proto3";
+
+package api.msgpusher.manager;
+
+import "google/protobuf/empty.proto";
+option go_package = "austin-v2/api/msgpusher-manager/v1;v1";
+option java_multiple_files = true;
+option java_package = "api.msgpusher.manager";
+
+service MsgPusherManager {
+  //新增/修改账号
+  rpc SendAccountEdit(SendAccountEditRequest) returns(google.protobuf.Empty);
+  //禁用/启用
+  rpc SendAccountChangeStatus(SendAccountChangeStatusRequest) returns(google.protobuf.Empty);
+  //账号列表
+  rpc SendAccountList(SendAccountListRequest) returns(SendAccountListResp);
+  //账号获取下拉
+  rpc SendAccountQuery(SendAccountListRequest) returns(SendAccountQueryResp);
+
+  //新增/修改模板
+  rpc TemplateEdit(TemplateEditRequest) returns(google.protobuf.Empty);
+  //禁用/启用
+  rpc TemplateChangeStatus(TemplateChangeStatusRequest) returns(google.protobuf.Empty);
+  //模板列表
+  rpc TemplateList(TemplateListRequest) returns(TemplateListResp);
+  //删除模板
+  rpc TemplateRemove(TemplateRemoveRequest) returns(google.protobuf.Empty);
+  //获取所有支持的渠道
+  rpc GetAllChannel(google.protobuf.Empty) returns(GetAllChannelResp);
+
+
+  //短信记录列表
+  rpc GetSmsRecord(SmsRecordRequest) returns(SmsRecordResp);
+  //消息记录列表
+  rpc GetMsgRecord(MsgRecordRequest) returns(MsgRecordResp);
+
+}
+
+message SendAccountEditRequest {
+  int64 ID = 1;
+  string Title = 2;
+  string config = 3;
+  string SendChannel = 4;
+}
+
+message SendAccountListRequest {
+  string Title = 1;
+  string SendChannel = 2;
+  int64 Page = 3;
+  int64 PageSize = 4;
+}
+
+message SendAccountChangeStatusRequest {
+  int64 ID = 1;
+  uint64 Status = 2;
+}
+
+message SendAccountRow {
+  int64 ID = 1;
+  string Title = 2;
+  string Config = 3;
+  string SendChannel = 4;
+}
+
+message SendAccountListResp {
+  repeated SendAccountRow rows = 1;
+  int64 total = 2;
+}
+
+message SendAccountQueryResp {
+  repeated SendAccountRow rows = 1;
+}
+message TemplateEditRequest {
+  int64 ID = 1;
+  string Name = 2;
+  int64 IdType = 3;
+  int64 SendChannel = 4;
+  int64 TemplateType = 5;
+  int64 MsgType = 6;
+  int64 ShieldType = 7;
+  string MsgContent = 8;
+  int64 SendAccount = 9;
+  string TemplateSn = 10;
+  string SmsChannel = 11;
+  string DeduplicationConfig = 12;
+}
+
+message TemplateChangeStatusRequest {
+  int64 ID = 1;
+  uint64 Status = 2;
+}
+
+message TemplateListRequest {
+  string Name = 1;
+  string SendChannel = 2;
+  int64 Page = 3;
+  int64 PageSize = 4;
+}
+
+message TemplateListRow {
+  int64 ID = 1;
+  string Name = 2;
+  int64 IdType = 3;
+  int64 SendChannel = 4;
+  int64 TemplateType = 5;
+  int64 MsgType = 6;
+  int64 ShieldType = 7;
+  string MsgContent = 8;
+  int64 SendAccount = 9;
+  string SendAccountName = 10;
+  string TemplateSn = 11;
+  string SmsChannel = 12;
+}
+
+message TemplateListResp {
+  repeated TemplateListRow rows = 1;
+  int64 total = 2;
+}
+
+message TemplateRemoveRequest{
+  int64 ID = 1;
+}
+
+message Channel{
+  int64 Id = 1;
+  string Name = 2;
+  string Channel = 3;
+}
+
+message GetAllChannelResp{
+  repeated Channel rows = 1;
+}
+message SmsRecordRequest{
+  string TemplateId = 1;
+  string RequestId = 2;
+  string SendChannel = 3;
+  int64 Page = 4;
+  int64 PageSize = 5;
+}
+
+message SmsRecordRow{
+  int64 Id = 1;
+  string SeriesId = 2;
+  string MsgContent = 3;
+  string SupplierName = 4;
+  int64 SupplierId = 5;
+  string Phone = 6;
+  int64 MessageTemplateId = 7;
+  string Created_at = 8;
+  string SendDate = 9;
+  string Status = 10;
+  string ReportContent = 11;
+  int64 ChargingNum = 12;
+  string UpdatedAt = 13;
+}
+
+message SmsRecordResp{
+  repeated SmsRecordRow rows = 1;
+  int64 total = 2;
+}
+message MsgRecordRequest{
+  string TemplateId = 1;
+  string RequestId = 2;
+  string Channel = 3;
+  int64 Page = 4;
+  int64 PageSize = 5;
+}
+
+message MsgRecordRow{
+  int64 MessageTemplateId = 1;
+  string RequestId = 2;
+  string Receiver = 3;
+  string MsgId = 4;
+  string Channel = 5;
+  string Msg = 6;
+  string SendAt = 7;
+  string CreateAt = 8;
+  string SendSinceTime = 9;
+  int64 ID = 10;
+}
+
+message MsgRecordResp{
+  repeated MsgRecordRow rows = 1;
+  int64 total = 2;
+}
+

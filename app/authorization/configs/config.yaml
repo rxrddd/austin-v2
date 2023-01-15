@@ -17,7 +17,7 @@ data:
     read_timeout: "0.2s"
     write_timeout: "0.2s"
 etcd:
-  address: 192.168.0.102:2379
+  address: 127.0.0.1:2379
 casbin:
   # casbin model必须使用换行 否则无法加载
   rbac_model: "[request_definition]

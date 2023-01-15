@@ -16,13 +16,13 @@ var (
 	TypeText = map[int]string{
 		//Im:                 "IM(站内信)",
 		//Push:               "push(通知栏)",
-		Sms:                "sms(短信)",
-		Email:              "email(邮件)",
-		OfficialAccounts:   "OfficialAccounts(服务号)",
-		MiniProgram:        "miniProgram(小程序)",
-		EnterpriseWeChat:   "EnterpriseWeChat(企业微信)",
-		DingDingRobot:      "dingDingRobot(钉钉机器人)",
-		DingDingWorkNotice: "dingDingWorkNotice(钉钉工作通知)",
+		Sms:                "短信",
+		Email:              "邮件",
+		OfficialAccounts:   "服务号",
+		MiniProgram:        "小程序",
+		EnterpriseWeChat:   "企业微信",
+		DingDingRobot:      "钉钉机器人",
+		DingDingWorkNotice: "钉钉工作通知",
 	}
 	TypeCodeEn = map[int]string{
 		//Im:                 "im",

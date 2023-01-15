@@ -14,20 +14,14 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
-//, tp *tracesdk.TracerProvider
-func NewFilesServiceClient(ac *conf.Auth, sr *conf.Service, r registry.Discovery) filesServiceV1.FilesClient {
+func NewFilesServiceClient(_ *conf.Auth, sr *conf.Service, r registry.Discovery) filesServiceV1.FilesClient {
 	// 初始化auth配置
-	auth = ac
 	conn, err := grpc.DialInsecure(
 		context.Background(),
 		grpc.WithEndpoint(sr.Files.Endpoint),
 		grpc.WithDiscovery(r),
 		grpc.WithMiddleware(
-			//tracing.Client(tracing.WithTracerProvider(tp)),
 			recovery.Recovery(),
-			//jwt.Client(func(token *jwt2.Token) (interface{}, error) {
-			//	return []byte(ac.ServiceKey), nil
-			//}, jwt.WithSigningMethod(jwt2.SigningMethodHS256)),
 		),
 	)
 	if err != nil {

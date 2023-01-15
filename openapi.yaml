@@ -3,19 +3,20 @@
 
 openapi: 3.0.3
 info:
-    title: MsgPusher API
+    title: Admin API
     version: 0.0.1
 paths:
-    /msgpusher/v1/batch_send:
-        post:
+    /admin/v1/administrator:
+        put:
             tags:
-                - MsgPusher
-            operationId: MsgPusher_BatchSend
+                - Admin
+            description: 管理员更新
+            operationId: Admin_UpdateAdministrator
             requestBody:
                 content:
                     application/json:
                         schema:
-                            $ref: '#/components/schemas/BatchSendRequest'
+                            $ref: '#/components/schemas/UpdateAdministratorRequest'
                 required: true
             responses:
                 "200":
@@ -23,23 +24,23 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/SendResponse'
+                                $ref: '#/components/schemas/AdministratorInfoResponse'
                 default:
                     description: Default error response
                     content:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /msgpusher/v1/send:
         post:
             tags:
-                - MsgPusher
-            operationId: MsgPusher_Send
+                - Admin
+            description: 管理员创建
+            operationId: Admin_CreateAdministrator
             requestBody:
                 content:
                     application/json:
                         schema:
-                            $ref: '#/components/schemas/SendRequest'
+                            $ref: '#/components/schemas/CreateAdministratorRequest'
                 required: true
             responses:
                 "200":
@@ -47,7 +48,1233 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/SendResponse'
+                                $ref: '#/components/schemas/AdministratorInfoResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        delete:
+            tags:
+                - Admin
+            description: 管理员删除
+            operationId: Admin_DeleteAdministrator
+            parameters:
+                - name: id
+                  in: query
+                  schema:
+                    type: integer
+                    format: int64
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/CheckReply'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        patch:
+            tags:
+                - Admin
+            description: 管理员恢复
+            operationId: Admin_RecoverAdministrator
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/RecoverAdministratorRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/CheckReply'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /admin/v1/administrator/approve:
+        patch:
+            tags:
+                - Admin
+            description: 管理员解禁
+            operationId: Admin_ApproveAdministrator
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/ApproveAdministratorRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/CheckReply'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /admin/v1/administrator/forbid:
+        patch:
+            tags:
+                - Admin
+            description: 管理员禁用
+            operationId: Admin_ForbidAdministrator
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/ForbidAdministratorRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/CheckReply'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /admin/v1/getAdministrator:
+        get:
+            tags:
+                - Admin
+            operationId: Admin_GetAdministrator
+            parameters:
+                - name: id
+                  in: query
+                  schema:
+                    type: integer
+                    format: int64
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/AdministratorInfoResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /admin/v1/getAdministratorInfo:
+        get:
+            tags:
+                - Admin
+            description: 管理员详情
+            operationId: Admin_GetAdministratorInfo
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/AdministratorInfoResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /admin/v1/getAdministrators:
+        get:
+            tags:
+                - Admin
+            description: 管理员列表
+            operationId: Admin_GetAdministratorList
+            parameters:
+                - name: page
+                  in: query
+                  schema:
+                    type: integer
+                    format: int64
+                - name: pageSize
+                  in: query
+                  schema:
+                    type: integer
+                    format: int64
+                - name: id
+                  in: query
+                  schema:
+                    type: integer
+                    format: int64
+                - name: username
+                  in: query
+                  schema:
+                    type: string
+                - name: mobile
+                  in: query
+                  schema:
+                    type: string
+                - name: nickname
+                  in: query
+                  schema:
+                    type: string
+                - name: status
+                  in: query
+                  schema:
+                    type: integer
+                    format: int64
+                - name: createdAtStart
+                  in: query
+                  schema:
+                    type: string
+                - name: createdAtEnd
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListAdministratorReply'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /admin/v1/login:
+        post:
+            tags:
+                - Admin
+            description: 管理员登陆
+            operationId: Admin_Login
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/LoginRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/LoginReply'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /admin/v1/loginSuccess:
+        get:
+            tags:
+                - Admin
+            operationId: Admin_LoginSuccess
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /admin/v1/logout:
+        post:
+            tags:
+                - Admin
+            description: 管理员退出
+            operationId: Admin_Logout
+            requestBody:
+                content:
+                    application/json: {}
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /authorization/v1/api:
+        get:
+            tags:
+                - Admin
+            description: Api列表
+            operationId: Admin_GetApiList
+            parameters:
+                - name: page
+                  in: query
+                  schema:
+                    type: integer
+                    format: int64
+                - name: pageSize
+                  in: query
+                  schema:
+                    type: integer
+                    format: int64
+                - name: group
+                  in: query
+                  schema:
+                    type: string
+                - name: name
+                  in: query
+                  schema:
+                    type: string
+                - name: path
+                  in: query
+                  schema:
+                    type: string
+                - name: method
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GetApiListReply'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        put:
+            tags:
+                - Admin
+            description: Api更新
+            operationId: Admin_UpdateApi
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UpdateApiRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ApiInfo'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        post:
+            tags:
+                - Admin
+            description: Api创建
+            operationId: Admin_CreateApi
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateApiRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ApiInfo'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        delete:
+            tags:
+                - Admin
+            description: Api删除
+            operationId: Admin_DeleteApi
+            parameters:
+                - name: id
+                  in: query
+                  schema:
+                    type: integer
+                    format: int64
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/CheckReply'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /authorization/v1/apiAll:
+        get:
+            tags:
+                - Admin
+            description: 所有Api列表
+            operationId: Admin_GetApiAll
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GetApiAllReply'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /authorization/v1/deleteRoleForUser:
+        delete:
+            tags:
+                - Admin
+            description: 删除用户某个角色
+            operationId: Admin_DeleteRoleForUser
+            parameters:
+                - name: username
+                  in: query
+                  schema:
+                    type: string
+                - name: role
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/CheckReply'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /authorization/v1/getPolicies:
+        get:
+            tags:
+                - Admin
+            description: 策略授权规则列表
+            operationId: Admin_GetPolicies
+            parameters:
+                - name: role
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GetPoliciesReply'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /authorization/v1/getRolesForUser:
+        get:
+            tags:
+                - Admin
+            description: 获取用户角色列表
+            operationId: Admin_GetRolesForUser
+            parameters:
+                - name: username
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GetRolesForUserReply'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /authorization/v1/getUsersForRole:
+        get:
+            tags:
+                - Admin
+            description: 获取角色用户列表
+            operationId: Admin_GetUsersForRole
+            parameters:
+                - name: role
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GetUsersForRoleReply'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /authorization/v1/menu:
+        put:
+            tags:
+                - Admin
+            description: Menu更新
+            operationId: Admin_UpdateMenu
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UpdateMenuRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/MenuInfo'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        post:
+            tags:
+                - Admin
+            description: Menu创建
+            operationId: Admin_CreateMenu
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateMenuRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/MenuInfo'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        delete:
+            tags:
+                - Admin
+            description: Menu删除
+            operationId: Admin_DeleteMenu
+            parameters:
+                - name: id
+                  in: query
+                  schema:
+                    type: integer
+                    format: int64
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/CheckReply'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /authorization/v1/menuAll:
+        get:
+            tags:
+                - Admin
+            description: 所有Menu列表
+            operationId: Admin_GetMenuAll
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GetMenuTreeReply'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /authorization/v1/menuTree:
+        get:
+            tags:
+                - Admin
+            description: Menu列表
+            operationId: Admin_GetMenuTree
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GetMenuTreeReply'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /authorization/v1/role:
+        get:
+            tags:
+                - Admin
+            description: 角色列表
+            operationId: Admin_GetRoleList
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GetRoleListReply'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        put:
+            tags:
+                - Admin
+            description: 角色更新
+            operationId: Admin_UpdateRole
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UpdateRoleRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/RoleInfo'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        post:
+            tags:
+                - Admin
+            description: 角色创建
+            operationId: Admin_CreateRole
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateRoleRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/RoleInfo'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        delete:
+            tags:
+                - Admin
+            description: 角色删除
+            operationId: Admin_DeleteRole
+            parameters:
+                - name: id
+                  in: query
+                  schema:
+                    type: integer
+                    format: int64
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/CheckReply'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /authorization/v1/roleMenu:
+        get:
+            tags:
+                - Admin
+            description: 角色菜单列表
+            operationId: Admin_GetRoleMenu
+            parameters:
+                - name: role
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GetMenuTreeReply'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        post:
+            tags:
+                - Admin
+            description: 角色菜单更新
+            operationId: Admin_SetRoleMenu
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/SetRoleMenuRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/CheckReply'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /authorization/v1/roleMenuBtn:
+        get:
+            tags:
+                - Admin
+            description: 角色菜单按钮列表
+            operationId: Admin_GetRoleMenuBtn
+            parameters:
+                - name: roleId
+                  in: query
+                  schema:
+                    type: integer
+                    format: int64
+                - name: roleName
+                  in: query
+                  schema:
+                    type: string
+                - name: menuId
+                  in: query
+                  schema:
+                    type: integer
+                    format: int64
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GetRoleMenuBtnReply'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        post:
+            tags:
+                - Admin
+            description: 角色菜单按钮更新
+            operationId: Admin_SetRoleMenuBtn
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/SetRoleMenuBtnRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/CheckReply'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /authorization/v1/roleMenuTree:
+        get:
+            tags:
+                - Admin
+            description: 角色菜单列表树
+            operationId: Admin_GetRoleMenuTree
+            parameters:
+                - name: role
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GetMenuTreeReply'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /authorization/v1/setRolesForUser:
+        post:
+            tags:
+                - Admin
+            description: 设置用户角色关系
+            operationId: Admin_SetRolesForUser
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/SetRolesForUserRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/CheckReply'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /authorization/v1/updatePolicies:
+        post:
+            tags:
+                - Admin
+            description: 策略添加授权规则
+            operationId: Admin_UpdatePolicies
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UpdatePoliciesRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/CheckReply'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /files/v1/getOssStsToken:
+        get:
+            tags:
+                - Admin
+            description: 获取OSS StsToken
+            operationId: Admin_GetOssStsToken
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/OssStsTokenResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /gmp_platform/msg/record:
+        get:
+            tags:
+                - Admin
+            description: 消息记录列表
+            operationId: Admin_GetMsgRecord
+            parameters:
+                - name: templateId
+                  in: query
+                  schema:
+                    type: string
+                - name: requestId
+                  in: query
+                  schema:
+                    type: string
+                - name: channel
+                  in: query
+                  schema:
+                    type: string
+                - name: page
+                  in: query
+                  schema:
+                    type: integer
+                    format: int64
+                - name: pageSize
+                  in: query
+                  schema:
+                    type: integer
+                    format: int64
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/MsgRecordResp'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /gmp_platform/sendAccount/changeStatus:
+        post:
+            tags:
+                - Admin
+            description: 禁用/启用
+            operationId: Admin_SendAccountChangeStatus
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/SendAccountChangeStatusRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /gmp_platform/sendAccount/edit:
+        post:
+            tags:
+                - Admin
+            description: 新增/修改账号
+            operationId: Admin_SendAccountEdit
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/SendAccountEditRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /gmp_platform/sendAccount/list:
+        get:
+            tags:
+                - Admin
+            description: 账号列表
+            operationId: Admin_SendAccountList
+            parameters:
+                - name: title
+                  in: query
+                  schema:
+                    type: string
+                - name: sendChannel
+                  in: query
+                  schema:
+                    type: string
+                - name: page
+                  in: query
+                  schema:
+                    type: integer
+                    format: int64
+                - name: pageSize
+                  in: query
+                  schema:
+                    type: integer
+                    format: int64
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SendAccountListResp'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /gmp_platform/sendAccount/query:
+        get:
+            tags:
+                - Admin
+            description: 账号获取下拉
+            operationId: Admin_SendAccountQuery
+            parameters:
+                - name: title
+                  in: query
+                  schema:
+                    type: string
+                - name: sendChannel
+                  in: query
+                  schema:
+                    type: string
+                - name: page
+                  in: query
+                  schema:
+                    type: integer
+                    format: int64
+                - name: pageSize
+                  in: query
+                  schema:
+                    type: integer
+                    format: int64
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SendAccountQueryResp'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /gmp_platform/sms/getAllChannel:
+        get:
+            tags:
+                - Admin
+            description: 获取所有支持的渠道
+            operationId: Admin_GetAllChannel
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GetAllChannelResp'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /gmp_platform/sms/record:
+        get:
+            tags:
+                - Admin
+            description: 短信记录列表
+            operationId: Admin_GetSmsRecord
+            parameters:
+                - name: templateId
+                  in: query
+                  schema:
+                    type: string
+                - name: requestId
+                  in: query
+                  schema:
+                    type: string
+                - name: sendChannel
+                  in: query
+                  schema:
+                    type: string
+                - name: page
+                  in: query
+                  schema:
+                    type: integer
+                    format: int64
+                - name: pageSize
+                  in: query
+                  schema:
+                    type: integer
+                    format: int64
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SmsRecordResp'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /gmp_platform/template/changeStatus:
+        post:
+            tags:
+                - Admin
+            description: 禁用/启用
+            operationId: Admin_TemplateChangeStatus
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/TemplateChangeStatusRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /gmp_platform/template/edit:
+        post:
+            tags:
+                - Admin
+            description: 新增/修改模板
+            operationId: Admin_TemplateEdit
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/TemplateEditRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /gmp_platform/template/list:
+        get:
+            tags:
+                - Admin
+            description: 模板列表
+            operationId: Admin_TemplateList
+            parameters:
+                - name: name
+                  in: query
+                  schema:
+                    type: string
+                - name: sendChannel
+                  in: query
+                  schema:
+                    type: string
+                - name: page
+                  in: query
+                  schema:
+                    type: integer
+                    format: int64
+                - name: pageSize
+                  in: query
+                  schema:
+                    type: integer
+                    format: int64
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/TemplateListResp'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /gmp_platform/template/remove:
+        post:
+            tags:
+                - Admin
+            description: 删除模板
+            operationId: Admin_TemplateRemove
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/TemplateRemoveRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
                 default:
                     description: Default error response
                     content:
@@ -56,16 +1283,222 @@ paths:
                                 $ref: '#/components/schemas/Status'
 components:
     schemas:
-        BatchSendRequest:
+        AdministratorInfoResponse:
             type: object
             properties:
-                messageTemplateId:
+                id:
                     type: integer
                     format: int64
-                messageParam:
+                username:
+                    type: string
+                mobile:
+                    type: string
+                nickname:
+                    type: string
+                avatar:
+                    type: string
+                status:
+                    type: integer
+                    format: int64
+                role:
+                    type: string
+                lastLoginTime:
+                    type: string
+                lastLoginIp:
+                    type: string
+                createdAt:
+                    type: string
+                updatedAt:
+                    type: string
+                deletedAt:
+                    type: string
+        ApiInfo:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    format: int64
+                group:
+                    type: string
+                name:
+                    type: string
+                path:
+                    type: string
+                method:
+                    type: string
+                createdAt:
+                    type: string
+                updatedAt:
+                    type: string
+        ApproveAdministratorRequest:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    format: int64
+        Channel:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    format: int64
+                name:
+                    type: string
+                channel:
+                    type: string
+        CheckReply:
+            type: object
+            properties:
+                isSuccess:
+                    type: boolean
+        CreateAdministratorRequest:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    format: int64
+                username:
+                    type: string
+                password:
+                    type: string
+                mobile:
+                    type: string
+                nickname:
+                    type: string
+                avatar:
+                    type: string
+                status:
+                    type: integer
+                    format: int64
+                role:
+                    type: string
+        CreateApiRequest:
+            type: object
+            properties:
+                group:
+                    type: string
+                name:
+                    type: string
+                path:
+                    type: string
+                method:
+                    type: string
+        CreateMenuRequest:
+            type: object
+            properties:
+                parentId:
+                    type: integer
+                    format: int64
+                path:
+                    type: string
+                name:
+                    type: string
+                hidden:
+                    type: integer
+                    format: int64
+                component:
+                    type: string
+                sort:
+                    type: integer
+                    format: int64
+                title:
+                    type: string
+                icon:
+                    type: string
+                menuBtns:
                     type: array
                     items:
-                        $ref: '#/components/schemas/MessageParam'
+                        $ref: '#/components/schemas/MenuBtn'
+                parentIds:
+                    type: array
+                    items:
+                        type: integer
+                        format: int64
+        CreateRoleRequest:
+            type: object
+            properties:
+                parentId:
+                    type: integer
+                    format: int64
+                name:
+                    type: string
+                parentIds:
+                    type: array
+                    items:
+                        type: integer
+                        format: int64
+        ForbidAdministratorRequest:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    format: int64
+        GetAllChannelResp:
+            type: object
+            properties:
+                rows:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Channel'
+        GetApiAllReply:
+            type: object
+            properties:
+                list:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/ApiInfo'
+        GetApiListReply:
+            type: object
+            properties:
+                total:
+                    type: integer
+                    format: int64
+                list:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/ApiInfo'
+        GetMenuTreeReply:
+            type: object
+            properties:
+                list:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/MenuInfo'
+        GetPoliciesReply:
+            type: object
+            properties:
+                policyRules:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/PolicyRules'
+        GetRoleListReply:
+            type: object
+            properties:
+                list:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/RoleInfo'
+        GetRoleMenuBtnReply:
+            type: object
+            properties:
+                list:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/MenuBtn'
+        GetRolesForUserReply:
+            type: object
+            properties:
+                roles:
+                    type: array
+                    items:
+                        type: string
+        GetUsersForRoleReply:
+            type: object
+            properties:
+                users:
+                    type: array
+                    items:
+                        type: string
         GoogleProtobufAny:
             type: object
             properties:
@@ -74,27 +1507,307 @@ components:
                     description: The type of the serialized message.
             additionalProperties: true
             description: Contains an arbitrary serialized message along with a @type that describes the type of the serialized message.
-        MessageParam:
+        ListAdministratorReply:
             type: object
             properties:
-                receiver:
+                total:
+                    type: integer
+                    format: int64
+                list:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/AdministratorInfoResponse'
+        LoginReply:
+            type: object
+            properties:
+                token:
                     type: string
-                variables:
-                    type: object
-                extra:
-                    type: object
-        SendRequest:
+        LoginRequest:
+            type: object
+            properties:
+                username:
+                    type: string
+                password:
+                    type: string
+        MenuBtn:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    format: int64
+                menuId:
+                    type: integer
+                    format: int64
+                name:
+                    type: string
+                description:
+                    type: string
+                identifier:
+                    type: string
+                createdAt:
+                    type: string
+                updatedAt:
+                    type: string
+        MenuInfo:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    format: int64
+                parentId:
+                    type: integer
+                    format: int64
+                path:
+                    type: string
+                name:
+                    type: string
+                hidden:
+                    type: integer
+                    format: int64
+                component:
+                    type: string
+                sort:
+                    type: integer
+                    format: int64
+                title:
+                    type: string
+                icon:
+                    type: string
+                createdAt:
+                    type: string
+                updatedAt:
+                    type: string
+                children:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/MenuInfo'
+                menuBtns:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/MenuBtn'
+                parentIds:
+                    type: array
+                    items:
+                        type: integer
+                        format: int64
+        MsgRecordResp:
+            type: object
+            properties:
+                rows:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/MsgRecordRow'
+                total:
+                    type: integer
+                    format: int64
+        MsgRecordRow:
             type: object
             properties:
                 messageTemplateId:
                     type: integer
                     format: int64
-                messageParam:
-                    $ref: '#/components/schemas/MessageParam'
-        SendResponse:
+                requestId:
+                    type: string
+                    description: '@inject_tag: json:"request_id"'
+                receiver:
+                    type: string
+                msgId:
+                    type: string
+                channel:
+                    type: string
+                msg:
+                    type: string
+                sendAt:
+                    type: string
+                createAt:
+                    type: string
+                sendSinceTime:
+                    type: string
+                id:
+                    type: integer
+                    format: int64
+        OssStsTokenResponse:
             type: object
             properties:
-                requestId:
+                accessKey:
+                    type: string
+                accessSecret:
+                    type: string
+                expiration:
+                    type: string
+                securityToken:
+                    type: string
+                endPoint:
+                    type: string
+                bucketName:
+                    type: string
+                region:
+                    type: string
+                url:
+                    type: string
+        PolicyRules:
+            type: object
+            properties:
+                path:
+                    type: string
+                method:
+                    type: string
+        RecoverAdministratorRequest:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    format: int64
+        RoleInfo:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    format: int64
+                parentId:
+                    type: integer
+                    format: int64
+                name:
+                    type: string
+                createdAt:
+                    type: string
+                updatedAt:
+                    type: string
+                parentIds:
+                    type: array
+                    items:
+                        type: integer
+                        format: int64
+                children:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/RoleInfo'
+        SendAccountChangeStatusRequest:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    format: int64
+                status:
+                    type: integer
+                    format: uint64
+        SendAccountEditRequest:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    format: int64
+                title:
+                    type: string
+                config:
+                    type: string
+                sendChannel:
+                    type: string
+        SendAccountListResp:
+            type: object
+            properties:
+                rows:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/SendAccountRow'
+                total:
+                    type: integer
+                    format: int64
+        SendAccountQueryResp:
+            type: object
+            properties:
+                rows:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/SendAccountRow'
+        SendAccountRow:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    format: int64
+                title:
+                    type: string
+                config:
+                    type: string
+                sendChannel:
+                    type: string
+        SetRoleMenuBtnRequest:
+            type: object
+            properties:
+                roleId:
+                    type: integer
+                    format: int64
+                menuId:
+                    type: integer
+                    format: int64
+                menuBtnIds:
+                    type: array
+                    items:
+                        type: integer
+                        format: int64
+        SetRoleMenuRequest:
+            type: object
+            properties:
+                roleId:
+                    type: integer
+                    format: int64
+                menuIds:
+                    type: array
+                    items:
+                        type: integer
+                        format: int64
+        SetRolesForUserRequest:
+            type: object
+            properties:
+                username:
+                    type: string
+                roles:
+                    type: array
+                    items:
+                        type: string
+        SmsRecordResp:
+            type: object
+            properties:
+                rows:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/SmsRecordRow'
+                total:
+                    type: integer
+                    format: int64
+        SmsRecordRow:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    format: int64
+                seriesId:
+                    type: string
+                msgContent:
+                    type: string
+                supplierName:
+                    type: string
+                supplierId:
+                    type: integer
+                    format: int64
+                phone:
+                    type: string
+                messageTemplateId:
+                    type: integer
+                    format: int64
+                createdAt:
+                    type: string
+                sendDate:
+                    type: string
+                status:
+                    type: string
+                reportContent:
+                    type: string
+                chargingNum:
+                    type: integer
+                    format: int64
+                updatedAt:
                     type: string
         Status:
             type: object
@@ -112,5 +1825,192 @@ components:
                         $ref: '#/components/schemas/GoogleProtobufAny'
                     description: A list of messages that carry the error details.  There is a common set of message types for APIs to use.
             description: 'The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https://github.com/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https://cloud.google.com/apis/design/errors).'
+        TemplateChangeStatusRequest:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    format: int64
+                status:
+                    type: integer
+                    format: uint64
+        TemplateEditRequest:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    format: int64
+                name:
+                    type: string
+                idType:
+                    type: integer
+                    format: int64
+                sendChannel:
+                    type: integer
+                    format: int64
+                templateType:
+                    type: integer
+                    format: int64
+                msgType:
+                    type: integer
+                    format: int64
+                shieldType:
+                    type: integer
+                    format: int64
+                msgContent:
+                    type: string
+                sendAccount:
+                    type: integer
+                    format: int64
+                templateSn:
+                    type: string
+                smsChannel:
+                    type: string
+                deduplicationConfig:
+                    type: string
+        TemplateListResp:
+            type: object
+            properties:
+                rows:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/TemplateListRow'
+                total:
+                    type: integer
+                    format: int64
+        TemplateListRow:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    format: int64
+                name:
+                    type: string
+                idType:
+                    type: integer
+                    format: int64
+                sendChannel:
+                    type: integer
+                    format: int64
+                templateType:
+                    type: integer
+                    format: int64
+                msgType:
+                    type: integer
+                    format: int64
+                shieldType:
+                    type: integer
+                    format: int64
+                msgContent:
+                    type: string
+                sendAccount:
+                    type: integer
+                    format: int64
+                sendAccountName:
+                    type: string
+                templateSn:
+                    type: string
+                smsChannel:
+                    type: string
+        TemplateRemoveRequest:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    format: int64
+        UpdateAdministratorRequest:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    format: int64
+                username:
+                    type: string
+                password:
+                    type: string
+                mobile:
+                    type: string
+                nickname:
+                    type: string
+                avatar:
+                    type: string
+                status:
+                    type: integer
+                    format: int64
+                role:
+                    type: string
+        UpdateApiRequest:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    format: int64
+                group:
+                    type: string
+                name:
+                    type: string
+                path:
+                    type: string
+                method:
+                    type: string
+        UpdateMenuRequest:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    format: int64
+                parentId:
+                    type: integer
+                    format: int64
+                path:
+                    type: string
+                name:
+                    type: string
+                hidden:
+                    type: integer
+                    format: int64
+                component:
+                    type: string
+                sort:
+                    type: integer
+                    format: int64
+                title:
+                    type: string
+                icon:
+                    type: string
+                menuBtns:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/MenuBtn'
+                parentIds:
+                    type: array
+                    items:
+                        type: integer
+                        format: int64
+        UpdatePoliciesRequest:
+            type: object
+            properties:
+                role:
+                    type: string
+                policyRules:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/PolicyRules'
+        UpdateRoleRequest:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    format: int64
+                parentId:
+                    type: integer
+                    format: int64
+                name:
+                    type: string
+                parentIds:
+                    type: array
+                    items:
+                        type: integer
+                        format: int64
 tags:
-    - name: MsgPusher
+    - name: Admin

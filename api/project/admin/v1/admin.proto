@@ -9,594 +9,823 @@ package api.admin.v1;
 option go_package = "austin-v2/project/admin/v1;v1";
 
 service Admin {
-	// 管理员登陆
-	rpc Login(LoginRequest) returns (LoginReply) {
+  // 管理员登陆
+  rpc Login(LoginRequest) returns (LoginReply) {
+    option (google.api.http) = {
+      post : "/admin/v1/login"
+      body : "*"
+    };
+  };
+
+  rpc LoginSuccess(google.protobuf.Empty) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      get : "/admin/v1/loginSuccess"
+    };
+  };
+
+  // 管理员退出
+  rpc Logout(google.protobuf.Empty) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post : "/admin/v1/logout"
+      body : "*"
+    };
+  };
+
+  // 管理员详情
+  rpc GetAdministratorInfo(google.protobuf.Empty) returns(AdministratorInfoResponse) {
+    option (google.api.http) = {
+      get : "/admin/v1/getAdministratorInfo"
+    };
+  }
+
+  // 管理员列表
+  rpc GetAdministratorList(ListAdministratorRequest) returns(ListAdministratorReply) {
+    option (google.api.http) = {
+      get : "/admin/v1/getAdministrators"
+    };
+  }
+
+  rpc GetAdministrator(GetAdministratorRequest) returns(AdministratorInfoResponse) {
+    option (google.api.http) = {
+      get : "/admin/v1/getAdministrator"
+    };
+  }
+
+  // 管理员创建
+  rpc CreateAdministrator (CreateAdministratorRequest) returns (AdministratorInfoResponse){
+    option (google.api.http) = {
+      post : "/admin/v1/administrator"
+      body : "*"
+    };
+  };
+
+  // 管理员更新
+  rpc UpdateAdministrator (UpdateAdministratorRequest) returns (AdministratorInfoResponse){
+    option (google.api.http) = {
+      put : "/admin/v1/administrator"
+      body : "*"
+    };
+  };
+
+  // 管理员删除
+  rpc DeleteAdministrator (DeleteAdministratorRequest) returns (CheckReply){
+    option (google.api.http) = {
+      delete : "/admin/v1/administrator"
+    };
+  };
+
+  // 管理员恢复
+  rpc RecoverAdministrator (RecoverAdministratorRequest) returns (CheckReply){
+    option (google.api.http) = {
+      patch : "/admin/v1/administrator"
+      body : "*"
+    };
+  };
+
+  // 管理员禁用
+  rpc forbidAdministrator (ForbidAdministratorRequest) returns (CheckReply){
+    option (google.api.http) = {
+      patch : "/admin/v1/administrator/forbid"
+      body : "*"
+    };
+  };
+
+  // 管理员解禁
+  rpc approveAdministrator (ApproveAdministratorRequest) returns (CheckReply){
+    option (google.api.http) = {
+      patch : "/admin/v1/administrator/approve"
+      body : "*"
+    };
+  };
+
+  // 角色列表
+  rpc GetRoleList (google.protobuf.Empty) returns (GetRoleListReply){
+    option (google.api.http) = {
+      get : "/authorization/v1/role",
+    };
+  };
+
+  // 角色创建
+  rpc CreateRole (CreateRoleRequest) returns (RoleInfo){
+    option (google.api.http) = {
+      post : "/authorization/v1/role",
+      body : "*"
+    };
+  };
+
+  // 角色更新
+  rpc UpdateRole (UpdateRoleRequest) returns (RoleInfo){
+    option (google.api.http) = {
+      put : "/authorization/v1/role"
+      body : "*"
+    };
+  };
+
+  // 角色删除
+  rpc DeleteRole (DeleteRoleRequest) returns (CheckReply){
+    option (google.api.http) = {
+      delete : "/authorization/v1/role"
+    };
+  };
+
+  // 设置用户角色关系
+  rpc SetRolesForUser (SetRolesForUserRequest) returns (CheckReply){
+    option (google.api.http) = {
+      post : "/authorization/v1/setRolesForUser"
+      body : "*"
+    };
+  };
+
+  // 获取用户角色列表
+  rpc GetRolesForUser (GetRolesForUserRequest) returns (GetRolesForUserReply){
+    option (google.api.http) = {
+      get : "/authorization/v1/getRolesForUser"
+    };
+  };
+
+  // 获取角色用户列表
+  rpc GetUsersForRole (GetUsersForRoleRequest) returns (GetUsersForRoleReply){
+    option (google.api.http) = {
+      get : "/authorization/v1/getUsersForRole"
+    };
+  };
+
+  // 删除用户某个角色
+  rpc DeleteRoleForUser (DeleteRoleForUserRequest) returns (CheckReply){
+    option (google.api.http) = {
+      delete : "/authorization/v1/deleteRoleForUser"
+    };
+  };
+
+  // 策略授权规则列表
+  rpc GetPolicies (GetPoliciesRequest) returns (GetPoliciesReply){
+    option (google.api.http) = {
+      get : "/authorization/v1/getPolicies"
+    };
+  };
+
+  // 策略添加授权规则
+  rpc UpdatePolicies (UpdatePoliciesRequest) returns (CheckReply){
+    option (google.api.http) = {
+      post : "/authorization/v1/updatePolicies"
+      body : "*"
+    };
+  };
+
+  // 所有Api列表
+  rpc GetApiAll (google.protobuf.Empty) returns (GetApiAllReply){
+    option (google.api.http) = {
+      get : "/authorization/v1/apiAll",
+    };
+  };
+
+  // Api列表
+  rpc GetApiList (GetApiListRequest) returns (GetApiListReply){
+    option (google.api.http) = {
+      get : "/authorization/v1/api",
+    };
+  };
+
+  // Api创建
+  rpc CreateApi (CreateApiRequest) returns (ApiInfo){
+    option (google.api.http) = {
+      post : "/authorization/v1/api",
+      body : "*"
+    };
+  };
+
+  // Api更新
+  rpc UpdateApi (UpdateApiRequest) returns (ApiInfo){
+    option (google.api.http) = {
+      put : "/authorization/v1/api"
+      body : "*"
+    };
+  };
+
+  // Api删除
+  rpc DeleteApi (DeleteApiRequest) returns (CheckReply){
+    option (google.api.http) = {
+      delete : "/authorization/v1/api"
+    };
+  };
+
+  // 所有Menu列表
+  rpc GetMenuAll (google.protobuf.Empty) returns (GetMenuTreeReply){
+    option (google.api.http) = {
+      get : "/authorization/v1/menuAll",
+    };
+  };
+
+  // Menu列表
+  rpc GetMenuTree (google.protobuf.Empty) returns (GetMenuTreeReply){
+    option (google.api.http) = {
+      get : "/authorization/v1/menuTree",
+    };
+  };
+
+  // Menu创建
+  rpc CreateMenu (CreateMenuRequest) returns (MenuInfo){
+    option (google.api.http) = {
+      post : "/authorization/v1/menu",
+      body : "*"
+    };
+  };
+
+  // Menu更新
+  rpc UpdateMenu (UpdateMenuRequest) returns (MenuInfo){
+    option (google.api.http) = {
+      put : "/authorization/v1/menu"
+      body : "*"
+    };
+  };
+
+  // Menu删除
+  rpc DeleteMenu (DeleteMenuRequest) returns (CheckReply){
+    option (google.api.http) = {
+      delete : "/authorization/v1/menu"
+    };
+  };
+
+  // 角色菜单列表树
+  rpc GetRoleMenuTree (GetRoleMenuRequest) returns (GetMenuTreeReply){
+    option (google.api.http) = {
+      get : "/authorization/v1/roleMenuTree"
+    };
+  };
+
+  // 角色菜单列表
+  rpc GetRoleMenu (GetRoleMenuRequest) returns (GetMenuTreeReply){
+    option (google.api.http) = {
+      get : "/authorization/v1/roleMenu"
+    };
+  };
+
+  // 角色菜单更新
+  rpc SetRoleMenu (SetRoleMenuRequest) returns (CheckReply){
+    option (google.api.http) = {
+      post : "/authorization/v1/roleMenu"
+      body : "*"
+    };
+  };
+
+  // 角色菜单按钮列表
+  rpc GetRoleMenuBtn (GetRoleMenuBtnRequest) returns (GetRoleMenuBtnReply){
+    option (google.api.http) = {
+      get : "/authorization/v1/roleMenuBtn"
+    };
+  };
+
+  // 角色菜单按钮更新
+  rpc SetRoleMenuBtn (SetRoleMenuBtnRequest) returns (CheckReply){
+    option (google.api.http) = {
+      post : "/authorization/v1/roleMenuBtn"
+      body : "*"
+    };
+  };
+
+  // 获取OSS StsToken
+  rpc GetOssStsToken (google.protobuf.Empty) returns (OssStsTokenResponse){
+    option (google.api.http) = {
+      get : "/files/v1/getOssStsToken"
+    };
+  };
+
+
+  //新增/修改账号
+  rpc SendAccountEdit(SendAccountEditRequest) returns(google.protobuf.Empty){
+    option (google.api.http) = {
+      post : "/gmp_platform/sendAccount/edit"
+      body : "*"
+    };
+  };
+  //禁用/启用
+  rpc SendAccountChangeStatus(SendAccountChangeStatusRequest) returns(google.protobuf.Empty){
 		option (google.api.http) = {
-			post : "/admin/v1/login"
+			post : "/gmp_platform/sendAccount/changeStatus"
 			body : "*"
 		};
 	};
-
-	rpc LoginSuccess(google.protobuf.Empty) returns (google.protobuf.Empty) {
+  //账号列表
+  rpc SendAccountList(SendAccountListRequest) returns(SendAccountListResp){
 		option (google.api.http) = {
-			get : "/admin/v1/loginSuccess"
+			get : "/gmp_platform/sendAccount/list"
+		};
+	};
+  //账号获取下拉
+  rpc SendAccountQuery(SendAccountListRequest) returns(SendAccountQueryResp){
+		option (google.api.http) = {
+			get : "/gmp_platform/sendAccount/query"
 		};
 	};
 
-	// 管理员退出
-	rpc Logout(google.protobuf.Empty) returns (google.protobuf.Empty) {
+  //新增/修改模板
+  rpc TemplateEdit(TemplateEditRequest) returns(google.protobuf.Empty){
 		option (google.api.http) = {
-			post : "/admin/v1/logout"
+			post : "/gmp_platform/template/edit"
 			body : "*"
 		};
 	};
-
-	// 管理员详情
-	rpc GetAdministratorInfo(google.protobuf.Empty) returns(AdministratorInfoResponse) {
+  //禁用/启用
+  rpc TemplateChangeStatus(TemplateChangeStatusRequest) returns(google.protobuf.Empty){
 		option (google.api.http) = {
-			get : "/admin/v1/getAdministratorInfo"
-		};
-	}
-
-	// 管理员列表
-	rpc GetAdministratorList(ListAdministratorRequest) returns(ListAdministratorReply) {
-		option (google.api.http) = {
-			get : "/admin/v1/getAdministrators"
-		};
-	}
-
-	rpc GetAdministrator(GetAdministratorRequest) returns(AdministratorInfoResponse) {
-		option (google.api.http) = {
-			get : "/admin/v1/getAdministrator"
-		};
-	}
-
-	// 管理员创建
-	rpc CreateAdministrator (CreateAdministratorRequest) returns (AdministratorInfoResponse){
-		option (google.api.http) = {
-			post : "/admin/v1/administrator"
+			post : "/gmp_platform/template/changeStatus"
 			body : "*"
 		};
 	};
-
-	// 管理员更新
-	rpc UpdateAdministrator (UpdateAdministratorRequest) returns (AdministratorInfoResponse){
+  //模板列表
+  rpc TemplateList(TemplateListRequest) returns(TemplateListResp){
 		option (google.api.http) = {
-			put : "/admin/v1/administrator"
+			get : "/gmp_platform/template/list"
+		};
+	};
+  //删除模板
+  rpc TemplateRemove(TemplateRemoveRequest) returns(google.protobuf.Empty){
+		option (google.api.http) = {
+			post : "/gmp_platform/template/remove"
 			body : "*"
 		};
 	};
-
-	// 管理员删除
-	rpc DeleteAdministrator (DeleteAdministratorRequest) returns (CheckReply){
+  //获取所有支持的渠道
+  rpc GetAllChannel(google.protobuf.Empty) returns(GetAllChannelResp){
 		option (google.api.http) = {
-			delete : "/admin/v1/administrator"
-		};
-	};
-
-	// 管理员恢复
-	rpc RecoverAdministrator (RecoverAdministratorRequest) returns (CheckReply){
-		option (google.api.http) = {
-			patch : "/admin/v1/administrator"
-			body : "*"
-		};
-	};
-
-	// 管理员禁用
-	rpc forbidAdministrator (ForbidAdministratorRequest) returns (CheckReply){
-		option (google.api.http) = {
-			patch : "/admin/v1/administrator/forbid"
-			body : "*"
-		};
-	};
-
-	// 管理员解禁
-	rpc approveAdministrator (ApproveAdministratorRequest) returns (CheckReply){
-		option (google.api.http) = {
-			patch : "/admin/v1/administrator/approve"
-			body : "*"
-		};
-	};
-
-	// 角色列表
-	rpc GetRoleList (google.protobuf.Empty) returns (GetRoleListReply){
-		option (google.api.http) = {
-			get : "/authorization/v1/role",
-		};
-	};
-
-	// 角色创建
-	rpc CreateRole (CreateRoleRequest) returns (RoleInfo){
-		option (google.api.http) = {
-			post : "/authorization/v1/role",
-			body : "*"
-		};
-	};
-
-	// 角色更新
-	rpc UpdateRole (UpdateRoleRequest) returns (RoleInfo){
-		option (google.api.http) = {
-			put : "/authorization/v1/role"
-			body : "*"
-		};
-	};
-
-	// 角色删除
-	rpc DeleteRole (DeleteRoleRequest) returns (CheckReply){
-		option (google.api.http) = {
-			delete : "/authorization/v1/role"
-		};
-	};
-
-	// 设置用户角色关系
-	rpc SetRolesForUser (SetRolesForUserRequest) returns (CheckReply){
-		option (google.api.http) = {
-			post : "/authorization/v1/setRolesForUser"
-			body : "*"
-		};
-	};
-
-	// 获取用户角色列表
-	rpc GetRolesForUser (GetRolesForUserRequest) returns (GetRolesForUserReply){
-		option (google.api.http) = {
-			get : "/authorization/v1/getRolesForUser"
-		};
-	};
-
-	// 获取角色用户列表
-	rpc GetUsersForRole (GetUsersForRoleRequest) returns (GetUsersForRoleReply){
-		option (google.api.http) = {
-			get : "/authorization/v1/getUsersForRole"
-		};
-	};
-
-	// 删除用户某个角色
-	rpc DeleteRoleForUser (DeleteRoleForUserRequest) returns (CheckReply){
-		option (google.api.http) = {
-			delete : "/authorization/v1/deleteRoleForUser"
-		};
-	};
-
-	// 策略授权规则列表
-	rpc GetPolicies (GetPoliciesRequest) returns (GetPoliciesReply){
-		option (google.api.http) = {
-			get : "/authorization/v1/getPolicies"
-		};
-	};
-
-	// 策略添加授权规则
-	rpc UpdatePolicies (UpdatePoliciesRequest) returns (CheckReply){
-		option (google.api.http) = {
-			post : "/authorization/v1/updatePolicies"
-			body : "*"
-		};
-	};
-
-	// 所有Api列表
-	rpc GetApiAll (google.protobuf.Empty) returns (GetApiAllReply){
-		option (google.api.http) = {
-			get : "/authorization/v1/apiAll",
-		};
-	};
-
-	// Api列表
-	rpc GetApiList (GetApiListRequest) returns (GetApiListReply){
-		option (google.api.http) = {
-			get : "/authorization/v1/api",
-		};
-	};
-
-	// Api创建
-	rpc CreateApi (CreateApiRequest) returns (ApiInfo){
-		option (google.api.http) = {
-			post : "/authorization/v1/api",
-			body : "*"
-		};
-	};
-
-	// Api更新
-	rpc UpdateApi (UpdateApiRequest) returns (ApiInfo){
-		option (google.api.http) = {
-			put : "/authorization/v1/api"
-			body : "*"
-		};
-	};
-
-	// Api删除
-	rpc DeleteApi (DeleteApiRequest) returns (CheckReply){
-		option (google.api.http) = {
-			delete : "/authorization/v1/api"
-		};
-	};
-
-	// 所有Menu列表
-	rpc GetMenuAll (google.protobuf.Empty) returns (GetMenuTreeReply){
-		option (google.api.http) = {
-			get : "/authorization/v1/menuAll",
-		};
-	};
-
-	// Menu列表
-	rpc GetMenuTree (google.protobuf.Empty) returns (GetMenuTreeReply){
-		option (google.api.http) = {
-			get : "/authorization/v1/menuTree",
-		};
-	};
-
-	// Menu创建
-	rpc CreateMenu (CreateMenuRequest) returns (MenuInfo){
-		option (google.api.http) = {
-			post : "/authorization/v1/menu",
-			body : "*"
-		};
-	};
-
-	// Menu更新
-	rpc UpdateMenu (UpdateMenuRequest) returns (MenuInfo){
-		option (google.api.http) = {
-			put : "/authorization/v1/menu"
-			body : "*"
-		};
-	};
-
-	// Menu删除
-	rpc DeleteMenu (DeleteMenuRequest) returns (CheckReply){
-		option (google.api.http) = {
-			delete : "/authorization/v1/menu"
-		};
-	};
-
-	// 角色菜单列表树
-	rpc GetRoleMenuTree (GetRoleMenuRequest) returns (GetMenuTreeReply){
-		option (google.api.http) = {
-			get : "/authorization/v1/roleMenuTree"
-		};
-	};
-
-	// 角色菜单列表
-	rpc GetRoleMenu (GetRoleMenuRequest) returns (GetMenuTreeReply){
-		option (google.api.http) = {
-			get : "/authorization/v1/roleMenu"
-		};
-	};
-
-	// 角色菜单更新
-	rpc SetRoleMenu (SetRoleMenuRequest) returns (CheckReply){
-		option (google.api.http) = {
-			post : "/authorization/v1/roleMenu"
-			body : "*"
-		};
-	};
-
-	// 角色菜单按钮列表
-	rpc GetRoleMenuBtn (GetRoleMenuBtnRequest) returns (GetRoleMenuBtnReply){
-		option (google.api.http) = {
-			get : "/authorization/v1/roleMenuBtn"
-		};
-	};
-
-	// 角色菜单按钮更新
-	rpc SetRoleMenuBtn (SetRoleMenuBtnRequest) returns (CheckReply){
-		option (google.api.http) = {
-			post : "/authorization/v1/roleMenuBtn"
-			body : "*"
-		};
-	};
-
-	// 获取OSS StsToken
-	rpc GetOssStsToken (google.protobuf.Empty) returns (OssStsTokenResponse){
-		option (google.api.http) = {
-			get : "/files/v1/getOssStsToken"
+			get : "/gmp_platform/sms/getAllChannel"
 		};
 	};
 
 
+  //短信记录列表
+  rpc GetSmsRecord(SmsRecordRequest) returns(SmsRecordResp){
+		option (google.api.http) = {
+			get : "/gmp_platform/sms/record"
+		};
+	};
+  //消息记录列表
+  rpc GetMsgRecord(MsgRecordRequest) returns(MsgRecordResp){
+		option (google.api.http) = {
+			get : "/gmp_platform/msg/record"
+		};
+	};
 
 }
 
 message LoginRequest {
-	string username = 1;
-	string password = 2;
+  string username = 1;
+  string password = 2;
 }
 
 message LoginReply {
-	string token = 1;
+  string token = 1;
 }
 
 message AdministratorInfoResponse {
-	int64 id = 1;
-	string username = 2;
-	string mobile = 3;
-	string nickname = 4;
-	string avatar = 5;
-	int64  status = 6;
-	string role = 7;
-	string last_login_time = 8;
-	string last_login_ip = 9;
-	string created_at = 10;
-	string updated_at = 11;
-	string deleted_at = 12;
+  int64 id = 1;
+  string username = 2;
+  string mobile = 3;
+  string nickname = 4;
+  string avatar = 5;
+  int64  status = 6;
+  string role = 7;
+  string last_login_time = 8;
+  string last_login_ip = 9;
+  string created_at = 10;
+  string updated_at = 11;
+  string deleted_at = 12;
 }
 
 message ListAdministratorRequest {
-	int64 page = 1;
-	int64 page_size = 2;
-	int64 id = 3;
-	string username = 4;
-	string mobile = 5;
-	string nickname = 6;
-	int64 status = 7;
-	string created_at_start = 8;
-	string created_at_end = 9;
+  int64 page = 1;
+  int64 page_size = 2;
+  int64 id = 3;
+  string username = 4;
+  string mobile = 5;
+  string nickname = 6;
+  int64 status = 7;
+  string created_at_start = 8;
+  string created_at_end = 9;
 }
 
 message ListAdministratorReply {
-	int64 total = 1;
-	repeated AdministratorInfoResponse list = 2;
+  int64 total = 1;
+  repeated AdministratorInfoResponse list = 2;
 }
 
 message CreateAdministratorRequest {
-	int64 id = 1;
-	string username = 2;
-	string password = 3;
-	string mobile = 4;
-	string nickname = 5;
-	string avatar = 6;
-	int64 status = 7;
-	string role = 8;
+  int64 id = 1;
+  string username = 2;
+  string password = 3;
+  string mobile = 4;
+  string nickname = 5;
+  string avatar = 6;
+  int64 status = 7;
+  string role = 8;
 }
 
 message UpdateAdministratorRequest {
-	int64 id = 1;
-	string username = 2;
-	string password = 3;
-	string mobile = 4;
-	string nickname = 5;
-	string avatar = 6;
-	int64 status = 7;
-	string role = 8;
+  int64 id = 1;
+  string username = 2;
+  string password = 3;
+  string mobile = 4;
+  string nickname = 5;
+  string avatar = 6;
+  int64 status = 7;
+  string role = 8;
 }
 
 message DeleteAdministratorRequest {
-	int64 id = 1;
+  int64 id = 1;
 }
 
 message GetAdministratorRequest {
-	int64 id = 1;
+  int64 id = 1;
 }
 
 message RecoverAdministratorRequest {
-	int64 id = 1;
+  int64 id = 1;
 }
 
 message ForbidAdministratorRequest {
-	int64 id = 1;
+  int64 id = 1;
 }
 
 message ApproveAdministratorRequest {
-	int64 id = 1;
+  int64 id = 1;
 }
 
 message GetRoleListReply {
-	repeated RoleInfo list = 1;
+  repeated RoleInfo list = 1;
 }
 
 message CheckReply {
-	bool is_success = 1;
+  bool is_success = 1;
 }
 
 message RoleInfo {
-	int64 id = 1;
-	int64 parent_id = 2;
-	string name = 3;
-	string created_at = 4;
-	string updated_at = 5;
-	repeated int64 parent_ids = 6;
-	repeated RoleInfo children = 7;
+  int64 id = 1;
+  int64 parent_id = 2;
+  string name = 3;
+  string created_at = 4;
+  string updated_at = 5;
+  repeated int64 parent_ids = 6;
+  repeated RoleInfo children = 7;
 }
 
 message CreateRoleRequest{
-	int64 parent_id = 1;
-	string name = 2;
-	repeated int64 parent_ids = 3;
+  int64 parent_id = 1;
+  string name = 2;
+  repeated int64 parent_ids = 3;
 }
 
 message DeleteRoleRequest{
-	int64 id = 1;
+  int64 id = 1;
 }
 
 message UpdateRoleRequest {
-	int64 id = 1;
-	int64 parent_id = 2;
-	string name = 3;
-	repeated int64 parent_ids = 4;
+  int64 id = 1;
+  int64 parent_id = 2;
+  string name = 3;
+  repeated int64 parent_ids = 4;
 }
 
 message SetRolesForUserRequest {
-	string username = 1;
-	repeated string roles = 2;
+  string username = 1;
+  repeated string roles = 2;
 }
 
 message GetRolesForUserRequest {
-	string username = 1;
+  string username = 1;
 }
 
 message GetRolesForUserReply {
-	repeated string roles = 1;
+  repeated string roles = 1;
 }
 
 message GetUsersForRoleRequest {
-	string role = 1;
+  string role = 1;
 }
 
 message GetUsersForRoleReply {
-	repeated string users = 1;
+  repeated string users = 1;
 }
 
 message DeleteRoleForUserRequest{
-	string username = 1;
-	string role = 2;
+  string username = 1;
+  string role = 2;
 }
 
 
 message PolicyRules {
-	string path = 1;
-	string method = 2;
+  string path = 1;
+  string method = 2;
 }
 
 message UpdatePoliciesRequest {
-	string role = 1;
-	repeated PolicyRules policyRules = 2;
+  string role = 1;
+  repeated PolicyRules policyRules = 2;
 }
 
 message ApiInfo {
-	int64 id = 1;
-	string group = 2;
-	string name = 3;
-	string path = 4;
-	string method = 5;
-	string created_at = 6;
-	string updated_at = 7;
+  int64 id = 1;
+  string group = 2;
+  string name = 3;
+  string path = 4;
+  string method = 5;
+  string created_at = 6;
+  string updated_at = 7;
 }
 
 message GetApiListRequest{
-	int64 page = 1;
-	int64 page_size = 2;
-	string group = 3;
-	string name = 4;
-	string path = 5;
-	string method = 6;
+  int64 page = 1;
+  int64 page_size = 2;
+  string group = 3;
+  string name = 4;
+  string path = 5;
+  string method = 6;
 }
 
 message GetApiAllReply {
-	repeated ApiInfo list = 1;
+  repeated ApiInfo list = 1;
 }
 
 message GetApiListReply {
-	int64 total = 1;
-	repeated ApiInfo list = 2;
+  int64 total = 1;
+  repeated ApiInfo list = 2;
 }
 
 message CreateApiRequest {
-	string group = 1;
-	string name = 2;
-	string path = 3;
-	string method = 4;
+  string group = 1;
+  string name = 2;
+  string path = 3;
+  string method = 4;
 }
 
 message UpdateApiRequest {
-	int64 id = 1;
-	string group = 2;
-	string name = 3;
-	string path = 4;
-	string method = 5;
+  int64 id = 1;
+  string group = 2;
+  string name = 3;
+  string path = 4;
+  string method = 5;
 }
 
 message DeleteApiRequest {
-	int64 id = 1;
+  int64 id = 1;
 }
 
 message GetMenuTreeReply {
-	repeated MenuInfo list = 1;
+  repeated MenuInfo list = 1;
 }
 
 message MenuInfo {
-	int64 id = 1;
-	int64 parent_id = 2;
-	string path = 3;
-	string name = 4;
-	int64 hidden = 5;
-	string component = 6;
-	int64 sort = 7;
-	string title = 8;
-	string icon = 9;
-	string created_at = 10;
-	string updated_at = 11;
-	repeated MenuInfo children = 12;
-	repeated MenuBtn menuBtns = 13;
-	repeated int64 parent_ids = 14;
+  int64 id = 1;
+  int64 parent_id = 2;
+  string path = 3;
+  string name = 4;
+  int64 hidden = 5;
+  string component = 6;
+  int64 sort = 7;
+  string title = 8;
+  string icon = 9;
+  string created_at = 10;
+  string updated_at = 11;
+  repeated MenuInfo children = 12;
+  repeated MenuBtn menuBtns = 13;
+  repeated int64 parent_ids = 14;
 }
 message MenuBtn {
-	int64 id = 1;
-	int64 menu_id = 2;
-	string name = 3;
-	string description = 4;
-	string identifier = 5;
-	string created_at = 6;
-	string updated_at = 7;
+  int64 id = 1;
+  int64 menu_id = 2;
+  string name = 3;
+  string description = 4;
+  string identifier = 5;
+  string created_at = 6;
+  string updated_at = 7;
 }
 
 message CreateMenuRequest {
-	int64 parent_id = 2;
-	string path = 3;
-	string name = 4;
-	int64 hidden = 5;
-	string component = 6;
-	int64 sort = 7;
-	string title = 8;
-	string icon = 9;
-	repeated MenuBtn menuBtns = 10;
-	repeated int64 parent_ids = 11;
+  int64 parent_id = 2;
+  string path = 3;
+  string name = 4;
+  int64 hidden = 5;
+  string component = 6;
+  int64 sort = 7;
+  string title = 8;
+  string icon = 9;
+  repeated MenuBtn menuBtns = 10;
+  repeated int64 parent_ids = 11;
 }
 
 message UpdateMenuRequest {
-	int64 id = 1;
-	int64 parent_id = 2;
-	string path = 3;
-	string name = 4;
-	int64 hidden = 5;
-	string component = 6;
-	int64 sort = 7;
-	string title = 8;
-	string icon = 9;
-	repeated MenuBtn menuBtns = 10;
-	repeated int64 parent_ids = 11;
+  int64 id = 1;
+  int64 parent_id = 2;
+  string path = 3;
+  string name = 4;
+  int64 hidden = 5;
+  string component = 6;
+  int64 sort = 7;
+  string title = 8;
+  string icon = 9;
+  repeated MenuBtn menuBtns = 10;
+  repeated int64 parent_ids = 11;
 }
 
 message DeleteMenuRequest {
-	int64 id = 1;
+  int64 id = 1;
 }
 
 message SetRoleMenuRequest{
-	int64 role_id = 1;
-	repeated int64 menu_ids = 2;
+  int64 role_id = 1;
+  repeated int64 menu_ids = 2;
 }
 
 message GetRoleMenuRequest{
-	string role = 1;
+  string role = 1;
 }
 
 message GetPoliciesRequest{
-	string role = 1;
+  string role = 1;
 }
 
 message GetPoliciesReply{
-	repeated PolicyRules policyRules = 1;
+  repeated PolicyRules policyRules = 1;
 }
 
 message GetRoleMenuBtnRequest {
-	int64 role_id = 1;
-	string role_name = 2;
-	int64 menu_id = 3;
+  int64 role_id = 1;
+  string role_name = 2;
+  int64 menu_id = 3;
 }
 
 message GetRoleMenuBtnReply {
-	repeated MenuBtn list = 1;
+  repeated MenuBtn list = 1;
 }
 
 message SetRoleMenuBtnRequest {
-	int64 role_id = 1;
-	int64 menu_id = 2;
-	repeated int64 menu_btn_ids = 3;
+  int64 role_id = 1;
+  int64 menu_id = 2;
+  repeated int64 menu_btn_ids = 3;
 }
 
 message OssStsTokenResponse {
-	string access_key = 1;
-	string access_secret = 2;
-	string expiration = 3;
-	string security_token = 4;
-	string end_point = 5;
-	string bucket_name = 6;
-	string region = 7;
-	string url = 8;
+  string access_key = 1;
+  string access_secret = 2;
+  string expiration = 3;
+  string security_token = 4;
+  string end_point = 5;
+  string bucket_name = 6;
+  string region = 7;
+  string url = 8;
 }
+
+
+
+
+
+message SendAccountEditRequest {
+  int64 id = 1;
+  string title = 2;
+  string config = 3;
+  string send_channel = 4;
+}
+
+message SendAccountListRequest {
+  string title = 1;
+  string send_channel = 2;
+  int64 page = 3;
+  int64 page_size = 4;
+}
+
+message SendAccountChangeStatusRequest {
+  int64 id = 1;
+  uint64 status = 2;
+}
+
+message SendAccountRow {
+  int64 id = 1;
+  string title = 2;
+  string config = 3;
+  string send_channel = 4;
+}
+
+message SendAccountListResp {
+  repeated SendAccountRow rows = 1;
+  int64 total = 2;
+}
+
+message SendAccountQueryResp {
+  repeated SendAccountRow rows = 1;
+}
+message TemplateEditRequest {
+  int64 id = 1;
+  string name = 2;
+  int64 id_type = 3;
+  int64 send_channel = 4;
+  int64 template_type = 5;
+  int64 msg_type = 6;
+  int64 shield_type = 7;
+  string msg_content = 8;
+  int64 send_account = 9;
+  string template_sn = 10;
+  string sms_channel = 11;
+  string deduplication_config = 12;
+}
+
+message TemplateChangeStatusRequest {
+  int64 id = 1;
+  uint64 status = 2;
+}
+
+message TemplateListRequest {
+  string name = 1;
+  string send_channel = 2;
+  int64 page = 3;
+  int64 page_size = 4;
+}
+
+message TemplateListRow {
+  int64 id = 1;
+  string name = 2;
+  int64 id_type = 3;
+  int64 send_channel = 4;
+  int64 template_type = 5;
+  int64 msg_type = 6;
+  int64 shield_type = 7;
+  string msg_content = 8;
+  int64 send_account = 9;
+  string send_account_name = 10;
+  string template_sn = 11;
+  string sms_channel = 12;
+}
+
+message TemplateListResp {
+  repeated TemplateListRow rows = 1;
+  int64 total = 2;
+}
+
+message TemplateRemoveRequest{
+  int64 id = 1;
+}
+
+message Channel{
+  int64 id = 1;
+  string name = 2;
+  string channel = 3;
+}
+
+message GetAllChannelResp{
+  repeated Channel rows = 1;
+}
+message SmsRecordRequest{
+  string template_id = 1;
+  string request_id = 2;
+  string send_channel = 3;
+  int64 page = 4;
+  int64 page_size = 5;
+}
+
+message SmsRecordRow{
+  int64 id = 1;
+  string series_id = 2;
+  string msg_content = 3;
+  string supplier_name = 4;
+  int64 supplier_id = 5;
+  string phone = 6;
+  int64 message_template_id = 7;
+  string created_at = 8;
+  string send_date = 9;
+  string status = 10;
+  string report_content = 11;
+  int64 charging_num = 12;
+  string updated_at = 13;
+}
+
+message SmsRecordResp{
+  repeated SmsRecordRow rows = 1;
+  int64 total = 2;
+}
+message MsgRecordRequest{
+  string template_id = 1;
+  string request_id = 2;
+  string channel = 3;
+  int64 page = 4;
+  int64 page_size = 5;
+}
+
+message MsgRecordRow{
+  int64 message_template_id = 1;
+  string request_id = 2;
+  string receiver = 3;
+  string msg_id = 4;
+  string channel = 5;
+  string msg = 6;
+  string send_at = 7;
+  string create_at = 8;
+  string send_since_time = 9;
+  int64 id = 10;
+}
+
+message MsgRecordResp{
+  repeated MsgRecordRow rows = 1;
+  int64 total = 2;
+}
+
+
+

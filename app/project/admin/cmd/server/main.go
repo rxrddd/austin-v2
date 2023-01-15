@@ -4,6 +4,8 @@ import (
 	"austin-v2/app/project/admin/internal/conf"
 	"austin-v2/pkg/utils/stringHelper"
 	"flag"
+	"github.com/go-kratos/kratos/v2/encoding/json"
+	"google.golang.org/protobuf/encoding/protojson"
 
 	"os"
 
@@ -29,6 +31,11 @@ var (
 
 func init() {
 	flag.StringVar(&flagconf, "conf", "../../configs", "config path, eg: -conf config.yaml")
+
+	json.MarshalOptions = protojson.MarshalOptions{
+		EmitUnpopulated: true, //默认值不忽略
+		UseProtoNames:   true, //使用proto name返回http字段
+	}
 }
 
 func newApp(logger log.Logger, hs *http.Server, rr registry.Registrar) *kratos.App {
@@ -80,23 +87,7 @@ func main() {
 		"ts", log.DefaultTimestamp,
 		"caller", log.DefaultCaller,
 	)
-	// 初始化链路追踪
-	//exp, err := jaeger.New(jaeger.WithCollectorEndpoint(jaeger.WithEndpoint(bc.Trace.Endpoint)))
-	//if err != nil {
-	//	panic(err)
-	//}
-	//tp := tracesdk.NewTracerProvider(
-	//	// 将基于父span的采样率设置为100%
-	//	tracesdk.WithSampler(tracesdk.ParentBased(tracesdk.TraceIDRatioBased(1.0))),
-	//	// 始终确保再生成中批量处理
-	//	tracesdk.WithBatcher(exp),
-	//	// 在资源中记录有关此应用程序的信息
-	//	tracesdk.WithResource(resource.NewSchemaless(
-	//		semconv.ServiceNameKey.String(Name),
-	//		attribute.String("env", "dev"),
-	//	)),
-	//)
-	//otel.SetTracerProvider(tp)
+
 	app, cleanup, err := wireApp(bc.Server, &rc, bc.Data, bc.Auth, bc.Service, logger)
 	if err != nil {
 		panic(err)

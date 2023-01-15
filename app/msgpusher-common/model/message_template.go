@@ -11,7 +11,7 @@ type MessageTemplate struct {
 	MsgType             int    `gorm:"column:msg_type" json:"msg_type"`                         // 10.通知类消息 20.营销类消息 30.验证码类消息
 	ShieldType          int    `gorm:"column:shield_type" json:"shield_type"`                   // 10.夜间不屏蔽 20.夜间屏蔽 30.夜间屏蔽(次日早上9点发送)
 	MsgContent          string `gorm:"column:msg_content" json:"msg_content"`                   // 消息内容 占位符用{$var}表示
-	SendAccount         int    `gorm:"column:send_account" json:"send_account"`                 // 发送账号 一个渠道下可存在多个账号
+	SendAccount         int64  `gorm:"column:send_account" json:"send_account"`                 // 发送账号 一个渠道下可存在多个账号
 	Creator             string `gorm:"column:creator" json:"creator"`                           // 创建者
 	Updator             string `gorm:"column:updator" json:"updator"`                           // 更新者
 	Auditor             string `gorm:"column:auditor" json:"auditor"`                           // 审核人
@@ -19,9 +19,11 @@ type MessageTemplate struct {
 	Proposer            string `gorm:"column:proposer" json:"proposer"`                         // 业务方
 	SmsChannel          string `gorm:"column:sms_channel" json:"sms_channel"`                   // 短信渠道 send_channel=30的时候有用
 	IsDeleted           int    `gorm:"column:is_deleted" json:"is_deleted"`                     // 是否删除：0.不删除 1.删除
-	Created             int32  `gorm:"column:created" json:"created"`                           // 创建时间
-	Updated             int32  `gorm:"column:updated" json:"updated"`                           // 更新时间
+	Created             int64  `gorm:"column:created" json:"created"`                           // 创建时间
+	Updated             int64  `gorm:"column:updated" json:"updated"`                           // 更新时间
 	DeduplicationConfig string `gorm:"column:deduplication_config" json:"deduplication_config"` // 限流配置
+
+	SendAccountItem SendAccount `gorm:"foreignkey:send_account"`
 }
 
 func (m MessageTemplate) TableName() string {
