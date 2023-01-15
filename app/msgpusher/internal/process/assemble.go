@@ -8,6 +8,7 @@ import (
 	"austin-v2/pkg/utils/transformHelper"
 	"context"
 	"strings"
+	"time"
 )
 
 type AssembleAction struct {
@@ -28,7 +29,6 @@ func (p *AssembleAction) Process(ctx context.Context, sendTaskModel *types.SendT
 
 	var newTaskList []types.TaskInfo
 	for _, param := range messageParamList {
-
 		curTask := types.TaskInfo{
 			RequestId:         sendTaskModel.RequestId,
 			MessageTemplateId: messageTemplate.ID,
@@ -42,6 +42,7 @@ func (p *AssembleAction) Process(ctx context.Context, sendTaskModel *types.SendT
 			ContentModel:      contentModel.BuilderContent(messageTemplate.Temp2Domain(), param),
 			SendAccount:       messageTemplate.SendAccount,
 			TemplateSn:        messageTemplate.TemplateSn,
+			SendAt:            time.Now(),
 			MessageParam:      param,
 		}
 

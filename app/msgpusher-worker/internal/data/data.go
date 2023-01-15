@@ -101,7 +101,7 @@ func NewMysqlCmd(conf *conf.Data, logger log.Logger) *gorm.DB {
 func NewMongoDB(conf *conf.Data) *mongo.Client {
 	var mgoCli *mongo.Client
 	var err error
-	clientOptions := options.Client().ApplyURI(conf.Mongodb.URL)
+	clientOptions := options.Client().ApplyURI(conf.Mongodb.Url)
 	if conf.Mongodb.Username != "" && conf.Mongodb.Password != "" {
 		clientOptions.SetAuth(options.Credential{
 			Username: conf.Mongodb.Username,
@@ -109,13 +109,11 @@ func NewMongoDB(conf *conf.Data) *mongo.Client {
 		})
 	}
 	// 连接到mongoDB
-	mgoCli, err = mongo.Connect(context.TODO(), clientOptions)
-	if err != nil {
+	if mgoCli, err = mongo.Connect(context.TODO(), clientOptions); err != nil {
 		panic(fmt.Errorf("mongo connect err %v", err))
 	}
 	// 检查连接
-	err = mgoCli.Ping(context.TODO(), nil)
-	if err != nil {
+	if err = mgoCli.Ping(context.TODO(), nil); err != nil {
 		panic(fmt.Errorf("mongo ping err %v", err))
 	}
 	return mgoCli

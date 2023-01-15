@@ -7,6 +7,7 @@ import (
 	"austin-v2/pkg/utils/stringHelper"
 	"austin-v2/pkg/utils/timeHelper"
 	"context"
+	"time"
 )
 
 type BaseHandler struct {
@@ -25,5 +26,10 @@ func (b BaseHandler) getRecord(taskInfo *types.TaskInfo, receiver string) mongo_
 		CreateAt:          timeHelper.CurrentTimeYMDHIS(),
 		TaskInfo:          jsonHelper.MustToString(taskInfo),
 		Receiver:          receiver,
+		StartConsumeAt:    taskInfo.StartConsumeAt.Format(timeHelper.DateDefaultLayout),
+		SendAt:            taskInfo.SendAt.Format(timeHelper.DateDefaultLayout),
+		EndConsumeAt:      timeHelper.CurrentTimeYMDHIS(),
+		ConsumeSinceTime:  time.Now().Sub(taskInfo.StartConsumeAt).String(),
+		SendSinceTime:     time.Now().Sub(taskInfo.SendAt).String(),
 	}
 }

@@ -10,4 +10,9 @@ type MsgRecord struct {
 	MsgId             string `bson:"msg_id" json:"msg_id"`
 	Channel           string `bson:"channel" json:"channel"`
 	Msg               string `bson:"msg" json:"msg"`
+	StartConsumeAt    string `bson:"start_consume_at" json:"start_consume_at"`
+	EndConsumeAt      string `bson:"end_consume_at" json:"end_consume_at"`
+	SendAt            string `bson:"send_at" json:"send_at"`
+	ConsumeSinceTime  string `bson:"consume_since_time" json:"consume_since_time"`
+	SendSinceTime     string `bson:"send_since_time" json:"send_since_time"`
 }

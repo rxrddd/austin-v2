@@ -32,9 +32,9 @@ message Data {
     string URL = 1;
   }
   message MongoDB {
-    string URL = 1;
-    string Username = 2;
-    string Password = 3;
+    string url = 1;
+    string username = 2;
+    string password = 3;
   }
   Database database = 1;
   Redis redis = 2;

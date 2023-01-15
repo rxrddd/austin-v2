@@ -3,6 +3,7 @@ package types
 import (
 	"context"
 	"encoding/json"
+	"time"
 )
 
 type TaskInfo struct {
@@ -19,6 +20,8 @@ type TaskInfo struct {
 	SendAccount       int64        `json:"send_account"`
 	TemplateSn        string       `json:"template_sn"`
 	SmsChannel        string       `json:"sms_channel"`
+	StartConsumeAt    time.Time    `json:"start_consume_at"`
+	SendAt            time.Time    `json:"send_at"`
 	MessageParam      MessageParam `json:"message_param"`
 }
 

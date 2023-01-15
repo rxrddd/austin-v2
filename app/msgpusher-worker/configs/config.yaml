@@ -13,5 +13,7 @@ data:
   rabbitmq:
       URL: "amqp://guest:guest@127.0.0.1:5672/"
   mongodb:
-      URL: "mongodb://localhost:27017"
+      url: "mongodb://localhost:27017"
+      username:
+      password:
 

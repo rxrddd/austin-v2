@@ -17,6 +17,7 @@ import (
 	"fmt"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/streadway/amqp"
+	"time"
 )
 
 type RabbitMqServer struct {
@@ -80,6 +81,7 @@ func (m *MqHandler) onMassage(delivery amqp.Delivery) {
 	for _, task := range taskList {
 		channel := channelType.TypeCodeEn[task.SendChannel]
 		msgType := messageType.TypeCodeEn[task.MsgType]
+		task.StartConsumeAt = time.Now()
 		err := m.executor.Submit(context.Background(), fmt.Sprintf("%s.%s", channel, msgType), sender.NewTask(task, m.hs, m.logger, m.taskSvc))
 		if err != nil {
 			l.Errorf(" on massage err: %v task_info: %s", err, task)
