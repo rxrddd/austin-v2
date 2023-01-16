@@ -1608,7 +1608,6 @@ components:
                     format: int64
                 requestId:
                     type: string
-                    description: '@inject_tag: json:"request_id"'
                 receiver:
                     type: string
                 msgId:
@@ -1732,6 +1731,9 @@ components:
                     type: string
                 sendChannel:
                     type: string
+                status:
+                    type: integer
+                    format: int64
         SetRoleMenuBtnRequest:
             type: object
             properties:
@@ -1911,6 +1913,8 @@ components:
                 templateSn:
                     type: string
                 smsChannel:
+                    type: string
+                createAt:
                     type: string
         TemplateRemoveRequest:
             type: object

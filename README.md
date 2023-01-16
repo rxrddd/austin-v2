@@ -1,14 +1,15 @@
 # 基于kratos 的聚合消息推送平台
 
 #### 介绍
-austin-go项目的v2版本
+基于kratos 的聚合消息推送平台 austin-go项目的v2版本 
+
+> v2版本
+#### github地址：[https://github.com/rxrddd/austin-v2](https://github.com/rxrddd/austin-v2)
 
 > v1版本
 #### github地址：[https://github.com/rxrddd/austin-go](https://github.com/rxrddd/austin-go)
 #### gitee地址：[https://gitee.com/AbelZou/austin-go](https://gitee.com/AbelZou/austin-go)
 
-> v2版本
-#### github地址：[https://github.com/rxrddd/austin-v2](https://github.com/rxrddd/austin-v2)
 
 #### 项目描述
 
@@ -110,19 +111,19 @@ curl --location --request POST 'http://localhost:8888/send' \
 #### 目录说明
 
 ```
-.
 ├── Makefile
 ├── README.md
 ├── api   //grpc 接口定义
 ├── app  //项目代码
-│   ├── administrator //用户信息,登录
-│   ├── authorization //授权
-│   ├── files //文件上传oss
-│   ├── msgpusher //msgpusher的rpc和http接口
-│   ├── msgpusher-common //公共文件
-│   ├── msgpusher-worker //消费端
-│   └── project
-│       └── admin  //后端接口项目
+│   ├── administrator //用户服务
+│   ├── authorization //授权服务
+│   ├── files //文件上传服务
+│   ├── msgpusher //消息推送服务对外rpc和http接口
+│   ├── msgpusher-common //公共文件
+│   ├── msgpusher-manager //聚合消息curd服务
+│   ├── msgpusher-worker //消息推送消费端
+│   └── project
+│       └── admin  //后端BFF项目
 ├── deploy  //部署文件
 ├── dev.md
 ├── docs  //文档
@@ -130,8 +131,7 @@ curl --location --request POST 'http://localhost:8888/send' \
 ├── go.sum
 ├── openapi.yaml
 ├── pkg  //公共包
-└── third_party //三方包 谷歌啥的
-
+└── third_party 
 ```
 
 

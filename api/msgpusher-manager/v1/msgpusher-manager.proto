@@ -60,6 +60,7 @@ message SendAccountRow {
   string Title = 2;
   string Config = 3;
   string SendChannel = 4;
+  int64 Status = 5;
 }
 
 message SendAccountListResp {
@@ -110,6 +111,7 @@ message TemplateListRow {
   string SendAccountName = 10;
   string TemplateSn = 11;
   string SmsChannel = 12;
+  string CreateAt = 13;
 }
 
 message TemplateListResp {

@@ -75,19 +75,6 @@ func (a AuthorizationRepo) GetMenuAll(ctx context.Context) ([]*biz.Menu, error) 
 
 func (a AuthorizationRepo) GetMenuTree(ctx context.Context) ([]*biz.Menu, error) {
 	var response []*biz.Menu
-	// 缓存key
-	cacheParams := map[string]interface{}{
-		"type": "tree",
-	}
-	cacheKey := redisHelper.GetRedisCacheKeyByParams(a.data.Module+":"+childModuleMenu+":", cacheParams)
-	// 查看缓存
-	if cache := a.GetRedisCache(cacheKey); cache != "" {
-		if err := json.Unmarshal([]byte(cache), &response); err == nil {
-			return response, nil
-		} else {
-			a.log.Error("GetMenuTree()", err)
-		}
-	}
 
 	var menus []entity2.Menu
 	// 获取所有根菜单
@@ -130,7 +117,6 @@ func (a AuthorizationRepo) GetMenuTree(ctx context.Context) ([]*biz.Menu, error)
 			return response, kerrors.InternalServer(errResponse.ReasonSystemError, err.Error())
 		}
 	}
-	redisHelper.BatchDeleteRedisCache(a.data.redisCli, a.data.Module+":"+childModuleMenu+":")
 	return response, nil
 }
 

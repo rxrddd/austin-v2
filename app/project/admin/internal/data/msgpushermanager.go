@@ -76,6 +76,7 @@ func (s *MsgPusherManagerRepo) SendAccountList(ctx context.Context, req *pb.Send
 			Title:       item.Title,
 			Config:      item.Config,
 			SendChannel: item.SendChannel,
+			Status:      item.Status,
 		})
 	}
 	return &pb.SendAccountListResp{
@@ -154,6 +155,7 @@ func (s *MsgPusherManagerRepo) TemplateList(ctx context.Context, req *pb.Templat
 			SendAccountName: item.SendAccountName,
 			TemplateSn:      item.TemplateSn,
 			SmsChannel:      item.SmsChannel,
+			CreateAt:        item.CreateAt,
 		})
 	}
 	return &pb.TemplateListResp{

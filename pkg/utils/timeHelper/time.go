@@ -32,12 +32,12 @@ func CurrentTimeHIS() string {
 	return time.Now().Format("15:04:05")
 }
 
-// FormatTimeYMGHIS 获取指定时间戳的年月日时分秒
-func FormatTimeYMGHIS(timestamp time.Time) string {
+// FormatTimeYMDHIS 获取指定时间戳的年月日时分秒
+func FormatTimeYMDHIS(timestamp time.Time) string {
 	return timestamp.Format("2006-01-02 15:04:05")
 }
 
-func FormatTimeInt64YMGHIS(timestamp int64) string {
+func FormatTimeInt64YMDHIS(timestamp int64) string {
 	if timestamp == 0 {
 		return ""
 	}

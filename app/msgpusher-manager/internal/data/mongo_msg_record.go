@@ -2,6 +2,7 @@ package data
 
 import (
 	"austin-v2/app/msgpusher-common/model/mongo_model"
+	"austin-v2/app/msgpusher-manager/internal/domain"
 	"austin-v2/pkg/utils/emptyHelper"
 	"austin-v2/pkg/utils/jsonHelper"
 	"context"
@@ -14,7 +15,7 @@ import (
 )
 
 type IMsgRecordRepo interface {
-	GetMsgRecord(ctx context.Context, req *MsgRecordRequest) (items []*mongo_model.MsgRecord, total int64, err error)
+	GetMsgRecord(ctx context.Context, req *domain.MsgRecordRequest) (items []*mongo_model.MsgRecord, total int64, err error)
 }
 
 type msgRecordRepo struct {
@@ -31,15 +32,7 @@ func NewMsgRecordRepo(data *Data, logger log.Logger) IMsgRecordRepo {
 	}
 }
 
-type MsgRecordRequest struct {
-	TemplateId string
-	RequestId  string
-	Channel    string
-	Page       int64
-	PageSize   int64
-}
-
-func (r *msgRecordRepo) GetMsgRecord(ctx context.Context, req *MsgRecordRequest) (items []*mongo_model.MsgRecord, total int64, err error) {
+func (r *msgRecordRepo) GetMsgRecord(ctx context.Context, req *domain.MsgRecordRequest) (items []*mongo_model.MsgRecord, total int64, err error) {
 	query := bson.M{}
 
 	if emptyHelper.IsNotEmpty(req.RequestId) {

@@ -2,6 +2,7 @@ package data
 
 import (
 	"austin-v2/app/msgpusher-common/model"
+	"austin-v2/app/msgpusher-manager/internal/domain"
 	"austin-v2/pkg/utils/cacheHepler"
 	"austin-v2/pkg/utils/emptyHelper"
 	"austin-v2/pkg/utils/gromHelper"
@@ -14,7 +15,7 @@ type IMessageTemplateRepo interface {
 	TemplateEdit(ctx context.Context, req *model.MessageTemplate) error
 	TemplateCreate(ctx context.Context, req *model.MessageTemplate) error
 	TemplateChangeStatus(ctx context.Context, id int64, status int) error
-	TemplateList(ctx context.Context, req TemplateListRequest) (items []model.MessageTemplate, total int64, err error)
+	TemplateList(ctx context.Context, req *domain.TemplateListRequest) (items []model.MessageTemplate, total int64, err error)
 }
 
 type messageTemplateRepo struct {
@@ -39,20 +40,23 @@ type TemplateListRequest struct {
 }
 
 func (s *messageTemplateRepo) TemplateEdit(ctx context.Context, req *model.MessageTemplate) error {
-	return s.data.db.WithContext(ctx).Where("id = ?", req.ID).Updates(req).Error
+	return s.data.db.WithContext(ctx).Model(model.MessageTemplate{}).Where("id = ?", req.ID).Updates(req).Error
 }
 func (s *messageTemplateRepo) TemplateCreate(ctx context.Context, req *model.MessageTemplate) error {
 	req.ID = stringHelper.NextID()
-	return s.data.db.WithContext(ctx).Create(req).Error
+	return s.data.db.WithContext(ctx).Model(model.MessageTemplate{}).Create(req).Error
 }
 func (s *messageTemplateRepo) TemplateChangeStatus(ctx context.Context, id int64, status int) error {
-	return s.data.db.WithContext(ctx).Where("id = ?", id).UpdateColumn("status", status).Error
+	return s.data.db.WithContext(ctx).Model(model.MessageTemplate{}).Where("id = ?", id).UpdateColumn("status", status).Error
 }
-func (s *messageTemplateRepo) TemplateList(ctx context.Context, req TemplateListRequest) (items []model.MessageTemplate, total int64, err error) {
+func (s *messageTemplateRepo) TemplateList(ctx context.Context, req *domain.TemplateListRequest) (items []model.MessageTemplate, total int64, err error) {
 	items = make([]model.MessageTemplate, 0)
 	query := s.data.db.WithContext(ctx).Model(items)
 	if emptyHelper.IsNotEmpty(req.Name) {
 		query.Where("name like ?", "%"+req.Name+"%")
+	}
+	if emptyHelper.IsNotEmpty(req.SendChannel) {
+		query.Where("send_channel = ?", req.SendChannel)
 	}
 
 	query.Count(&total).

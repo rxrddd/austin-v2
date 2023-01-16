@@ -703,6 +703,7 @@ message SendAccountRow {
   string title = 2;
   string config = 3;
   string send_channel = 4;
+  int64 status = 5;
 }
 
 message SendAccountListResp {
@@ -753,6 +754,7 @@ message TemplateListRow {
   string send_account_name = 10;
   string template_sn = 11;
   string sms_channel = 12;
+  string create_at = 13;
 }
 
 message TemplateListResp {
