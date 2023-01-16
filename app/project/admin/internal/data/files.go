@@ -20,6 +20,7 @@ func NewFilesServiceClient(_ *conf.Auth, sr *conf.Service, r registry.Discovery)
 		context.Background(),
 		grpc.WithEndpoint(sr.Files.Endpoint),
 		grpc.WithDiscovery(r),
+		grpc.WithTimeout(sr.Files.Timeout.AsDuration()),
 		grpc.WithMiddleware(
 			recovery.Recovery(),
 		),

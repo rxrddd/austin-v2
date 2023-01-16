@@ -22,6 +22,7 @@ func NewAdministratorServiceClient(ah *conf.Auth, sr *conf.Service, r registry.D
 		context.Background(),
 		grpc.WithEndpoint(sr.Administrator.Endpoint),
 		grpc.WithDiscovery(r),
+		grpc.WithTimeout(sr.Administrator.Timeout.AsDuration()),
 		grpc.WithMiddleware(
 			recovery.Recovery(),
 		),

@@ -19,6 +19,7 @@ func NewMsgPusherManagerClient(_ *conf.Auth, sr *conf.Service, r registry.Discov
 		context.Background(),
 		grpc.WithEndpoint(sr.Msgpushermanager.Endpoint),
 		grpc.WithDiscovery(r),
+		grpc.WithTimeout(sr.Msgpushermanager.Timeout.AsDuration()),
 		grpc.WithMiddleware(
 			recovery.Recovery(),
 		),

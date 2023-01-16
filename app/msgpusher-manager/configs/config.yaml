@@ -6,7 +6,7 @@ trace:
 server:
   grpc:
     addr: 0.0.0.0:10000
-    timeout: 1s
+    timeout: 5s
 data:
   database:
     driver: mysql
