@@ -8,24 +8,20 @@ import (
 )
 
 type LoginUser struct {
-	UserId   int64
-	UserName string
+	UserId   int64  `json:"user_id"`
+	UserName string `json:"user_name"`
 }
 
-const LoginKey = "x-md-global-admin-login"
+const loginKey = "x-md-global-admin-login"
 
-func WithContext(ctx context.Context, user LoginUser) context.Context {
-	return WithClientContext(ctx, LoginKey, jsonHelper.MustToString(user))
-}
-func WithClientContext(ctx context.Context, kv ...string) context.Context {
-	ctx = metadata.AppendToClientContext(ctx, kv...)
-	return ctx
+func WithMetaAdminUser(ctx context.Context, user LoginUser) context.Context {
+	return metadata.AppendToClientContext(ctx, loginKey, jsonHelper.MustToString(user))
 }
 
 func GetMetaAdminUser(ctx context.Context) LoginUser {
-	serverContext, _ := metadata.FromServerContext(ctx)
 	var res LoginUser
-	_ = json.Unmarshal([]byte(serverContext.Get(LoginKey)), &res)
+	if serverContext, ok := metadata.FromServerContext(ctx); ok {
+		_ = json.Unmarshal([]byte(serverContext.Get(loginKey)), &res)
+	}
 	return res
-
 }

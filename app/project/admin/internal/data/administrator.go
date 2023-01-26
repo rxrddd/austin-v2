@@ -6,8 +6,10 @@ import (
 	"austin-v2/app/project/admin/internal/conf"
 	"austin-v2/pkg/errResponse"
 	"austin-v2/pkg/utils/encryption"
+	"austin-v2/pkg/utils/metaHelper"
 	"context"
 	"github.com/go-kratos/kratos/v2/log"
+	metadataMidd "github.com/go-kratos/kratos/v2/middleware/metadata"
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
 	"github.com/go-kratos/kratos/v2/registry"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
@@ -25,6 +27,8 @@ func NewAdministratorServiceClient(ah *conf.Auth, sr *conf.Service, r registry.D
 		grpc.WithTimeout(sr.Administrator.Timeout.AsDuration()),
 		grpc.WithMiddleware(
 			recovery.Recovery(),
+			metaHelper.MetaUserMiddleware(),
+			metadataMidd.Client(),
 		),
 	)
 	if err != nil {

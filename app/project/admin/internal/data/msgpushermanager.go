@@ -4,11 +4,9 @@ import (
 	msgpushermanagerV1 "austin-v2/api/msgpusher-manager/v1"
 	pb "austin-v2/api/project/admin/v1"
 	"austin-v2/app/project/admin/internal/conf"
-	"austin-v2/app/project/admin/pkg/ctxdata"
 	"austin-v2/pkg/utils/metaHelper"
 	"context"
 	"github.com/go-kratos/kratos/v2/log"
-	"github.com/go-kratos/kratos/v2/middleware"
 	metadataMidd "github.com/go-kratos/kratos/v2/middleware/metadata"
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
 	"github.com/go-kratos/kratos/v2/registry"
@@ -26,14 +24,7 @@ func NewMsgPusherManagerClient(_ *conf.Auth, sr *conf.Service, r registry.Discov
 		grpc.WithTimeout(sr.Msgpushermanager.Timeout.AsDuration()),
 		grpc.WithMiddleware(
 			recovery.Recovery(),
-			func(handler middleware.Handler) middleware.Handler {
-				return func(ctx context.Context, req interface{}) (interface{}, error) {
-					return handler(metaHelper.WithContext(ctx, metaHelper.LoginUser{
-						UserId:   ctxdata.GetAdminId(ctx),
-						UserName: ctxdata.GetAdminName(ctx),
-					}), req)
-				}
-			},
+			metaHelper.MetaUserMiddleware(),
 			metadataMidd.Client(),
 		),
 	)

@@ -4,9 +4,11 @@ import (
 	filesServiceV1 "austin-v2/api/files/v1"
 	v1 "austin-v2/api/project/admin/v1"
 	"austin-v2/app/project/admin/internal/conf"
+	"austin-v2/pkg/utils/metaHelper"
 	"context"
 	"fmt"
 	"github.com/go-kratos/kratos/v2/log"
+	metadataMidd "github.com/go-kratos/kratos/v2/middleware/metadata"
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
 	"github.com/go-kratos/kratos/v2/registry"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
@@ -23,6 +25,8 @@ func NewFilesServiceClient(_ *conf.Auth, sr *conf.Service, r registry.Discovery)
 		grpc.WithTimeout(sr.Files.Timeout.AsDuration()),
 		grpc.WithMiddleware(
 			recovery.Recovery(),
+			metaHelper.MetaUserMiddleware(),
+			metadataMidd.Client(),
 		),
 	)
 	if err != nil {

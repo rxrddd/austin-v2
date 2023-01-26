@@ -5,6 +5,7 @@ import (
 	"austin-v2/app/files/internal/conf"
 	"austin-v2/app/files/internal/service"
 	"github.com/go-kratos/kratos/v2/log"
+	"github.com/go-kratos/kratos/v2/middleware/metadata"
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
 )
@@ -14,6 +15,7 @@ func NewGRPCServer(c *conf.Server, service *service.FilesService, logger log.Log
 	var opts = []grpc.ServerOption{
 		grpc.Middleware(
 			recovery.Recovery(),
+			metadata.Server(),
 		),
 	}
 	if c.Grpc.Network != "" {
