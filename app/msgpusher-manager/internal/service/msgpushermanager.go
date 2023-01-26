@@ -4,7 +4,10 @@ import (
 	"austin-v2/app/msgpusher-common/enums/channelType"
 	"austin-v2/app/msgpusher-manager/internal/biz"
 	"austin-v2/app/msgpusher-manager/internal/domain"
+	"austin-v2/pkg/utils/jsonHelper"
+	"austin-v2/pkg/utils/metaHelper"
 	"context"
+	"fmt"
 	"github.com/spf13/cast"
 	"time"
 
@@ -46,6 +49,8 @@ func (s *MsgPusherManagerService) SendAccountChangeStatus(ctx context.Context, r
 	return s.sa.SendAccountChangeStatus(ctx, req.ID, int(req.Status))
 }
 func (s *MsgPusherManagerService) SendAccountList(ctx context.Context, req *pb.SendAccountListRequest) (*pb.SendAccountListResp, error) {
+	fmt.Println(`GetMetaAdminUser`, jsonHelper.MustToString(metaHelper.GetMetaAdminUser(ctx)))
+
 	result, err := s.sa.SendAccountList(ctx, &domain.SendAccountListRequest{
 		Title:       req.Title,
 		SendChannel: req.SendChannel,

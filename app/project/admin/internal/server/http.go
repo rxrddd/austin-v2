@@ -181,13 +181,13 @@ func responseEncoder(w stdHttp.ResponseWriter, r *stdHttp.Request, v interface{}
 		return err
 	}
 
-	data, err = codec.Marshal(reply)
+	resp, err := codec.Marshal(reply)
 	if err != nil {
 		return err
 	}
 	w.Header().Set("Content-Type", codec.Name())
 	w.WriteHeader(stdHttp.StatusOK)
-	w.Write(data)
+	_, _ = w.Write(resp)
 	return nil
 }
 

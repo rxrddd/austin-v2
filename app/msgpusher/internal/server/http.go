@@ -75,7 +75,7 @@ func responseEncoder(w stdHttp.ResponseWriter, r *stdHttp.Request, v interface{}
 	}
 	w.Header().Set("Content-Type", codec.Name())
 	w.WriteHeader(stdHttp.StatusOK)
-	w.Write(data)
+	_, _ = w.Write(data)
 	return nil
 }
 
