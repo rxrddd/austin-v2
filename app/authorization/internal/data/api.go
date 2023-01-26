@@ -67,19 +67,19 @@ func (a AuthorizationRepo) GetApiList(ctx context.Context, page int64, pageSize 
 	conn := a.data.db.Model(&entity2.Api{})
 
 	if name, ok := params["name"]; ok && name != nil && name.(string) != "" {
-		conn = conn.Where("name LIKE ?", "%"+name.(string)+"%")
+		conn = conn.Where("`name` LIKE ?", "%"+name.(string)+"%")
 	}
 
 	if method, ok := params["method"]; ok && method != nil && method.(string) != "" {
-		conn = conn.Where("method LIKE ?", "%"+method.(string)+"%")
+		conn = conn.Where("`method` LIKE ?", "%"+method.(string)+"%")
 	}
 
 	if path, ok := params["path"]; ok && path != nil && path.(string) != "" {
-		conn = conn.Where("path LIKE ?", "%"+path.(string)+"%")
+		conn = conn.Where("`path` LIKE ?", "%"+path.(string)+"%")
 	}
 
 	if group, ok := params["group"]; ok && group != nil && group.(string) != "" {
-		conn = conn.Where("group LIKE ?", "%"+group.(string)+"%")
+		conn = conn.Where("`group` LIKE ?", "%"+group.(string)+"%")
 	}
 
 	err := conn.Scopes(entity2.Paginate(page, pageSize)).Order("id ASC").Find(&list).Error
