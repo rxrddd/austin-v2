@@ -90,7 +90,7 @@ func setUserInfo() middleware.Middleware {
 }
 
 // NewHTTPServer new a HTTP serviceName.
-func NewHTTPServer(c *conf.Server, ac *conf.Auth, service *service.AdminInterface, logger log.Logger) *http.Server {
+func NewHTTPServer(c *conf.Server, debug *conf.Debug, ac *conf.Auth, service *service.AdminInterface, logger log.Logger) *http.Server {
 	// 初始化基础数据库 casbin权限控制策略,连接基础库
 	db, err := gorm.Open(mysql.Open(ac.CasbinSource), &gorm.Config{})
 	if err != nil {

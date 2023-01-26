@@ -12,10 +12,15 @@ message Bootstrap {
   Data data = 3;
   Auth auth = 4;
   Service service = 5;
+  Debug debug = 6;
 }
 
 message Trace {
   string endpoint = 1;
+}
+
+message Debug {
+  string mode = 1;
 }
 
 message Server {

@@ -1,3 +1,5 @@
+debug:
+  mode: dev
 service:
   name: austin-v2.adminInterface.service
   version: v1
