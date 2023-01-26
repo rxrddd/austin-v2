@@ -113,12 +113,15 @@ type AdminClient interface {
 	TemplateList(ctx context.Context, in *TemplateListRequest, opts ...grpc.CallOption) (*TemplateListResp, error)
 	//删除模板
 	TemplateRemove(ctx context.Context, in *TemplateRemoveRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	//删除模板
+	TemplateOne(ctx context.Context, in *TemplateOneRequest, opts ...grpc.CallOption) (*TemplateOneResp, error)
 	//获取所有支持的渠道
 	GetAllChannel(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetAllChannelResp, error)
 	//短信记录列表
 	GetSmsRecord(ctx context.Context, in *SmsRecordRequest, opts ...grpc.CallOption) (*SmsRecordResp, error)
 	//消息记录列表
 	GetMsgRecord(ctx context.Context, in *MsgRecordRequest, opts ...grpc.CallOption) (*MsgRecordResp, error)
+	GetOfficialAccountTemplateList(ctx context.Context, in *OfficialAccountTemplateRequest, opts ...grpc.CallOption) (*OfficialAccountTemplateResp, error)
 }
 
 type adminClient struct {
@@ -543,6 +546,15 @@ func (c *adminClient) TemplateRemove(ctx context.Context, in *TemplateRemoveRequ
 	return out, nil
 }
 
+func (c *adminClient) TemplateOne(ctx context.Context, in *TemplateOneRequest, opts ...grpc.CallOption) (*TemplateOneResp, error) {
+	out := new(TemplateOneResp)
+	err := c.cc.Invoke(ctx, "/api.admin.v1.Admin/TemplateOne", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *adminClient) GetAllChannel(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetAllChannelResp, error) {
 	out := new(GetAllChannelResp)
 	err := c.cc.Invoke(ctx, "/api.admin.v1.Admin/GetAllChannel", in, out, opts...)
@@ -564,6 +576,15 @@ func (c *adminClient) GetSmsRecord(ctx context.Context, in *SmsRecordRequest, op
 func (c *adminClient) GetMsgRecord(ctx context.Context, in *MsgRecordRequest, opts ...grpc.CallOption) (*MsgRecordResp, error) {
 	out := new(MsgRecordResp)
 	err := c.cc.Invoke(ctx, "/api.admin.v1.Admin/GetMsgRecord", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *adminClient) GetOfficialAccountTemplateList(ctx context.Context, in *OfficialAccountTemplateRequest, opts ...grpc.CallOption) (*OfficialAccountTemplateResp, error) {
+	out := new(OfficialAccountTemplateResp)
+	err := c.cc.Invoke(ctx, "/api.admin.v1.Admin/GetOfficialAccountTemplateList", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -664,12 +685,15 @@ type AdminServer interface {
 	TemplateList(context.Context, *TemplateListRequest) (*TemplateListResp, error)
 	//删除模板
 	TemplateRemove(context.Context, *TemplateRemoveRequest) (*emptypb.Empty, error)
+	//删除模板
+	TemplateOne(context.Context, *TemplateOneRequest) (*TemplateOneResp, error)
 	//获取所有支持的渠道
 	GetAllChannel(context.Context, *emptypb.Empty) (*GetAllChannelResp, error)
 	//短信记录列表
 	GetSmsRecord(context.Context, *SmsRecordRequest) (*SmsRecordResp, error)
 	//消息记录列表
 	GetMsgRecord(context.Context, *MsgRecordRequest) (*MsgRecordResp, error)
+	GetOfficialAccountTemplateList(context.Context, *OfficialAccountTemplateRequest) (*OfficialAccountTemplateResp, error)
 	mustEmbedUnimplementedAdminServer()
 }
 
@@ -815,6 +839,9 @@ func (UnimplementedAdminServer) TemplateList(context.Context, *TemplateListReque
 func (UnimplementedAdminServer) TemplateRemove(context.Context, *TemplateRemoveRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method TemplateRemove not implemented")
 }
+func (UnimplementedAdminServer) TemplateOne(context.Context, *TemplateOneRequest) (*TemplateOneResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method TemplateOne not implemented")
+}
 func (UnimplementedAdminServer) GetAllChannel(context.Context, *emptypb.Empty) (*GetAllChannelResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAllChannel not implemented")
 }
@@ -823,6 +850,9 @@ func (UnimplementedAdminServer) GetSmsRecord(context.Context, *SmsRecordRequest)
 }
 func (UnimplementedAdminServer) GetMsgRecord(context.Context, *MsgRecordRequest) (*MsgRecordResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMsgRecord not implemented")
+}
+func (UnimplementedAdminServer) GetOfficialAccountTemplateList(context.Context, *OfficialAccountTemplateRequest) (*OfficialAccountTemplateResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetOfficialAccountTemplateList not implemented")
 }
 func (UnimplementedAdminServer) mustEmbedUnimplementedAdminServer() {}
 
@@ -1665,6 +1695,24 @@ func _Admin_TemplateRemove_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Admin_TemplateOne_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TemplateOneRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdminServer).TemplateOne(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.admin.v1.Admin/TemplateOne",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdminServer).TemplateOne(ctx, req.(*TemplateOneRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Admin_GetAllChannel_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(emptypb.Empty)
 	if err := dec(in); err != nil {
@@ -1715,6 +1763,24 @@ func _Admin_GetMsgRecord_Handler(srv interface{}, ctx context.Context, dec func(
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AdminServer).GetMsgRecord(ctx, req.(*MsgRecordRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Admin_GetOfficialAccountTemplateList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(OfficialAccountTemplateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdminServer).GetOfficialAccountTemplateList(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.admin.v1.Admin/GetOfficialAccountTemplateList",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdminServer).GetOfficialAccountTemplateList(ctx, req.(*OfficialAccountTemplateRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1911,6 +1977,10 @@ var Admin_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Admin_TemplateRemove_Handler,
 		},
 		{
+			MethodName: "TemplateOne",
+			Handler:    _Admin_TemplateOne_Handler,
+		},
+		{
 			MethodName: "GetAllChannel",
 			Handler:    _Admin_GetAllChannel_Handler,
 		},
@@ -1921,6 +1991,10 @@ var Admin_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetMsgRecord",
 			Handler:    _Admin_GetMsgRecord_Handler,
+		},
+		{
+			MethodName: "GetOfficialAccountTemplateList",
+			Handler:    _Admin_GetOfficialAccountTemplateList_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

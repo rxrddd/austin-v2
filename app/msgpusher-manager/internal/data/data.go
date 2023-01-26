@@ -32,6 +32,7 @@ var DataProviderSet = wire.NewSet(
 	NewMessageTemplateRepo,
 	NewSmsRecordRepo,
 	NewSendAccountRepo,
+	NewWxTemplateRepo,
 )
 
 // Data .

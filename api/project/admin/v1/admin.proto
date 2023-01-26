@@ -300,71 +300,83 @@ service Admin {
   };
   //禁用/启用
   rpc SendAccountChangeStatus(SendAccountChangeStatusRequest) returns(google.protobuf.Empty){
-		option (google.api.http) = {
-			post : "/gmp_platform/sendAccount/changeStatus"
-			body : "*"
-		};
-	};
+    option (google.api.http) = {
+      post : "/gmp_platform/sendAccount/changeStatus"
+      body : "*"
+    };
+  };
   //账号列表
   rpc SendAccountList(SendAccountListRequest) returns(SendAccountListResp){
-		option (google.api.http) = {
-			get : "/gmp_platform/sendAccount/list"
-		};
-	};
+    option (google.api.http) = {
+      get : "/gmp_platform/sendAccount/list"
+    };
+  };
   //账号获取下拉
   rpc SendAccountQuery(SendAccountListRequest) returns(SendAccountQueryResp){
-		option (google.api.http) = {
-			get : "/gmp_platform/sendAccount/query"
-		};
-	};
+    option (google.api.http) = {
+      get : "/gmp_platform/sendAccount/query"
+    };
+  };
 
   //新增/修改模板
   rpc TemplateEdit(TemplateEditRequest) returns(google.protobuf.Empty){
-		option (google.api.http) = {
-			post : "/gmp_platform/template/edit"
-			body : "*"
-		};
-	};
+    option (google.api.http) = {
+      post : "/gmp_platform/template/edit"
+      body : "*"
+    };
+  };
   //禁用/启用
   rpc TemplateChangeStatus(TemplateChangeStatusRequest) returns(google.protobuf.Empty){
-		option (google.api.http) = {
-			post : "/gmp_platform/template/changeStatus"
-			body : "*"
-		};
-	};
+    option (google.api.http) = {
+      post : "/gmp_platform/template/changeStatus"
+      body : "*"
+    };
+  };
   //模板列表
   rpc TemplateList(TemplateListRequest) returns(TemplateListResp){
-		option (google.api.http) = {
-			get : "/gmp_platform/template/list"
-		};
-	};
+    option (google.api.http) = {
+      get : "/gmp_platform/template/list"
+    };
+  };
   //删除模板
   rpc TemplateRemove(TemplateRemoveRequest) returns(google.protobuf.Empty){
-		option (google.api.http) = {
-			post : "/gmp_platform/template/remove"
-			body : "*"
-		};
-	};
+    option (google.api.http) = {
+      post : "/gmp_platform/template/remove"
+      body : "*"
+    };
+  };
+  //删除模板
+  rpc TemplateOne(TemplateOneRequest) returns(TemplateOneResp){
+    option (google.api.http) = {
+      get : "/gmp_platform/template/one"
+    };
+  };
   //获取所有支持的渠道
   rpc GetAllChannel(google.protobuf.Empty) returns(GetAllChannelResp){
-		option (google.api.http) = {
-			get : "/gmp_platform/sms/getAllChannel"
-		};
-	};
+    option (google.api.http) = {
+      get : "/gmp_platform/sms/getAllChannel"
+    };
+  };
 
 
   //短信记录列表
   rpc GetSmsRecord(SmsRecordRequest) returns(SmsRecordResp){
-		option (google.api.http) = {
-			get : "/gmp_platform/sms/record"
-		};
-	};
+    option (google.api.http) = {
+      get : "/gmp_platform/sms/record"
+    };
+  };
   //消息记录列表
   rpc GetMsgRecord(MsgRecordRequest) returns(MsgRecordResp){
-		option (google.api.http) = {
-			get : "/gmp_platform/msg/record"
-		};
-	};
+    option (google.api.http) = {
+      get : "/gmp_platform/msg/record"
+    };
+  };
+
+  rpc GetOfficialAccountTemplateList(OfficialAccountTemplateRequest) returns(OfficialAccountTemplateResp){
+    option (google.api.http) = {
+      get : "/gmp_platform/wxTemplate/getOfficialAccountTemplateList"
+    };
+  };
 
 }
 
@@ -755,6 +767,7 @@ message TemplateListRow {
   string template_sn = 11;
   string sms_channel = 12;
   string create_at = 13;
+  string deduplication_config = 14;
 }
 
 message TemplateListResp {
@@ -829,5 +842,41 @@ message MsgRecordResp{
   int64 total = 2;
 }
 
+message OfficialAccountTemplateRequest{
+  int64 send_account = 1;
+}
 
+message OfficialAccountTemplateResp{
+  repeated OfficialAccountTemplateRow rows = 1;
+}
 
+message OfficialAccountTemplateRow{
+  string template_id = 1;
+  string title = 2;
+  string content = 3;
+  string example = 4;
+}
+
+message TemplateOneRequest{
+  int64 id = 1;
+}
+
+message TemplateOneResp{
+  int64  id = 1;
+  string name = 2;
+  int32 id_type = 4;
+  string send_channel = 5;
+  string template_type = 6;
+  string template_sn = 7;
+  string msg_type = 8;
+  string shield_type = 9;
+  string msg_content = 10;
+  int64  send_account = 11;
+  string creator = 12;
+  string updator = 13;
+  string auditor = 14;
+  string team = 15;
+  string proposer = 16;
+  string sms_channel = 17;
+  string deduplication_config = 21;
+}

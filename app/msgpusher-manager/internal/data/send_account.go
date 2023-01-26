@@ -8,6 +8,7 @@ import (
 	"austin-v2/pkg/utils/gromHelper"
 	"austin-v2/pkg/utils/stringHelper"
 	"context"
+	"fmt"
 	"github.com/go-kratos/kratos/v2/log"
 )
 
@@ -17,6 +18,7 @@ type ISendAccountRepo interface {
 	SendAccountChangeStatus(ctx context.Context, id int64, status int) error
 	SendAccountList(ctx context.Context, req *domain.SendAccountListRequest) (items []model.SendAccount, total int64, err error)
 	SendAccountQuery(ctx context.Context, req *domain.SendAccountListRequest) (items []model.SendAccount, err error)
+	One(ctx context.Context, id int64) (item model.SendAccount, err error)
 }
 
 type sendAccountRepo struct {
@@ -33,19 +35,19 @@ func NewSendAccountRepo(data *Data, logger log.Logger) ISendAccountRepo {
 	}
 }
 
-func (s *sendAccountRepo) SendAccountEdit(ctx context.Context, req *model.SendAccount) error {
-	return s.data.db.WithContext(ctx).Model(model.SendAccount{}).Where("id = ?", req.ID).Updates(req).Error
+func (r *sendAccountRepo) SendAccountEdit(ctx context.Context, req *model.SendAccount) error {
+	return r.data.db.WithContext(ctx).Model(model.SendAccount{}).Where("id = ?", req.ID).Updates(req).Error
 }
-func (s *sendAccountRepo) SendAccountCreate(ctx context.Context, req *model.SendAccount) error {
+func (r *sendAccountRepo) SendAccountCreate(ctx context.Context, req *model.SendAccount) error {
 	req.ID = stringHelper.NextID()
-	return s.data.db.WithContext(ctx).Model(model.SendAccount{}).Create(req).Error
+	return r.data.db.WithContext(ctx).Model(model.SendAccount{}).Create(req).Error
 }
-func (s *sendAccountRepo) SendAccountChangeStatus(ctx context.Context, id int64, status int) error {
-	return s.data.db.WithContext(ctx).Model(model.SendAccount{}).Where("id = ?", id).UpdateColumn("status", status).Error
+func (r *sendAccountRepo) SendAccountChangeStatus(ctx context.Context, id int64, status int) error {
+	return r.data.db.WithContext(ctx).Model(model.SendAccount{}).Where("id = ?", id).UpdateColumn("status", status).Error
 }
-func (s *sendAccountRepo) SendAccountList(ctx context.Context, req *domain.SendAccountListRequest) (items []model.SendAccount, total int64, err error) {
+func (r *sendAccountRepo) SendAccountList(ctx context.Context, req *domain.SendAccountListRequest) (items []model.SendAccount, total int64, err error) {
 	items = make([]model.SendAccount, 0)
-	query := s.data.db.WithContext(ctx).Model(items)
+	query := r.data.db.WithContext(ctx).Model(items)
 	if emptyHelper.IsNotEmpty(req.Title) {
 		query.Where("title like ?", "%"+req.Title+"%")
 	}
@@ -57,9 +59,9 @@ func (s *sendAccountRepo) SendAccountList(ctx context.Context, req *domain.SendA
 		Find(&items)
 	return items, total, nil
 }
-func (s *sendAccountRepo) SendAccountQuery(ctx context.Context, req *domain.SendAccountListRequest) (items []model.SendAccount, err error) {
+func (r *sendAccountRepo) SendAccountQuery(ctx context.Context, req *domain.SendAccountListRequest) (items []model.SendAccount, err error) {
 	items = make([]model.SendAccount, 0)
-	query := s.data.db.WithContext(ctx).Model(items)
+	query := r.data.db.WithContext(ctx).Model(items)
 	if emptyHelper.IsNotEmpty(req.Title) {
 		query.Where("title like ?", "%"+req.Title+"%")
 	}
@@ -68,4 +70,12 @@ func (s *sendAccountRepo) SendAccountQuery(ctx context.Context, req *domain.Send
 	}
 	query.Where("status = ?", 0).Find(&items)
 	return items, nil
+}
+
+func (r *sendAccountRepo) One(ctx context.Context, id int64) (item model.SendAccount, err error) {
+	key := fmt.Sprintf("sendaccount_%d", id)
+	err = r.cache.GetOrSet(ctx, key, &item, func(ctx context.Context, v interface{}) error {
+		return r.data.db.WithContext(ctx).Where("id", id).Limit(1).Find(&v).Error
+	})
+	return item, err
 }

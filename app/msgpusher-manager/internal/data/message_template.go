@@ -16,6 +16,7 @@ type IMessageTemplateRepo interface {
 	TemplateCreate(ctx context.Context, req *model.MessageTemplate) error
 	TemplateChangeStatus(ctx context.Context, id int64, status int) error
 	TemplateList(ctx context.Context, req *domain.TemplateListRequest) (items []model.MessageTemplate, total int64, err error)
+	One(ctx context.Context, id int64) (item model.MessageTemplate, err error)
 }
 
 type messageTemplateRepo struct {
@@ -46,12 +47,17 @@ func (s *messageTemplateRepo) TemplateCreate(ctx context.Context, req *model.Mes
 	req.ID = stringHelper.NextID()
 	return s.data.db.WithContext(ctx).Model(model.MessageTemplate{}).Create(req).Error
 }
+func (s *messageTemplateRepo) One(ctx context.Context, id int64) (item model.MessageTemplate, err error) {
+	err = s.data.db.WithContext(ctx).Model(model.MessageTemplate{}).Limit(1).Where("id=?", id).Find(&item).Error
+	return item, err
+}
 func (s *messageTemplateRepo) TemplateChangeStatus(ctx context.Context, id int64, status int) error {
-	return s.data.db.WithContext(ctx).Model(model.MessageTemplate{}).Where("id = ?", id).UpdateColumn("status", status).Error
+	return s.data.db.WithContext(ctx).Model(model.MessageTemplate{}).Where("id = ?", id).UpdateColumn("is_deleted", status).Error
 }
 func (s *messageTemplateRepo) TemplateList(ctx context.Context, req *domain.TemplateListRequest) (items []model.MessageTemplate, total int64, err error) {
 	items = make([]model.MessageTemplate, 0)
-	query := s.data.db.WithContext(ctx).Model(items)
+	query := s.data.db.WithContext(ctx).Model(items).
+		Where("is_deleted=0")
 	if emptyHelper.IsNotEmpty(req.Name) {
 		query.Where("name like ?", "%"+req.Name+"%")
 	}

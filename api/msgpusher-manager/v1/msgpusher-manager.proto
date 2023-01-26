@@ -25,6 +25,9 @@ service MsgPusherManager {
   rpc TemplateList(TemplateListRequest) returns(TemplateListResp);
   //删除模板
   rpc TemplateRemove(TemplateRemoveRequest) returns(google.protobuf.Empty);
+
+  rpc TemplateOne(TemplateOneRequest) returns(TemplateOneResp);
+
   //获取所有支持的渠道
   rpc GetAllChannel(google.protobuf.Empty) returns(GetAllChannelResp);
 
@@ -33,6 +36,8 @@ service MsgPusherManager {
   rpc GetSmsRecord(SmsRecordRequest) returns(SmsRecordResp);
   //消息记录列表
   rpc GetMsgRecord(MsgRecordRequest) returns(MsgRecordResp);
+  //获取微信模板列表
+  rpc GetOfficialAccountTemplateList(OfficialAccountTemplateRequest) returns(OfficialAccountTemplateResp);
 
 }
 
@@ -112,6 +117,30 @@ message TemplateListRow {
   string TemplateSn = 11;
   string SmsChannel = 12;
   string CreateAt = 13;
+  string DeduplicationConfig = 14;
+}
+
+message TemplateOneRequest{
+  int64  id = 1;
+}
+message TemplateOneResp{
+  int64  id = 1;
+  string name = 2;
+  int32 id_type = 4;
+  int32 send_channel = 5;
+  int32 template_type = 6;
+  string template_sn = 7;
+  int32 msg_type = 8;
+  int32 shield_type = 9;
+  string msg_content = 10;
+  int64  send_account = 11;
+  string creator = 12;
+  string updator = 13;
+  string auditor = 14;
+  string team = 15;
+  string proposer = 16;
+  string sms_channel = 17;
+  string deduplication_config = 21;
 }
 
 message TemplateListResp {
@@ -186,3 +215,17 @@ message MsgRecordResp{
   int64 total = 2;
 }
 
+message OfficialAccountTemplateRequest{
+  int64 SendAccount=1;
+}
+
+message OfficialAccountTemplateResp{
+  repeated OfficialAccountTemplateRow rows = 1;
+}
+
+message OfficialAccountTemplateRow{
+  string TemplateID = 1;
+  string Title = 2;
+  string Content = 3;
+  string Example = 4;
+}

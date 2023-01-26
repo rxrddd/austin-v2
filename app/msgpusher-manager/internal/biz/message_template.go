@@ -64,19 +64,20 @@ func (s *MessageTemplateUseCase) TemplateList(ctx context.Context, req *domain.T
 
 	for _, item := range items {
 		rows = append(rows, &domain.TemplateListRow{
-			ID:              item.ID,
-			Name:            item.Name,
-			IdType:          int64(item.IDType),
-			SendChannel:     int64(item.SendChannel),
-			TemplateType:    int64(item.TemplateType),
-			MsgType:         int64(item.MsgType),
-			ShieldType:      int64(item.ShieldType),
-			MsgContent:      item.MsgContent,
-			SendAccount:     item.SendAccount,
-			SendAccountName: item.SendAccountItem.Title,
-			TemplateSn:      item.TemplateSn,
-			SmsChannel:      item.SmsChannel,
-			CreateAt:        timeHelper.FormatTimeInt64YMDHIS(item.Created),
+			ID:                  item.ID,
+			Name:                item.Name,
+			IdType:              int64(item.IDType),
+			SendChannel:         int64(item.SendChannel),
+			TemplateType:        int64(item.TemplateType),
+			MsgType:             int64(item.MsgType),
+			ShieldType:          int64(item.ShieldType),
+			MsgContent:          item.MsgContent,
+			SendAccount:         item.SendAccount,
+			SendAccountName:     item.SendAccountItem.Title,
+			TemplateSn:          item.TemplateSn,
+			SmsChannel:          item.SmsChannel,
+			CreateAt:            timeHelper.FormatTimeInt64YMDHIS(item.Created),
+			DeduplicationConfig: item.DeduplicationConfig,
 		})
 	}
 
@@ -85,6 +86,37 @@ func (s *MessageTemplateUseCase) TemplateList(ctx context.Context, req *domain.T
 		Total: total,
 	}, err
 }
+
+func (s *MessageTemplateUseCase) TemplateOne(ctx context.Context, req *domain.TemplateOneRequest) (*domain.TemplateOneResp, error) {
+	item, err := s.repo.One(ctx, req.Id)
+	if err != nil {
+		return nil, err
+	}
+	return &domain.TemplateOneResp{
+		ID:                  item.ID,
+		Name:                item.Name,
+		AuditStatus:         item.AuditStatus,
+		IDType:              item.IDType,
+		SendChannel:         item.SendChannel,
+		TemplateType:        item.TemplateType,
+		TemplateSn:          item.TemplateSn,
+		MsgType:             item.MsgType,
+		ShieldType:          item.ShieldType,
+		MsgContent:          item.MsgContent,
+		SendAccount:         item.SendAccount,
+		Creator:             item.Creator,
+		Updator:             item.Updator,
+		Auditor:             item.Auditor,
+		Team:                item.Team,
+		Proposer:            item.Proposer,
+		SmsChannel:          item.SmsChannel,
+		IsDeleted:           item.IsDeleted,
+		Created:             item.Created,
+		Updated:             item.Updated,
+		DeduplicationConfig: item.DeduplicationConfig,
+	}, err
+}
+
 func (s *MessageTemplateUseCase) TemplateRemove(ctx context.Context, id int64) (*emptypb.Empty, error) {
-	return &emptypb.Empty{}, nil
+	return &emptypb.Empty{}, s.repo.TemplateChangeStatus(ctx, id, 1)
 }
