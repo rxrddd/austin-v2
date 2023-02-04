@@ -95,7 +95,6 @@ docker:
 # 管理后台生成docker
 dockerAdmin:
 	#cd ../../../../ && docker build -f deploy/build/DockerfileAdmin --build-arg APP_RELATIVE_PATH=$(APP_RELATIVE_PATH) -t $(DOCKER_IMAGE) .
-	#cd ../../../../ && docker build -f deploy/build/DockerfileAdmin --build-arg APP_RELATIVE_PATH=$(APP_RELATIVE_PATH) -t $(DOCKER_IMAGE) .
 	cd ../../../ && docker build -f deploy/build/DockerfileAdmin --build-arg APP_RELATIVE_PATH=$(APP_RELATIVE_PATH) -t $(DOCKER_IMAGE) .
 
 .PHONY: wire
