@@ -3,6 +3,7 @@ package biz
 import (
 	pb "austin-v2/api/msgpusher-manager/v1"
 	"austin-v2/app/msgpusher-manager/internal/data"
+	"austin-v2/app/msgpusher-manager/internal/domain"
 	"context"
 	"github.com/go-kratos/kratos/v2/log"
 )
@@ -19,7 +20,7 @@ func NewSmsRecordUseCase(repo data.ISmsRecordRepo, logger log.Logger) *SmsRecord
 	}
 }
 
-func (s *SmsRecordUseCase) GetSmsRecord(ctx context.Context, req *pb.SmsRecordRequest) (*pb.SmsRecordResp, error) {
+func (s *SmsRecordUseCase) GetSmsRecord(ctx context.Context, req *domain.SmsRecordRequest) (*pb.SmsRecordResp, error) {
 	var (
 		items       = make([]*pb.SmsRecordRow, 0)
 		total int64 = 0

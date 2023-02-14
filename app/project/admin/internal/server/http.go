@@ -90,7 +90,7 @@ func setUserInfo() middleware.Middleware {
 }
 
 // NewHTTPServer new a HTTP serviceName.
-func NewHTTPServer(c *conf.Server, ac *conf.Auth, service *service.AdminInterface, logger log.Logger) *http.Server {
+func NewHTTPServer(c *conf.Server, debug *conf.Debug, ac *conf.Auth, service *service.AdminInterface, logger log.Logger) *http.Server {
 	// 初始化基础数据库 casbin权限控制策略,连接基础库
 	db, err := gorm.Open(mysql.Open(ac.CasbinSource), &gorm.Config{})
 	if err != nil {
@@ -181,13 +181,13 @@ func responseEncoder(w stdHttp.ResponseWriter, r *stdHttp.Request, v interface{}
 		return err
 	}
 
-	data, err = codec.Marshal(reply)
+	resp, err := codec.Marshal(reply)
 	if err != nil {
 		return err
 	}
 	w.Header().Set("Content-Type", codec.Name())
 	w.WriteHeader(stdHttp.StatusOK)
-	w.Write(data)
+	_, _ = w.Write(resp)
 	return nil
 }
 

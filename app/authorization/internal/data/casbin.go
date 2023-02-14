@@ -4,6 +4,7 @@ import (
 	"austin-v2/app/authorization/internal/biz"
 	"austin-v2/pkg/errResponse"
 	"context"
+	"fmt"
 	kerrors "github.com/go-kratos/kratos/v2/errors"
 	"strings"
 )
@@ -95,6 +96,7 @@ func (a AuthorizationRepo) GetPolicies(ctx context.Context, role string) ([]*biz
 }
 
 func (a AuthorizationRepo) UpdatePolicies(ctx context.Context, role string, rules []biz.PolicyRules) (bool, error) {
+	fmt.Println(`role`, role)
 	// 检查角色是否存在
 	if !a.checkRoleExist([]string{role}) {
 		return false, kerrors.BadRequest(errResponse.ReasonParamsError, "角色不存在")
@@ -107,11 +109,13 @@ func (a AuthorizationRepo) UpdatePolicies(ctx context.Context, role string, rule
 	// 移除已有策略规则
 	_, err := a.data.enforcer.RemoveFilteredPolicy(0, role)
 	if err != nil {
+		fmt.Println(`err`, err)
 		return false, kerrors.InternalServer(errResponse.ReasonSystemError, err.Error())
 	}
 
 	success, err := a.data.enforcer.AddPolicies(policies)
 	if err != nil {
+		fmt.Println(`err`, err)
 		return false, kerrors.InternalServer(errResponse.ReasonSystemError, err.Error())
 	}
 	if !success {

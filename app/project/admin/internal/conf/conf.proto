@@ -12,10 +12,15 @@ message Bootstrap {
   Data data = 3;
   Auth auth = 4;
   Service service = 5;
+  Debug debug = 6;
 }
 
 message Trace {
   string endpoint = 1;
+}
+
+message Debug {
+  string mode = 1;
 }
 
 message Server {
@@ -69,19 +74,23 @@ message Service {
   string version = 2;
   message Administrator {
     string endpoint = 1;
+    google.protobuf.Duration timeout = 2;
   }
   Administrator administrator = 3;
   message Authorization {
     string endpoint = 1;
+    google.protobuf.Duration timeout = 2;
   }
   Authorization authorization = 4;
   message Files {
     string endpoint = 1;
+    google.protobuf.Duration timeout = 2;
   }
   Files files = 5;
 
   message Msgpushermanager {
     string endpoint = 1;
+    google.protobuf.Duration timeout = 2;
   }
   Msgpushermanager msgpushermanager = 6;
 }

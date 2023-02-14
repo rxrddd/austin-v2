@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+// 定义包名
+package api.msgpusher;
+import "errors/errors.proto";
+
+// 多语言特定包名，用于源代码引用
+option go_package = "austin-v2/api/v1;v1";
+
+enum ErrorReason {
+  // 设置缺省错误码
+  option (errors.default_code) = 500;
+
+  CLIENT_PARAMS_ERROR = 0; //参数错误
+  SEARCH_MESSAGE_TEMPLATE = 1;//模板错误
+  PRE_PARAM_CHECK = 2; //参数check错误
+  PRE_PARAM_ALL_FILTER = 3; //全部被过滤掉了
+  SYSTEM = 4; //系统异常
+}

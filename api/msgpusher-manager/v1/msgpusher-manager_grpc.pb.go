@@ -39,12 +39,15 @@ type MsgPusherManagerClient interface {
 	TemplateList(ctx context.Context, in *TemplateListRequest, opts ...grpc.CallOption) (*TemplateListResp, error)
 	//删除模板
 	TemplateRemove(ctx context.Context, in *TemplateRemoveRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	TemplateOne(ctx context.Context, in *TemplateOneRequest, opts ...grpc.CallOption) (*TemplateOneResp, error)
 	//获取所有支持的渠道
 	GetAllChannel(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetAllChannelResp, error)
 	//短信记录列表
 	GetSmsRecord(ctx context.Context, in *SmsRecordRequest, opts ...grpc.CallOption) (*SmsRecordResp, error)
 	//消息记录列表
 	GetMsgRecord(ctx context.Context, in *MsgRecordRequest, opts ...grpc.CallOption) (*MsgRecordResp, error)
+	//获取微信模板列表
+	GetOfficialAccountTemplateList(ctx context.Context, in *OfficialAccountTemplateRequest, opts ...grpc.CallOption) (*OfficialAccountTemplateResp, error)
 }
 
 type msgPusherManagerClient struct {
@@ -127,6 +130,15 @@ func (c *msgPusherManagerClient) TemplateRemove(ctx context.Context, in *Templat
 	return out, nil
 }
 
+func (c *msgPusherManagerClient) TemplateOne(ctx context.Context, in *TemplateOneRequest, opts ...grpc.CallOption) (*TemplateOneResp, error) {
+	out := new(TemplateOneResp)
+	err := c.cc.Invoke(ctx, "/api.msgpusher.manager.MsgPusherManager/TemplateOne", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *msgPusherManagerClient) GetAllChannel(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetAllChannelResp, error) {
 	out := new(GetAllChannelResp)
 	err := c.cc.Invoke(ctx, "/api.msgpusher.manager.MsgPusherManager/GetAllChannel", in, out, opts...)
@@ -154,6 +166,15 @@ func (c *msgPusherManagerClient) GetMsgRecord(ctx context.Context, in *MsgRecord
 	return out, nil
 }
 
+func (c *msgPusherManagerClient) GetOfficialAccountTemplateList(ctx context.Context, in *OfficialAccountTemplateRequest, opts ...grpc.CallOption) (*OfficialAccountTemplateResp, error) {
+	out := new(OfficialAccountTemplateResp)
+	err := c.cc.Invoke(ctx, "/api.msgpusher.manager.MsgPusherManager/GetOfficialAccountTemplateList", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MsgPusherManagerServer is the server API for MsgPusherManager service.
 // All implementations must embed UnimplementedMsgPusherManagerServer
 // for forward compatibility
@@ -174,12 +195,15 @@ type MsgPusherManagerServer interface {
 	TemplateList(context.Context, *TemplateListRequest) (*TemplateListResp, error)
 	//删除模板
 	TemplateRemove(context.Context, *TemplateRemoveRequest) (*emptypb.Empty, error)
+	TemplateOne(context.Context, *TemplateOneRequest) (*TemplateOneResp, error)
 	//获取所有支持的渠道
 	GetAllChannel(context.Context, *emptypb.Empty) (*GetAllChannelResp, error)
 	//短信记录列表
 	GetSmsRecord(context.Context, *SmsRecordRequest) (*SmsRecordResp, error)
 	//消息记录列表
 	GetMsgRecord(context.Context, *MsgRecordRequest) (*MsgRecordResp, error)
+	//获取微信模板列表
+	GetOfficialAccountTemplateList(context.Context, *OfficialAccountTemplateRequest) (*OfficialAccountTemplateResp, error)
 	mustEmbedUnimplementedMsgPusherManagerServer()
 }
 
@@ -211,6 +235,9 @@ func (UnimplementedMsgPusherManagerServer) TemplateList(context.Context, *Templa
 func (UnimplementedMsgPusherManagerServer) TemplateRemove(context.Context, *TemplateRemoveRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method TemplateRemove not implemented")
 }
+func (UnimplementedMsgPusherManagerServer) TemplateOne(context.Context, *TemplateOneRequest) (*TemplateOneResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method TemplateOne not implemented")
+}
 func (UnimplementedMsgPusherManagerServer) GetAllChannel(context.Context, *emptypb.Empty) (*GetAllChannelResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAllChannel not implemented")
 }
@@ -219,6 +246,9 @@ func (UnimplementedMsgPusherManagerServer) GetSmsRecord(context.Context, *SmsRec
 }
 func (UnimplementedMsgPusherManagerServer) GetMsgRecord(context.Context, *MsgRecordRequest) (*MsgRecordResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMsgRecord not implemented")
+}
+func (UnimplementedMsgPusherManagerServer) GetOfficialAccountTemplateList(context.Context, *OfficialAccountTemplateRequest) (*OfficialAccountTemplateResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetOfficialAccountTemplateList not implemented")
 }
 func (UnimplementedMsgPusherManagerServer) mustEmbedUnimplementedMsgPusherManagerServer() {}
 
@@ -377,6 +407,24 @@ func _MsgPusherManager_TemplateRemove_Handler(srv interface{}, ctx context.Conte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _MsgPusherManager_TemplateOne_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TemplateOneRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgPusherManagerServer).TemplateOne(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.msgpusher.manager.MsgPusherManager/TemplateOne",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgPusherManagerServer).TemplateOne(ctx, req.(*TemplateOneRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _MsgPusherManager_GetAllChannel_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(emptypb.Empty)
 	if err := dec(in); err != nil {
@@ -431,6 +479,24 @@ func _MsgPusherManager_GetMsgRecord_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _MsgPusherManager_GetOfficialAccountTemplateList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(OfficialAccountTemplateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgPusherManagerServer).GetOfficialAccountTemplateList(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.msgpusher.manager.MsgPusherManager/GetOfficialAccountTemplateList",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgPusherManagerServer).GetOfficialAccountTemplateList(ctx, req.(*OfficialAccountTemplateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // MsgPusherManager_ServiceDesc is the grpc.ServiceDesc for MsgPusherManager service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -471,6 +537,10 @@ var MsgPusherManager_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _MsgPusherManager_TemplateRemove_Handler,
 		},
 		{
+			MethodName: "TemplateOne",
+			Handler:    _MsgPusherManager_TemplateOne_Handler,
+		},
+		{
 			MethodName: "GetAllChannel",
 			Handler:    _MsgPusherManager_GetAllChannel_Handler,
 		},
@@ -481,6 +551,10 @@ var MsgPusherManager_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetMsgRecord",
 			Handler:    _MsgPusherManager_GetMsgRecord_Handler,
+		},
+		{
+			MethodName: "GetOfficialAccountTemplateList",
+			Handler:    _MsgPusherManager_GetOfficialAccountTemplateList_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

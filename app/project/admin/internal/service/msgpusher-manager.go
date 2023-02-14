@@ -32,6 +32,11 @@ func (s *AdminInterface) TemplateList(ctx context.Context, req *pb.TemplateListR
 func (s *AdminInterface) TemplateRemove(ctx context.Context, req *pb.TemplateRemoveRequest) (*emptypb.Empty, error) {
 	return s.msgPusherManagerRepo.TemplateRemove(ctx, req)
 }
+
+func (s *AdminInterface) TemplateOne(ctx context.Context, req *pb.TemplateOneRequest) (*pb.TemplateOneResp, error) {
+	return s.msgPusherManagerRepo.TemplateOne(ctx, req)
+}
+
 func (s *AdminInterface) GetAllChannel(ctx context.Context, req *emptypb.Empty) (*pb.GetAllChannelResp, error) {
 	var res []*pb.Channel
 	for key, val := range channelType.TypeEnCode {
@@ -51,4 +56,7 @@ func (s *AdminInterface) GetSmsRecord(ctx context.Context, req *pb.SmsRecordRequ
 }
 func (s *AdminInterface) GetMsgRecord(ctx context.Context, req *pb.MsgRecordRequest) (*pb.MsgRecordResp, error) {
 	return s.msgPusherManagerRepo.GetMsgRecord(ctx, req)
+}
+func (s *AdminInterface) GetOfficialAccountTemplateList(ctx context.Context, req *pb.OfficialAccountTemplateRequest) (*pb.OfficialAccountTemplateResp, error) {
+	return s.msgPusherManagerRepo.GetOfficialAccountTemplateList(ctx, req)
 }

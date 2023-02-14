@@ -20,11 +20,9 @@ import (
 
 // wireApp init kratos application.
 func wireApp(confServer *conf.Server, registry *conf.Registry, confData *conf.Data, logger log.Logger) (*kratos.App, func(), error) {
-	iMessagingClient := data.NewMq(confData, logger)
 	db := data.NewMysqlCmd(confData, logger)
 	cmdable := data.NewRedisCmd(confData, logger)
-	client := data.NewMongoDB(confData)
-	dataData, cleanup, err := data.NewData(confData, logger, iMessagingClient, db, cmdable, client)
+	dataData, cleanup, err := data.NewData(confData, logger, db, cmdable)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -36,7 +34,9 @@ func wireApp(confServer *conf.Server, registry *conf.Registry, confData *conf.Da
 	smsRecordUseCase := biz.NewSmsRecordUseCase(iSmsRecordRepo, logger)
 	iSendAccountRepo := data.NewSendAccountRepo(dataData, logger)
 	sendAccountUseCase := biz.NewSendAccountUseCase(iSendAccountRepo, logger)
-	msgPusherManagerService := service.NewMsgPusherManagerService(msgRecordUseCase, messageTemplateUseCase, smsRecordUseCase, sendAccountUseCase)
+	iWxTemplateRepo := data.NewWxTemplateRepo(dataData, iSendAccountRepo, logger)
+	wxTemplateUseCase := biz.NewWxTemplateUseCase(iWxTemplateRepo, logger)
+	msgPusherManagerService := service.NewMsgPusherManagerService(msgRecordUseCase, messageTemplateUseCase, smsRecordUseCase, sendAccountUseCase, wxTemplateUseCase)
 	grpcServer := server.NewGRPCServer(confServer, msgPusherManagerService, logger)
 	registrar := data.NewRegistrar(registry)
 	app := newApp(logger, grpcServer, registrar)

@@ -285,6 +285,7 @@ func (s AdministratorRepo) AdministratorStatusChange(ctx context.Context, id int
 func (s AdministratorRepo) VerifyAdministratorPassword(ctx context.Context, id int64, password string) (bool, error) {
 	administrator := entity2.AdministratorEntity{}
 	if err := s.data.db.Model(&entity2.AdministratorEntity{}).Where("id = ?", id).First(&administrator).Error; err != nil {
+		s.log.Error("err", err.Error())
 		return false, errors.New(500, "SYSTEM_ERROR", err.Error())
 	}
 	if administrator.Id != id {

@@ -4,7 +4,6 @@ import (
 	v1 "austin-v2/api/msgpusher/v1"
 	"austin-v2/app/msgpusher/internal/conf"
 	"austin-v2/app/msgpusher/internal/service"
-	"austin-v2/pkg/errResponse"
 	"encoding/json"
 	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/log"
@@ -75,7 +74,7 @@ func responseEncoder(w stdHttp.ResponseWriter, r *stdHttp.Request, v interface{}
 	}
 	w.Header().Set("Content-Type", codec.Name())
 	w.WriteHeader(stdHttp.StatusOK)
-	w.Write(data)
+	_, _ = w.Write(data)
 	return nil
 }
 
@@ -85,7 +84,6 @@ func errorEncoder(w stdHttp.ResponseWriter, r *stdHttp.Request, err error) {
 	// 返回码均是200
 	w.WriteHeader(stdHttp.StatusOK)
 	// 重写errResponse
-	err = errResponse.SetCustomizeErrInfo(err)
 	se := errors.FromError(err)
 	body, err := codec.Marshal(se)
 	if err != nil {

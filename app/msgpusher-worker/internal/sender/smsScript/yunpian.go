@@ -5,7 +5,6 @@ import (
 	"austin-v2/app/msgpusher-common/domain/content_model"
 	"austin-v2/app/msgpusher-common/model"
 	"austin-v2/app/msgpusher-worker/internal/biz"
-	"austin-v2/pkg/mq"
 	"austin-v2/pkg/types"
 	"austin-v2/pkg/utils/accountHelper"
 	"austin-v2/pkg/utils/contentHelper"
@@ -16,6 +15,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/go-kratos/kratos/v2/log"
+	"github.com/hibiken/asynq"
 	"github.com/panjf2000/ants/v2"
 	"github.com/pkg/errors"
 	"github.com/spf13/cast"
@@ -26,20 +26,20 @@ import (
 )
 
 type YunPian struct {
-	logger   *log.Helper
-	mqHelper mq.IMessagingClient
-	sc       *biz.SendAccountUseCase
+	logger *log.Helper
+	cli    *asynq.Client
+	sc     *biz.SendAccountUseCase
 }
 
 func NewYunPin(
 	logger log.Logger,
-	mqHelper mq.IMessagingClient,
+	cli *asynq.Client,
 	sc *biz.SendAccountUseCase,
 ) *YunPian {
 	return &YunPian{
-		logger:   log.NewHelper(log.With(logger, "module", "sender/smsScript/yunpian")),
-		mqHelper: mqHelper,
-		sc:       sc,
+		logger: log.NewHelper(log.With(logger, "module", "sender/smsScript/yunpian")),
+		cli:    cli,
+		sc:     sc,
 	}
 }
 func (h *YunPian) Name() string {
@@ -93,8 +93,8 @@ func (h *YunPian) Send(ctx context.Context, taskInfo *types.TaskInfo) (err error
 
 	}
 	_ = ants.Submit(func() {
-		if err = h.mqHelper.Publish(jsonHelper.MustToByte(records), "sms.record"); err != nil {
-			h.logger.WithContext(ctx).Errorw("msg", "yun pian send publish  err", "err", err)
+		if _, err = h.cli.EnqueueContext(ctx, asynq.NewTask("sms.record", jsonHelper.MustToByte(records))); err != nil {
+			h.logger.WithContext(ctx).Errorw("msg", "yun pian send publish err", "err", err)
 		}
 	})
 

@@ -6,9 +6,7 @@ import (
 	"austin-v2/pkg/types"
 	"austin-v2/pkg/utils/stringHelper"
 	"context"
-	"fmt"
 	"github.com/go-kratos/kratos/v2/log"
-	"github.com/pkg/errors"
 	//"google.golang.org/protobuf/types/known/structpb"
 )
 
@@ -29,11 +27,12 @@ func NewMsgPusherUseCase(
 		uc:  uc,
 	}
 }
+
 //Send 单条推送消息
 func (s *MsgPusherUseCase) Send(ctx context.Context, in *pb.SendRequest) (resp *pb.SendResponse, err error) {
 	requestId := stringHelper.GenerateUUID()
 	if in.MessageParam == nil {
-		return nil, errors.Wrapf(errors.New("客户端参数错误1"), "in:%v", in)
+		return nil, pb.ErrorClientParamsError("客户端参数错误")
 	}
 
 	var sendTaskModel = &types.SendTaskModel{
@@ -48,10 +47,9 @@ func (s *MsgPusherUseCase) Send(ctx context.Context, in *pb.SendRequest) (resp *
 		},
 	}
 	messageTemplate, err := s.uc.One(ctx, sendTaskModel.MessageTemplateId)
-	if err != nil {
-		return nil, fmt.Errorf("查询模板异常 err:%v 模板id:%d", err, sendTaskModel.MessageTemplateId)
+	if messageTemplate.ID <= 0 || err != nil {
+		return nil, pb.ErrorSearchMessageTemplate("查询模板异常 模板id:%d", sendTaskModel.MessageTemplateId)
 	}
-
 	if err = s.pr.Process(ctx, sendTaskModel, messageTemplate); err != nil {
 		return nil, err
 	}
@@ -65,7 +63,7 @@ func (s *MsgPusherUseCase) Send(ctx context.Context, in *pb.SendRequest) (resp *
 func (s *MsgPusherUseCase) BatchSend(ctx context.Context, in *pb.BatchSendRequest) (*pb.SendResponse, error) {
 	requestId := stringHelper.GenerateUUID()
 	if in.MessageParam == nil {
-		return nil, errors.Wrapf(errors.New("客户端参数错误1"), "in:%v", in)
+		return nil, pb.ErrorClientParamsError("客户端参数错误")
 	}
 	messageParamList := make([]types.MessageParam, 0)
 
@@ -84,7 +82,7 @@ func (s *MsgPusherUseCase) BatchSend(ctx context.Context, in *pb.BatchSendReques
 	}
 	messageTemplate, err := s.uc.One(ctx, sendTaskModel.MessageTemplateId)
 	if err != nil {
-		return nil, fmt.Errorf("查询模板异常 err:%v 模板id:%d", err, sendTaskModel.MessageTemplateId)
+		return nil, pb.ErrorSearchMessageTemplate("查询模板异常 err:%v 模板id:%d", err, sendTaskModel.MessageTemplateId)
 	}
 
 	if err = s.pr.Process(ctx, sendTaskModel, messageTemplate); err != nil {

@@ -1,13 +1,13 @@
 package process
 
 import (
+	pb "austin-v2/api/msgpusher/v1"
 	"austin-v2/app/msgpusher-common/enums/channelType"
 	"austin-v2/app/msgpusher-common/enums/idType"
 	"austin-v2/app/msgpusher/internal/data/model"
 	"austin-v2/pkg/types"
 	"austin-v2/pkg/utils/taskHelper"
 	"context"
-	"github.com/pkg/errors"
 	"regexp"
 )
 
@@ -32,7 +32,7 @@ func (p *AfterParamCheckAction) Process(_ context.Context, sendTaskModel *types.
 			}
 		}
 		if len(newTask) <= 0 {
-			return errors.Wrapf(sendErr, "AfterParamCheckAction sendTaskModel:%v", sendTaskModel)
+			return pb.ErrorPreParamAllFilter("没有可以发送的消息")
 		}
 		sendTaskModel.TaskInfo = newTask
 	}

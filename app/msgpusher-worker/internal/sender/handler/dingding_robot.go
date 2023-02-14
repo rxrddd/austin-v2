@@ -4,6 +4,7 @@ import (
 	"austin-v2/app/msgpusher-common/domain/account"
 	"austin-v2/app/msgpusher-common/domain/content_model"
 	"austin-v2/app/msgpusher-common/enums/channelType"
+	"austin-v2/app/msgpusher-common/model"
 	"austin-v2/app/msgpusher-worker/internal/biz"
 	"austin-v2/app/msgpusher-worker/internal/data"
 	"austin-v2/pkg/types"
@@ -80,7 +81,7 @@ func (h *DingDingRobotHandler) Execute(ctx context.Context, taskInfo *types.Task
 		record.Msg = "推送成功"
 	}
 	_ = ants.Submit(func() {
-		_ = h.mrr.InsertMany(ctx, []interface{}{record})
+		_ = h.mrr.InsertMany(ctx, []*model.MsgRecord{record})
 	})
 	return nil
 }

@@ -5,7 +5,6 @@ import (
 	"austin-v2/app/msgpusher-common/domain/content_model"
 	"austin-v2/app/msgpusher-common/model"
 	"austin-v2/app/msgpusher-worker/internal/biz"
-	"austin-v2/pkg/mq"
 	"austin-v2/pkg/types"
 	"austin-v2/pkg/utils/accountHelper"
 	"austin-v2/pkg/utils/contentHelper"
@@ -18,26 +17,27 @@ import (
 	smsapi "github.com/alibabacloud-go/dysmsapi-20170525/v3/client"
 	"github.com/alibabacloud-go/tea/tea"
 	"github.com/go-kratos/kratos/v2/log"
+	"github.com/hibiken/asynq"
 	"github.com/panjf2000/ants/v2"
 	"github.com/spf13/cast"
 	"time"
 )
 
 type AliyunSms struct {
-	logger   *log.Helper
-	mqHelper mq.IMessagingClient
-	sc       *biz.SendAccountUseCase
+	logger *log.Helper
+	cli    *asynq.Client
+	sc     *biz.SendAccountUseCase
 }
 
 func NewAliyunSms(
 	logger log.Logger,
-	mqHelper mq.IMessagingClient,
+	cli *asynq.Client,
 	sc *biz.SendAccountUseCase,
 ) *AliyunSms {
 	return &AliyunSms{
-		logger:   log.NewHelper(log.With(logger, "module", "sender/smsScript/yunpian")),
-		mqHelper: mqHelper,
-		sc:       sc,
+		logger: log.NewHelper(log.With(logger, "module", "sender/smsScript/yunpian")),
+		cli:    cli,
+		sc:     sc,
 	}
 }
 func (h *AliyunSms) Name() string {
@@ -82,7 +82,7 @@ func (h *AliyunSms) Send(ctx context.Context, taskInfo *types.TaskInfo) (err err
 		}
 	}
 	_ = ants.Submit(func() {
-		if err = h.mqHelper.Publish(jsonHelper.MustToByte(records), "sms.record"); err != nil {
+		if _, err = h.cli.EnqueueContext(ctx, asynq.NewTask("sms.record", jsonHelper.MustToByte(records))); err != nil {
 			h.logger.WithContext(ctx).Errorw("msg", "aliyun send publish err", "err", err)
 		}
 	})

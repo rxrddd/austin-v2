@@ -8,4 +8,5 @@ var BizProviderSet = wire.NewSet(
 	NewSendAccountUseCase,
 	NewSmsRecordUseCase,
 	NewMsgRecordUseCase,
+	NewWxTemplateUseCase,
 )

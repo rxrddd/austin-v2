@@ -1,17 +1,18 @@
 package data
 
 import (
+	authorizationServiceV1 "austin-v2/api/authorization/v1"
 	v1 "austin-v2/api/project/admin/v1"
 	"austin-v2/app/project/admin/internal/conf"
+	"austin-v2/pkg/utils/metaHelper"
 	"context"
 	"github.com/go-kratos/kratos/v2/log"
-	"golang.org/x/sync/singleflight"
-	"google.golang.org/protobuf/types/known/emptypb"
-
-	authorizationServiceV1 "austin-v2/api/authorization/v1"
+	metadataMidd "github.com/go-kratos/kratos/v2/middleware/metadata"
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
 	"github.com/go-kratos/kratos/v2/registry"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
+	"golang.org/x/sync/singleflight"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 type AuthorizationRepo struct {
@@ -34,8 +35,11 @@ func NewAuthorizationServiceClient(ah *conf.Auth, sr *conf.Service, r registry.D
 		context.Background(),
 		grpc.WithEndpoint(sr.Authorization.Endpoint),
 		grpc.WithDiscovery(r),
+		grpc.WithTimeout(sr.Authorization.Timeout.AsDuration()),
 		grpc.WithMiddleware(
 			recovery.Recovery(),
+			metaHelper.MetaUserMiddleware(),
+			metadataMidd.Client(),
 		),
 	)
 	if err != nil {

@@ -4,11 +4,14 @@ import (
 	msgpushermanagerV1 "austin-v2/api/msgpusher-manager/v1"
 	pb "austin-v2/api/project/admin/v1"
 	"austin-v2/app/project/admin/internal/conf"
+	"austin-v2/pkg/utils/metaHelper"
 	"context"
 	"github.com/go-kratos/kratos/v2/log"
+	metadataMidd "github.com/go-kratos/kratos/v2/middleware/metadata"
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
 	"github.com/go-kratos/kratos/v2/registry"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
+	"github.com/spf13/cast"
 	"golang.org/x/sync/singleflight"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
@@ -19,8 +22,11 @@ func NewMsgPusherManagerClient(_ *conf.Auth, sr *conf.Service, r registry.Discov
 		context.Background(),
 		grpc.WithEndpoint(sr.Msgpushermanager.Endpoint),
 		grpc.WithDiscovery(r),
+		grpc.WithTimeout(sr.Msgpushermanager.Timeout.AsDuration()),
 		grpc.WithMiddleware(
 			recovery.Recovery(),
+			metaHelper.MetaUserMiddleware(),
+			metadataMidd.Client(),
 		),
 	)
 	if err != nil {
@@ -76,6 +82,7 @@ func (s *MsgPusherManagerRepo) SendAccountList(ctx context.Context, req *pb.Send
 			Title:       item.Title,
 			Config:      item.Config,
 			SendChannel: item.SendChannel,
+			Status:      item.Status,
 		})
 	}
 	return &pb.SendAccountListResp{
@@ -142,18 +149,20 @@ func (s *MsgPusherManagerRepo) TemplateList(ctx context.Context, req *pb.Templat
 	resp := make([]*pb.TemplateListRow, 0)
 	for _, item := range list.Rows {
 		resp = append(resp, &pb.TemplateListRow{
-			Id:              item.ID,
-			Name:            item.Name,
-			IdType:          item.IdType,
-			SendChannel:     item.SendChannel,
-			TemplateType:    item.TemplateType,
-			MsgType:         item.MsgType,
-			ShieldType:      item.ShieldType,
-			MsgContent:      item.MsgContent,
-			SendAccount:     item.SendAccount,
-			SendAccountName: item.SendAccountName,
-			TemplateSn:      item.TemplateSn,
-			SmsChannel:      item.SmsChannel,
+			Id:                  item.ID,
+			Name:                item.Name,
+			IdType:              item.IdType,
+			SendChannel:         item.SendChannel,
+			TemplateType:        item.TemplateType,
+			MsgType:             item.MsgType,
+			ShieldType:          item.ShieldType,
+			MsgContent:          item.MsgContent,
+			SendAccount:         item.SendAccount,
+			SendAccountName:     item.SendAccountName,
+			TemplateSn:          item.TemplateSn,
+			SmsChannel:          item.SmsChannel,
+			CreateAt:            item.CreateAt,
+			DeduplicationConfig: item.DeduplicationConfig,
 		})
 	}
 	return &pb.TemplateListResp{
@@ -166,6 +175,35 @@ func (s *MsgPusherManagerRepo) TemplateRemove(ctx context.Context, req *pb.Templ
 		ID: req.Id,
 	})
 }
+
+func (s *MsgPusherManagerRepo) TemplateOne(ctx context.Context, req *pb.TemplateOneRequest) (*pb.TemplateOneResp, error) {
+	one, err := s.data.msgPusherManagerClient.TemplateOne(ctx, &msgpushermanagerV1.TemplateOneRequest{
+		Id: req.Id,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return &pb.TemplateOneResp{
+		Id:                  one.Id,
+		Name:                one.Name,
+		IdType:              one.IdType,
+		SendChannel:         cast.ToString(one.SendChannel),
+		TemplateType:        cast.ToString(one.TemplateType),
+		TemplateSn:          one.TemplateSn,
+		MsgType:             cast.ToString(one.MsgType),
+		ShieldType:          cast.ToString(one.ShieldType),
+		MsgContent:          one.MsgContent,
+		SendAccount:         one.SendAccount,
+		Creator:             one.Creator,
+		Updator:             one.Updator,
+		Auditor:             one.Auditor,
+		Team:                one.Team,
+		Proposer:            one.Proposer,
+		SmsChannel:          one.SmsChannel,
+		DeduplicationConfig: one.DeduplicationConfig,
+	}, nil
+}
+
 func (s *MsgPusherManagerRepo) GetAllChannel(ctx context.Context, req *emptypb.Empty) (*pb.GetAllChannelResp, error) {
 	list, err := s.data.msgPusherManagerClient.GetAllChannel(ctx, req)
 	if err != nil {
@@ -253,6 +291,29 @@ func (s *MsgPusherManagerRepo) GetMsgRecord(ctx context.Context, req *pb.MsgReco
 	return &pb.MsgRecordResp{
 		Rows:  resp,
 		Total: list.Total,
+	}, nil
+
+}
+
+func (s *MsgPusherManagerRepo) GetOfficialAccountTemplateList(ctx context.Context, req *pb.OfficialAccountTemplateRequest) (*pb.OfficialAccountTemplateResp, error) {
+	list, err := s.data.msgPusherManagerClient.GetOfficialAccountTemplateList(ctx, &msgpushermanagerV1.OfficialAccountTemplateRequest{
+		SendAccount: req.SendAccount,
+	})
+	if err != nil {
+		return nil, err
+	}
+	resp := make([]*pb.OfficialAccountTemplateRow, 0)
+	for _, item := range list.Rows {
+		resp = append(resp, &pb.OfficialAccountTemplateRow{
+			TemplateId: item.TemplateID,
+			Title:      item.Title,
+			Content:    item.Content,
+			Example:    item.Example,
+		})
+	}
+
+	return &pb.OfficialAccountTemplateResp{
+		Rows: resp,
 	}, nil
 
 }

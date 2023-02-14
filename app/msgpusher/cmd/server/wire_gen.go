@@ -24,12 +24,12 @@ func wireApp(confServer *conf.Server, registry *conf.Registry, confData *conf.Da
 	preParamCheckAction := process.NewPreParamCheckAction()
 	assembleAction := process.NewAssembleAction()
 	afterParamCheckAction := process.NewAfterParamCheckAction()
-	iMessagingClient := data.NewMq(confData, logger)
-	sendMqAction := process.NewSendMqAction(iMessagingClient, logger)
+	client := data.NewAsynqClient(confData)
+	sendMqAction := process.NewSendMqAction(logger, client)
 	businessProcess := process.NewBusinessProcess(preParamCheckAction, assembleAction, afterParamCheckAction, sendMqAction)
 	db := data.NewMysqlCmd(confData, logger)
 	cmdable := data.NewRedisCmd(confData, logger)
-	dataData, cleanup, err := data.NewData(confData, logger, iMessagingClient, db, cmdable)
+	dataData, cleanup, err := data.NewData(confData, logger, db, cmdable)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -37,10 +37,8 @@ func wireApp(confServer *conf.Server, registry *conf.Registry, confData *conf.Da
 	messageTemplateUseCase := biz.NewMessageTemplateUseCase(iMessageTemplateRepo, logger)
 	msgPusherUseCase := biz.NewMsgPusherUseCase(logger, businessProcess, messageTemplateUseCase)
 	msgPusherService := service.NewMsgPusherService(msgPusherUseCase, logger)
-	grpcServer := server.NewGRPCServer(confServer, msgPusherService, logger)
 	httpServer := server.NewHTTPServer(confServer, msgPusherService, logger)
-	registrar := data.NewRegistrar(registry)
-	app := newApp(logger, grpcServer, httpServer, registrar)
+	app := newApp(logger, httpServer)
 	return app, func() {
 		cleanup()
 	}, nil

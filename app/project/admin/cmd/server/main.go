@@ -2,7 +2,10 @@ package main
 
 import (
 	"austin-v2/app/project/admin/internal/conf"
+	"austin-v2/pkg/mode"
+	"austin-v2/pkg/utils/httpHelper"
 	"austin-v2/pkg/utils/stringHelper"
+	"context"
 	"flag"
 	"github.com/go-kratos/kratos/v2/encoding/json"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -23,14 +26,14 @@ var (
 	Name string
 	// Version is the version of the compiled software.
 	Version string
-	// flagconf is the config flag.
-	flagconf string
+	// FlagConf is the config flag.
+	FlagConf string
 
-	Id string
+	ID string
 )
 
 func init() {
-	flag.StringVar(&flagconf, "conf", "../../configs", "config path, eg: -conf config.yaml")
+	flag.StringVar(&FlagConf, "conf", "../../configs", "config path, eg: -conf config.yaml")
 
 	json.MarshalOptions = protojson.MarshalOptions{
 		EmitUnpopulated: true, //默认值不忽略
@@ -38,9 +41,9 @@ func init() {
 	}
 }
 
-func newApp(logger log.Logger, hs *http.Server, rr registry.Registrar) *kratos.App {
+func newApp(logger log.Logger, debug *conf.Debug, hs *http.Server, rr registry.Registrar) *kratos.App {
 	return kratos.New(
-		kratos.ID(Id),
+		kratos.ID(ID),
 		kratos.Name(Name),
 		kratos.Version(Version),
 		kratos.Metadata(map[string]string{}),
@@ -48,6 +51,12 @@ func newApp(logger log.Logger, hs *http.Server, rr registry.Registrar) *kratos.A
 		kratos.Server(
 			hs,
 		),
+		kratos.AfterStart(func(ctx context.Context) error {
+			if debug.Mode == mode.DEV {
+				httpHelper.PrintRoute(hs)
+			}
+			return nil
+		}),
 		kratos.Registrar(rr),
 	)
 }
@@ -57,7 +66,7 @@ func main() {
 
 	c := config.New(
 		config.WithSource(
-			file.NewSource(flagconf),
+			file.NewSource(FlagConf),
 		),
 	)
 	defer c.Close()
@@ -75,7 +84,7 @@ func main() {
 	Version = bc.Service.Version
 
 	hostname, _ := os.Hostname()
-	Id = hostname + "." + bc.Service.Name + "." + Version + "." + stringHelper.GenerateUUID()
+	ID = hostname + "." + bc.Service.Name + "." + Version + "." + stringHelper.GenerateUUID()
 
 	var rc conf.Registry
 	if err := c.Scan(&rc); err != nil {
@@ -88,7 +97,7 @@ func main() {
 		"caller", log.DefaultCaller,
 	)
 
-	app, cleanup, err := wireApp(bc.Server, &rc, bc.Data, bc.Auth, bc.Service, logger)
+	app, cleanup, err := wireApp(bc.Server, bc.Debug, &rc, bc.Data, bc.Auth, bc.Service, logger)
 	if err != nil {
 		panic(err)
 	}

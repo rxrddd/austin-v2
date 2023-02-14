@@ -40,6 +40,7 @@ const OperationAdminGetApiList = "/api.admin.v1.Admin/GetApiList"
 const OperationAdminGetMenuAll = "/api.admin.v1.Admin/GetMenuAll"
 const OperationAdminGetMenuTree = "/api.admin.v1.Admin/GetMenuTree"
 const OperationAdminGetMsgRecord = "/api.admin.v1.Admin/GetMsgRecord"
+const OperationAdminGetOfficialAccountTemplateList = "/api.admin.v1.Admin/GetOfficialAccountTemplateList"
 const OperationAdminGetOssStsToken = "/api.admin.v1.Admin/GetOssStsToken"
 const OperationAdminGetPolicies = "/api.admin.v1.Admin/GetPolicies"
 const OperationAdminGetRoleList = "/api.admin.v1.Admin/GetRoleList"
@@ -63,6 +64,7 @@ const OperationAdminSetRolesForUser = "/api.admin.v1.Admin/SetRolesForUser"
 const OperationAdminTemplateChangeStatus = "/api.admin.v1.Admin/TemplateChangeStatus"
 const OperationAdminTemplateEdit = "/api.admin.v1.Admin/TemplateEdit"
 const OperationAdminTemplateList = "/api.admin.v1.Admin/TemplateList"
+const OperationAdminTemplateOne = "/api.admin.v1.Admin/TemplateOne"
 const OperationAdminTemplateRemove = "/api.admin.v1.Admin/TemplateRemove"
 const OperationAdminUpdateAdministrator = "/api.admin.v1.Admin/UpdateAdministrator"
 const OperationAdminUpdateApi = "/api.admin.v1.Admin/UpdateApi"
@@ -91,6 +93,7 @@ type AdminHTTPServer interface {
 	GetMenuAll(context.Context, *emptypb.Empty) (*GetMenuTreeReply, error)
 	GetMenuTree(context.Context, *emptypb.Empty) (*GetMenuTreeReply, error)
 	GetMsgRecord(context.Context, *MsgRecordRequest) (*MsgRecordResp, error)
+	GetOfficialAccountTemplateList(context.Context, *OfficialAccountTemplateRequest) (*OfficialAccountTemplateResp, error)
 	GetOssStsToken(context.Context, *emptypb.Empty) (*OssStsTokenResponse, error)
 	GetPolicies(context.Context, *GetPoliciesRequest) (*GetPoliciesReply, error)
 	GetRoleList(context.Context, *emptypb.Empty) (*GetRoleListReply, error)
@@ -114,6 +117,7 @@ type AdminHTTPServer interface {
 	TemplateChangeStatus(context.Context, *TemplateChangeStatusRequest) (*emptypb.Empty, error)
 	TemplateEdit(context.Context, *TemplateEditRequest) (*emptypb.Empty, error)
 	TemplateList(context.Context, *TemplateListRequest) (*TemplateListResp, error)
+	TemplateOne(context.Context, *TemplateOneRequest) (*TemplateOneResp, error)
 	TemplateRemove(context.Context, *TemplateRemoveRequest) (*emptypb.Empty, error)
 	UpdateAdministrator(context.Context, *UpdateAdministratorRequest) (*AdministratorInfoResponse, error)
 	UpdateApi(context.Context, *UpdateApiRequest) (*ApiInfo, error)
@@ -170,9 +174,11 @@ func RegisterAdminHTTPServer(s *http.Server, srv AdminHTTPServer) {
 	r.POST("/gmp_platform/template/changeStatus", _Admin_TemplateChangeStatus0_HTTP_Handler(srv))
 	r.GET("/gmp_platform/template/list", _Admin_TemplateList0_HTTP_Handler(srv))
 	r.POST("/gmp_platform/template/remove", _Admin_TemplateRemove0_HTTP_Handler(srv))
+	r.GET("/gmp_platform/template/one", _Admin_TemplateOne0_HTTP_Handler(srv))
 	r.GET("/gmp_platform/sms/getAllChannel", _Admin_GetAllChannel0_HTTP_Handler(srv))
 	r.GET("/gmp_platform/sms/record", _Admin_GetSmsRecord0_HTTP_Handler(srv))
 	r.GET("/gmp_platform/msg/record", _Admin_GetMsgRecord0_HTTP_Handler(srv))
+	r.GET("/gmp_platform/wxTemplate/getOfficialAccountTemplateList", _Admin_GetOfficialAccountTemplateList0_HTTP_Handler(srv))
 }
 
 func _Admin_Login0_HTTP_Handler(srv AdminHTTPServer) func(ctx http.Context) error {
@@ -1049,6 +1055,25 @@ func _Admin_TemplateRemove0_HTTP_Handler(srv AdminHTTPServer) func(ctx http.Cont
 	}
 }
 
+func _Admin_TemplateOne0_HTTP_Handler(srv AdminHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in TemplateOneRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationAdminTemplateOne)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.TemplateOne(ctx, req.(*TemplateOneRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*TemplateOneResp)
+		return ctx.Result(200, reply)
+	}
+}
+
 func _Admin_GetAllChannel0_HTTP_Handler(srv AdminHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in emptypb.Empty
@@ -1106,6 +1131,25 @@ func _Admin_GetMsgRecord0_HTTP_Handler(srv AdminHTTPServer) func(ctx http.Contex
 	}
 }
 
+func _Admin_GetOfficialAccountTemplateList0_HTTP_Handler(srv AdminHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in OfficialAccountTemplateRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationAdminGetOfficialAccountTemplateList)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.GetOfficialAccountTemplateList(ctx, req.(*OfficialAccountTemplateRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*OfficialAccountTemplateResp)
+		return ctx.Result(200, reply)
+	}
+}
+
 type AdminHTTPClient interface {
 	ApproveAdministrator(ctx context.Context, req *ApproveAdministratorRequest, opts ...http.CallOption) (rsp *CheckReply, err error)
 	CreateAdministrator(ctx context.Context, req *CreateAdministratorRequest, opts ...http.CallOption) (rsp *AdministratorInfoResponse, err error)
@@ -1127,6 +1171,7 @@ type AdminHTTPClient interface {
 	GetMenuAll(ctx context.Context, req *emptypb.Empty, opts ...http.CallOption) (rsp *GetMenuTreeReply, err error)
 	GetMenuTree(ctx context.Context, req *emptypb.Empty, opts ...http.CallOption) (rsp *GetMenuTreeReply, err error)
 	GetMsgRecord(ctx context.Context, req *MsgRecordRequest, opts ...http.CallOption) (rsp *MsgRecordResp, err error)
+	GetOfficialAccountTemplateList(ctx context.Context, req *OfficialAccountTemplateRequest, opts ...http.CallOption) (rsp *OfficialAccountTemplateResp, err error)
 	GetOssStsToken(ctx context.Context, req *emptypb.Empty, opts ...http.CallOption) (rsp *OssStsTokenResponse, err error)
 	GetPolicies(ctx context.Context, req *GetPoliciesRequest, opts ...http.CallOption) (rsp *GetPoliciesReply, err error)
 	GetRoleList(ctx context.Context, req *emptypb.Empty, opts ...http.CallOption) (rsp *GetRoleListReply, err error)
@@ -1150,6 +1195,7 @@ type AdminHTTPClient interface {
 	TemplateChangeStatus(ctx context.Context, req *TemplateChangeStatusRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	TemplateEdit(ctx context.Context, req *TemplateEditRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	TemplateList(ctx context.Context, req *TemplateListRequest, opts ...http.CallOption) (rsp *TemplateListResp, err error)
+	TemplateOne(ctx context.Context, req *TemplateOneRequest, opts ...http.CallOption) (rsp *TemplateOneResp, err error)
 	TemplateRemove(ctx context.Context, req *TemplateRemoveRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	UpdateAdministrator(ctx context.Context, req *UpdateAdministratorRequest, opts ...http.CallOption) (rsp *AdministratorInfoResponse, err error)
 	UpdateApi(ctx context.Context, req *UpdateApiRequest, opts ...http.CallOption) (rsp *ApiInfo, err error)
@@ -1418,6 +1464,19 @@ func (c *AdminHTTPClientImpl) GetMsgRecord(ctx context.Context, in *MsgRecordReq
 	pattern := "/gmp_platform/msg/record"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationAdminGetMsgRecord))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
+func (c *AdminHTTPClientImpl) GetOfficialAccountTemplateList(ctx context.Context, in *OfficialAccountTemplateRequest, opts ...http.CallOption) (*OfficialAccountTemplateResp, error) {
+	var out OfficialAccountTemplateResp
+	pattern := "/gmp_platform/wxTemplate/getOfficialAccountTemplateList"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationAdminGetOfficialAccountTemplateList))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
 	if err != nil {
@@ -1717,6 +1776,19 @@ func (c *AdminHTTPClientImpl) TemplateList(ctx context.Context, in *TemplateList
 	pattern := "/gmp_platform/template/list"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationAdminTemplateList))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
+func (c *AdminHTTPClientImpl) TemplateOne(ctx context.Context, in *TemplateOneRequest, opts ...http.CallOption) (*TemplateOneResp, error) {
+	var out TemplateOneResp
+	pattern := "/gmp_platform/template/one"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationAdminTemplateOne))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
 	if err != nil {

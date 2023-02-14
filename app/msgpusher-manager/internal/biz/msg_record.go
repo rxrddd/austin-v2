@@ -1,8 +1,8 @@
 package biz
 
 import (
-	pb "austin-v2/api/msgpusher-manager/v1"
 	"austin-v2/app/msgpusher-manager/internal/data"
+	"austin-v2/app/msgpusher-manager/internal/domain"
 	"austin-v2/pkg/utils/timeHelper"
 	"context"
 	"github.com/go-kratos/kratos/v2/log"
@@ -20,12 +20,12 @@ func NewMsgRecordUseCase(repo data.IMsgRecordRepo, logger log.Logger) *MsgRecord
 	}
 }
 
-func (s *MsgRecordUseCase) GetMsgRecord(ctx context.Context, req *pb.MsgRecordRequest) (*pb.MsgRecordResp, error) {
+func (s *MsgRecordUseCase) GetMsgRecord(ctx context.Context, req *domain.MsgRecordRequest) (*domain.MsgRecordResp, error) {
 	var (
-		items       = make([]*pb.MsgRecordRow, 0)
+		items       = make([]*domain.MsgRecordRow, 0)
 		total int64 = 0
 	)
-	records, total, err := s.repo.GetMsgRecord(ctx, &data.MsgRecordRequest{
+	records, total, err := s.repo.GetMsgRecord(ctx, &domain.MsgRecordRequest{
 		TemplateId: req.TemplateId,
 		RequestId:  req.RequestId,
 		Channel:    req.Channel,
@@ -36,7 +36,7 @@ func (s *MsgRecordUseCase) GetMsgRecord(ctx context.Context, req *pb.MsgRecordRe
 		return nil, err
 	}
 	for _, v := range records {
-		items = append(items, &pb.MsgRecordRow{
+		items = append(items, &domain.MsgRecordRow{
 			MessageTemplateId: v.MessageTemplateID,
 			RequestId:         v.RequestID,
 			Receiver:          v.Receiver,
@@ -49,7 +49,7 @@ func (s *MsgRecordUseCase) GetMsgRecord(ctx context.Context, req *pb.MsgRecordRe
 			ID:                v.ID,
 		})
 	}
-	return &pb.MsgRecordResp{
+	return &domain.MsgRecordResp{
 		Rows:  items,
 		Total: total,
 	}, nil

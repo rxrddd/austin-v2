@@ -1,10 +1,10 @@
 package process
 
 import (
+	pb "austin-v2/api/msgpusher/v1"
 	"austin-v2/app/msgpusher/internal/data/model"
 	"austin-v2/pkg/types"
 	"context"
-	"github.com/pkg/errors"
 )
 
 type PreParamCheckAction struct {
@@ -15,9 +15,8 @@ func NewPreParamCheckAction() *PreParamCheckAction {
 }
 
 func (p *PreParamCheckAction) Process(_ context.Context, sendTaskModel *types.SendTaskModel, _ model.MessageTemplate) error {
-
 	if sendTaskModel.MessageTemplateId == 0 || len(sendTaskModel.MessageParamList) <= 0 {
-		return errors.Wrapf(clientParamsErr, "PreParamCheckAction sendTaskModel:%v", sendTaskModel)
+		return pb.ErrorClientParamsError("客户端参数错误")
 	}
 	// 过滤 receiver=null 的messageParam
 	var newRows []types.MessageParam
@@ -27,7 +26,7 @@ func (p *PreParamCheckAction) Process(_ context.Context, sendTaskModel *types.Se
 		}
 	}
 	if len(newRows) <= 0 {
-		return errors.Wrapf(clientParamsErr, "PreParamCheckAction 过滤结果参数为空 sendTaskModel:%v", sendTaskModel)
+		return pb.ErrorPreParamAllFilter("无可发送消息")
 	}
 	sendTaskModel.MessageParamList = newRows
 	return nil

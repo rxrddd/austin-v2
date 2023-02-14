@@ -4,6 +4,7 @@ import (
 	"austin-v2/pkg/utils/jsonHelper"
 	"context"
 	"encoding/json"
+	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-redis/redis/v8"
 	"time"
 )
@@ -15,8 +16,20 @@ type Cache struct {
 
 type Options struct {
 	defaultExpiration time.Duration
+	err               error
 }
 type Option func(o *Options)
+
+func WithErr(err error) func(ot *Options) {
+	return func(ot *Options) {
+		ot.err = err
+	}
+}
+func WithExpiration(expiration time.Duration) func(ot *Options) {
+	return func(ot *Options) {
+		ot.defaultExpiration = expiration
+	}
+}
 
 func NewCache(rds redis.Cmdable, opts ...Option) *Cache {
 	var o = Options{
@@ -46,9 +59,14 @@ func (c *Cache) GetOrSetEx(ctx context.Context, key string, v interface{}, query
 	if val != "" {
 		return json.Unmarshal([]byte(val), &v)
 	}
-	if err := query(ctx, v); err != nil {
+	err := query(ctx, v)
+	if err != nil && errors.Is(err, c.opt.err) {
+		c.rds.SetEX(context.Background(), key, jsonHelper.MustToString(v), time.Second*5)
+		return nil
+	}
+	if err != nil {
 		return err
 	}
-	c.rds.SetEX(context.Background(), key, jsonHelper.MustToString(v), expiration)
+	c.rds.SetEX(context.Background(), key, jsonHelper.MustToString(v), c.opt.defaultExpiration)
 	return nil
 }
