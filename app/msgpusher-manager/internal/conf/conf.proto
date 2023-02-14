@@ -31,8 +31,7 @@ message Server {
     string addr = 2;
     google.protobuf.Duration timeout = 3;
   }
-  HTTP http = 1;
-  GRPC grpc = 2;
+  GRPC grpc = 1;
 }
 
 message Data {
@@ -47,9 +46,6 @@ message Data {
     google.protobuf.Duration read_timeout = 4;
     google.protobuf.Duration write_timeout = 5;
   }
-  message RabbitMq {
-    string URL = 1;
-  }
   message MongoDB {
     string url = 1;
     string username = 2;
@@ -57,8 +53,7 @@ message Data {
   }
   Database database = 1;
   Redis redis = 2;
-  RabbitMq rabbitmq = 3;
-  MongoDB mongodb = 4;
+  MongoDB mongodb = 3;
 }
 
 message Registry {

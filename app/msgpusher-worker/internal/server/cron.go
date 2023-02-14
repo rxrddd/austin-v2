@@ -21,7 +21,7 @@ func NewCronServer(
 	}
 }
 func newNightShieldTask() *asynq.Task {
-	return asynq.NewTask("night.shield.handler", nil, asynq.TaskID("night.shield.handler"))
+	return asynq.NewTask(nightShieldHandlerKey, nil, asynq.TaskID("night.shield.handler"))
 }
 func (l *CronTask) Start(context.Context) error {
 	//每早8点发送被屏蔽的消息

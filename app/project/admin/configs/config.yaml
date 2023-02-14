@@ -32,7 +32,7 @@ auth:
   api_key: "austin-v2-admin-api-key"
   api_key_expire: "86400"
 
-  casbin_source: root:123456@tcp(127.0.0.1:3306)/kratos-admin?parseTime=true&collation=utf8mb4_unicode_ci&loc=Asia%2FShanghai&charset=utf8mb4
+  casbin_source: root:root@tcp(127.0.0.1:3306)/kratos-admin?parseTime=true&collation=utf8mb4_unicode_ci&loc=Asia%2FShanghai&charset=utf8mb4
   casbin_model: "[request_definition]
   
   r = sub, obj, act
