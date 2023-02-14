@@ -1,17 +1,17 @@
 /*
  Navicat Premium Data Transfer
 
- Source Server         : localhost
+ Source Server         : local
  Source Server Type    : MySQL
- Source Server Version : 80030
+ Source Server Version : 50726
  Source Host           : localhost:3306
  Source Schema         : kratos-admin
 
  Target Server Type    : MySQL
- Target Server Version : 80030
+ Target Server Version : 50726
  File Encoding         : 65001
 
- Date: 09/01/2023 19:31:35
+ Date: 14/02/2023 19:53:37
 */
 
 SET NAMES utf8mb4;
@@ -21,21 +21,20 @@ SET FOREIGN_KEY_CHECKS = 0;
 -- Table structure for authorization_api
 -- ----------------------------
 DROP TABLE IF EXISTS `authorization_api`;
-CREATE TABLE `authorization_api` (
-  `id` int unsigned NOT NULL AUTO_INCREMENT,
+CREATE TABLE `authorization_api`  (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `group` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '分组',
   `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '角色名称',
   `method` char(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '请求方式',
   `path` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '请求路径',
-  `created_at` datetime NOT NULL COMMENT '创建时间',
-  `updated_at` datetime NOT NULL COMMENT '更新时间',
+  `created_at` datetime(0) NOT NULL COMMENT '创建时间',
+  `updated_at` datetime(0) NOT NULL COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC COMMENT='角色表';
+) ENGINE = InnoDB AUTO_INCREMENT = 37 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '角色表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of authorization_api
 -- ----------------------------
-BEGIN;
 INSERT INTO `authorization_api` VALUES (1, '基础分组', '登录', 'POST', '/api.admin.v1.Admin/Login', '2022-12-06 11:08:41', '2022-12-06 11:08:41');
 INSERT INTO `authorization_api` VALUES (2, '基础分组', '登录成功', 'GET', '/api.admin.v1.Admin/LoginSuccess', '2022-12-06 11:09:08', '2022-12-06 11:09:08');
 INSERT INTO `authorization_api` VALUES (3, '基础分组', '获取登录用户信息', 'GET', '/api.admin.v1.Admin/GetAdministratorInfo', '2022-12-06 11:09:37', '2022-12-06 11:09:37');
@@ -69,27 +68,25 @@ INSERT INTO `authorization_api` VALUES (33, 'API管理', '列表', 'GET', '/api.
 INSERT INTO `authorization_api` VALUES (34, 'API管理', '删除', 'DELETE', '/api.admin.v1.Admin/DeleteApi', '2022-12-06 12:16:19', '2022-12-06 12:16:19');
 INSERT INTO `authorization_api` VALUES (35, '角色管理', '查看角色成员', 'GET', '/api.admin.v1.Admin/GetUsersForRole', '2022-12-07 18:26:33', '2022-12-07 18:26:33');
 INSERT INTO `authorization_api` VALUES (36, '角色管理', '移除角色用户', 'DELETE', '/api.admin.v1.Admin/DeleteRoleForUser', '2022-12-07 18:26:56', '2022-12-07 18:26:56');
-COMMIT;
 
 -- ----------------------------
 -- Table structure for authorization_menu_btns
 -- ----------------------------
 DROP TABLE IF EXISTS `authorization_menu_btns`;
-CREATE TABLE `authorization_menu_btns` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `menu_id` int NOT NULL COMMENT '菜单id',
+CREATE TABLE `authorization_menu_btns`  (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `menu_id` int(11) NOT NULL COMMENT '菜单id',
   `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '按钮名称',
   `description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '按钮描述',
   `identifier` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '标识符 权限依据',
   `created_at` datetime(3) NOT NULL COMMENT '创建时间',
   `updated_at` datetime(3) NOT NULL COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=43 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC COMMENT='菜单表';
+) ENGINE = InnoDB AUTO_INCREMENT = 43 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '菜单表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of authorization_menu_btns
 -- ----------------------------
-BEGIN;
 INSERT INTO `authorization_menu_btns` VALUES (20, 2, '新增', '新增管理员', 'createAdministrator', '2022-12-06 14:12:38.442', '2022-12-06 14:12:38.442');
 INSERT INTO `authorization_menu_btns` VALUES (21, 2, '编辑', '编辑管理员', 'updateAdministrator', '2022-12-06 14:12:38.444', '2022-12-06 14:12:38.444');
 INSERT INTO `authorization_menu_btns` VALUES (22, 2, '禁用/解禁', '禁用/解禁管理员', 'deleteRecoverAdministrator', '2022-12-06 14:12:38.446', '2022-12-06 14:12:38.446');
@@ -111,33 +108,31 @@ INSERT INTO `authorization_menu_btns` VALUES (37, 5, '新增', '新增API', 'cre
 INSERT INTO `authorization_menu_btns` VALUES (38, 5, '编辑', '编辑API', 'updateAPI', '2022-12-06 14:23:26.971', '2022-12-06 14:23:26.971');
 INSERT INTO `authorization_menu_btns` VALUES (39, 36, '有权限', '有权限按钮', 'hasPermissionButton', '2022-12-07 11:44:35.456', '2022-12-07 11:44:35.456');
 INSERT INTO `authorization_menu_btns` VALUES (40, 36, '无权限', '无权限按钮', 'noPermissionButton', '2022-12-07 11:44:35.456', '2022-12-07 11:44:35.456');
-COMMIT;
 
 -- ----------------------------
 -- Table structure for authorization_menus
 -- ----------------------------
 DROP TABLE IF EXISTS `authorization_menus`;
-CREATE TABLE `authorization_menus` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `parent_id` int NOT NULL COMMENT '父级菜单id',
+CREATE TABLE `authorization_menus`  (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `parent_id` int(11) NOT NULL COMMENT '父级菜单id',
   `parent_ids` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '角色父级id数组',
   `path` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '路由路径',
   `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '路由名称',
   `hidden` tinyint(1) NOT NULL COMMENT '是否隐藏 0否1是',
   `component` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '前端文件路径',
-  `sort` int NOT NULL COMMENT '排序',
+  `sort` int(11) NOT NULL COMMENT '排序',
   `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '名称',
   `icon` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'icon图标',
   `redirect` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '直接跳转',
   `created_at` datetime(3) NOT NULL COMMENT '创建时间',
   `updated_at` datetime(3) NOT NULL COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC COMMENT='菜单表';
+) ENGINE = InnoDB AUTO_INCREMENT = 37 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '菜单表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of authorization_menus
 -- ----------------------------
-BEGIN;
 INSERT INTO `authorization_menus` VALUES (1, 0, '0', '/system', 'system', 0, '#', 1, '系统管理', 'el-icon-s-tools', '', '2022-11-15 14:56:16.000', '2022-11-15 14:56:18.000');
 INSERT INTO `authorization_menus` VALUES (2, 1, '1', '/system/adminstrator', 'administrator', 0, '/system/administrator/index', 1, '管理员管理', 'el-icon-user-solid', '', '2022-11-15 14:58:41.000', '2022-12-06 14:12:38.439');
 INSERT INTO `authorization_menus` VALUES (3, 1, '1', '/system/auth/menu', 'menu', 0, '/system/auth/menu/index', 2, '菜单管理', 'el-icon-notebook-2', '', '2022-12-01 15:48:57.000', '2022-12-06 14:18:02.691');
@@ -145,23 +140,21 @@ INSERT INTO `authorization_menus` VALUES (4, 1, '1', '/system/auth/role', 'role'
 INSERT INTO `authorization_menus` VALUES (5, 1, '1', '/system/auth/api', 'api', 0, '/system/auth/api/index', 4, 'API管理', 'el-icon-setting', '', '2022-11-23 14:42:04.000', '2022-12-06 14:23:26.966');
 INSERT INTO `authorization_menus` VALUES (35, 0, '0', '/example', 'example', 0, '#', 1, '测试菜单', 'el-icon-s-flag', '', '2022-12-07 10:36:58.676', '2022-12-07 11:43:33.458');
 INSERT INTO `authorization_menus` VALUES (36, 35, '35', '/example/permission', 'permission_test', 0, '/example/index', 1, '按钮权限测试', 'el-icon-s-tools', '', '2022-12-07 11:44:35.452', '2022-12-07 11:44:35.452');
-COMMIT;
 
 -- ----------------------------
 -- Table structure for authorization_role_menu
 -- ----------------------------
 DROP TABLE IF EXISTS `authorization_role_menu`;
-CREATE TABLE `authorization_role_menu` (
-  `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `role_id` int NOT NULL COMMENT '角色id',
-  `menu_id` int NOT NULL COMMENT '菜单id',
+CREATE TABLE `authorization_role_menu`  (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `role_id` int(11) NOT NULL COMMENT '角色id',
+  `menu_id` int(11) NOT NULL COMMENT '菜单id',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=83 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC COMMENT='角色表';
+) ENGINE = InnoDB AUTO_INCREMENT = 83 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '角色表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of authorization_role_menu
 -- ----------------------------
-BEGIN;
 INSERT INTO `authorization_role_menu` VALUES (74, 1, 1);
 INSERT INTO `authorization_role_menu` VALUES (75, 1, 2);
 INSERT INTO `authorization_role_menu` VALUES (76, 1, 3);
@@ -171,24 +164,22 @@ INSERT INTO `authorization_role_menu` VALUES (79, 1, 35);
 INSERT INTO `authorization_role_menu` VALUES (80, 1, 36);
 INSERT INTO `authorization_role_menu` VALUES (81, 39, 35);
 INSERT INTO `authorization_role_menu` VALUES (82, 39, 36);
-COMMIT;
 
 -- ----------------------------
 -- Table structure for authorization_role_menu_btn
 -- ----------------------------
 DROP TABLE IF EXISTS `authorization_role_menu_btn`;
-CREATE TABLE `authorization_role_menu_btn` (
-  `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `role_id` int NOT NULL COMMENT '角色id',
-  `menu_id` int NOT NULL COMMENT '菜单id',
-  `btn_id` int NOT NULL COMMENT '按钮id',
+CREATE TABLE `authorization_role_menu_btn`  (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `role_id` int(11) NOT NULL COMMENT '角色id',
+  `menu_id` int(11) NOT NULL COMMENT '菜单id',
+  `btn_id` int(11) NOT NULL COMMENT '按钮id',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC COMMENT='角色菜单按钮表';
+) ENGINE = InnoDB AUTO_INCREMENT = 27 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '角色菜单按钮表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of authorization_role_menu_btn
 -- ----------------------------
-BEGIN;
 INSERT INTO `authorization_role_menu_btn` VALUES (2, 1, 2, 20);
 INSERT INTO `authorization_role_menu_btn` VALUES (3, 1, 2, 21);
 INSERT INTO `authorization_role_menu_btn` VALUES (4, 1, 2, 22);
@@ -209,55 +200,51 @@ INSERT INTO `authorization_role_menu_btn` VALUES (18, 1, 5, 36);
 INSERT INTO `authorization_role_menu_btn` VALUES (21, 1, 36, 39);
 INSERT INTO `authorization_role_menu_btn` VALUES (22, 1, 36, 40);
 INSERT INTO `authorization_role_menu_btn` VALUES (23, 39, 36, 39);
-COMMIT;
 
 -- ----------------------------
 -- Table structure for authorization_roles
 -- ----------------------------
 DROP TABLE IF EXISTS `authorization_roles`;
-CREATE TABLE `authorization_roles` (
-  `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `parent_id` int NOT NULL COMMENT '父级角色id',
+CREATE TABLE `authorization_roles`  (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `parent_id` int(11) NOT NULL COMMENT '父级角色id',
   `parent_ids` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '角色父级id数组',
   `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '角色名称',
-  `created_at` datetime NOT NULL COMMENT '创建时间',
-  `updated_at` datetime NOT NULL COMMENT '更新时间',
+  `created_at` datetime(0) NOT NULL COMMENT '创建时间',
+  `updated_at` datetime(0) NOT NULL COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE,
-  UNIQUE KEY `name_unique_idx` (`name`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC COMMENT='角色表';
+  UNIQUE INDEX `name_unique_idx`(`name`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 41 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '角色表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of authorization_roles
 -- ----------------------------
-BEGIN;
 INSERT INTO `authorization_roles` VALUES (1, 0, '0', '超级管理员', '2022-09-07 01:12:43', '2022-11-25 14:48:48');
 INSERT INTO `authorization_roles` VALUES (39, 0, '0', '测试管理员', '2022-12-06 11:57:30', '2022-12-06 14:24:40');
 INSERT INTO `authorization_roles` VALUES (40, 0, '0', '游客', '2022-12-07 11:25:42', '2022-12-07 11:25:42');
-COMMIT;
 
 -- ----------------------------
 -- Table structure for casbin_rule
 -- ----------------------------
 DROP TABLE IF EXISTS `casbin_rule`;
-CREATE TABLE `casbin_rule` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `ptype` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `v0` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `v1` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `v2` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `v3` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `v4` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `v5` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `v6` varchar(25) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `v7` varchar(25) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+CREATE TABLE `casbin_rule`  (
+  `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `ptype` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
+  `v0` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
+  `v1` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
+  `v2` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
+  `v3` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
+  `v4` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
+  `v5` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
+  `v6` varchar(25) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
+  `v7` varchar(25) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE,
-  UNIQUE KEY `idx_casbin_rule` (`ptype`,`v0`,`v1`,`v2`,`v3`,`v4`,`v5`,`v6`,`v7`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=401 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
+  UNIQUE INDEX `idx_casbin_rule`(`ptype`, `v0`, `v1`, `v2`, `v3`, `v4`, `v5`, `v6`, `v7`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 401 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of casbin_rule
 -- ----------------------------
-BEGIN;
 INSERT INTO `casbin_rule` VALUES (367, 'g', 'admin', '测试管理员', '', '', '', '', '', '');
 INSERT INTO `casbin_rule` VALUES (366, 'g', 'admin', '超级管理员', '', '', '', '', '', '');
 INSERT INTO `casbin_rule` VALUES (278, 'g', 'guest', '游客', '', '', '', '', '', '');
@@ -307,132 +294,152 @@ INSERT INTO `casbin_rule` VALUES (369, 'p', '超级管理员', '/api.admin.v1.Ad
 INSERT INTO `casbin_rule` VALUES (388, 'p', '超级管理员', '/api.admin.v1.Admin/UpdateMenu', 'PUT', '', '', '', '', '');
 INSERT INTO `casbin_rule` VALUES (396, 'p', '超级管理员', '/api.admin.v1.Admin/UpdatePolicies', 'POST', '', '', '', '', '');
 INSERT INTO `casbin_rule` VALUES (390, 'p', '超级管理员', '/api.admin.v1.Admin/UpdateRole', 'PUT', '', '', '', '', '');
-COMMIT;
 
 -- ----------------------------
 -- Table structure for message_template
 -- ----------------------------
 DROP TABLE IF EXISTS `message_template`;
-CREATE TABLE `message_template` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
+CREATE TABLE `message_template`  (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '标题',
-  `audit_status` tinyint NOT NULL DEFAULT '0' COMMENT '当前消息审核状态： 10.待审核 20.审核成功 30.被拒绝',
-  `id_type` tinyint NOT NULL DEFAULT '0' COMMENT '消息的发送ID类型：10. userId 20.did 30.手机号 40.openId 50.email 60.企业微信userId',
-  `send_channel` tinyint NOT NULL DEFAULT '0' COMMENT '消息发送渠道：10.IM 20.Push 30.短信 40.Email 50.公众号 60.小程序 70.企业微信',
-  `template_type` tinyint NOT NULL DEFAULT '0' COMMENT '10.运营类 20.技术类接口调用',
-  `msg_type` tinyint NOT NULL DEFAULT '0' COMMENT '10.通知类消息 20.营销类消息 30.验证码类消息',
-  `shield_type` tinyint NOT NULL DEFAULT '0' COMMENT '10.夜间不屏蔽 20.夜间屏蔽 30.夜间屏蔽(次日早上9点发送)',
+  `audit_status` tinyint(4) NOT NULL DEFAULT 0 COMMENT '当前消息审核状态： 10.待审核 20.审核成功 30.被拒绝',
+  `id_type` tinyint(4) NOT NULL DEFAULT 0 COMMENT '消息的发送ID类型：10. userId 20.did 30.手机号 40.openId 50.email 60.企业微信userId',
+  `send_channel` tinyint(4) NOT NULL DEFAULT 0 COMMENT '消息发送渠道：10.IM 20.Push 30.短信 40.Email 50.公众号 60.小程序 70.企业微信',
+  `template_type` tinyint(4) NOT NULL DEFAULT 0 COMMENT '10.运营类 20.技术类接口调用',
+  `msg_type` tinyint(4) NOT NULL DEFAULT 0 COMMENT '10.通知类消息 20.营销类消息 30.验证码类消息',
+  `shield_type` tinyint(4) NOT NULL DEFAULT 0 COMMENT '10.夜间不屏蔽 20.夜间屏蔽 30.夜间屏蔽(次日早上9点发送)',
   `msg_content` varchar(600) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '消息内容 占位符用{$var}表示',
-  `send_account` tinyint NOT NULL DEFAULT '0' COMMENT '发送账号 一个渠道下可存在多个账号',
+  `send_account` tinyint(4) NOT NULL DEFAULT 0 COMMENT '发送账号 一个渠道下可存在多个账号',
   `creator` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '创建者',
   `updator` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '更新者',
   `auditor` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '审核人',
   `team` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '业务方团队',
   `proposer` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '业务方',
-  `is_deleted` tinyint NOT NULL DEFAULT '0' COMMENT '是否删除：0.不删除 1.删除',
-  `created` int NOT NULL DEFAULT '0' COMMENT '创建时间',
-  `updated` int NOT NULL DEFAULT '0' COMMENT '更新时间',
+  `is_deleted` tinyint(4) NOT NULL DEFAULT 0 COMMENT '是否删除：0.不删除 1.删除',
+  `created` int(11) NOT NULL DEFAULT 0 COMMENT '创建时间',
+  `updated` int(11) NOT NULL DEFAULT 0 COMMENT '更新时间',
   `deduplication_config` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '数据去重配置',
   `template_sn` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '发送消息的模版ID',
   `sms_channel` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '短信渠道 send_channel=30的时候有用  tencent腾讯云  aliyun阿里云 yunpian云片',
-  PRIMARY KEY (`id`),
-  KEY `idx_channel` (`send_channel`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='消息模板信息';
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `idx_channel`(`send_channel`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 6 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '消息模板信息' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of message_template
 -- ----------------------------
-BEGIN;
 INSERT INTO `message_template` VALUES (1, '买一送十活动', 10, 30, 30, 20, 20, 30, '{\"content\":\"恭喜你:{$content}\",\"url\":\"\",\"title\":\"\"}', 10, 'Java3y', 'Java3y', '3y', '公众号Java3y', '三歪', 0, 1646274112, 1646275242, '', '', '');
 INSERT INTO `message_template` VALUES (2, '校招信息', 10, 50, 40, 20, 10, 0, '{\"content\":\"你已成功获取到offer 内容:{$content}\",\"url\":\"\",\"title\":\"招聘通知\"}', 1, 'Java3y', 'Java3y', '3y', '公众号Java3y', '鸡蛋', 0, 1646274195, 1646274195, '', '', '');
 INSERT INTO `message_template` VALUES (3, '验证码通知', 10, 30, 30, 20, 30, 0, '{\"content\":\"{$content}\",\"url\":\"\",\"title\":\"\"}', 10, 'Java3y', 'Java3y', '3y', '公众号Java3y', '孙悟空', 0, 1646275213, 1646275213, '', '', 'yunpian');
-INSERT INTO `message_template` VALUES (4, '微信测试通知', 10, 40, 50, 20, 10, 0, '', 2, '', '', '', '', '', 0, 1646275213, 1646275213, '', 'QCKQnx9mBQqHx-Md5o9dS8Agn_hKBm_vTWOIk8_16Uk', '');
+INSERT INTO `message_template` VALUES (4, '微信测试通知', 10, 40, 50, 20, 10, 0, '', 2, '', '', '', '', '', 0, 1646275213, 1646275213, '', 'OwqP1h3N8QNBvdTim7MTg9fo40RARsiplsvj_d7FtXM', '');
 INSERT INTO `message_template` VALUES (5, '钉钉测试通知', 10, 40, 70, 20, 10, 0, '{\"content\":\"钉钉测试消息:\\n内容:{$content}\",\"url\":\"\",\"title\":\"\"}', 3, '', '', '', '', '', 0, 1646275213, 1646275213, '', '', '');
-COMMIT;
+
+-- ----------------------------
+-- Table structure for msg_record
+-- ----------------------------
+DROP TABLE IF EXISTS `msg_record`;
+CREATE TABLE `msg_record`  (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `message_template_id` bigint(11) NOT NULL DEFAULT 0 COMMENT '消息模板ID',
+  `request_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '唯一请求 ID',
+  `receiver` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '接收人',
+  `msg_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '公众号消息id',
+  `channel` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '渠道',
+  `msg` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '推送结果信息',
+  `send_at` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '消息http 发送时间',
+  `create_at` datetime(0) NOT NULL,
+  `start_consume_at` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '开始消费时间',
+  `end_consume_at` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '结束消费时间',
+  `consume_since_time` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '消费间距时间',
+  `send_since_time` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT 'http->mq消费结束间距时间',
+  `task_info` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1625459959212806145 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of msg_record
+-- ----------------------------
+INSERT INTO `msg_record` VALUES (1625459874345259008, 4, '1625459871027564544', 'okEEF6WB92HO14qdy0Nosq62OVyY', '2798146648328945668', 'official_accounts', '推送成功', '2023-02-14 19:40:07', '2023-02-14 19:40:08', '2023-02-14 19:40:07', '2023-02-14 19:40:08', '616.983ms', '790.1012ms', '{\"request_id\":\"1625459871027564544\",\"message_template_id\":4,\"business_id\":2000000420230214,\"receiver\":[\"okEEF6WB92HO14qdy0Nosq62OVyY\"],\"id_type\":40,\"send_channel\":50,\"template_type\":20,\"msg_type\":10,\"shield_type\":0,\"content_model\":{\"data\":{\"order_no\":\"DD12345678\",\"time\":\"2022-01-11 10:00:00\"},\"mini_program\":{\"appid\":\"\",\"pagepath\":\"\"},\"template_sn\":\"OwqP1h3N8QNBvdTim7MTg9fo40RARsiplsvj_d7FtXM\",\"url\":\"\"},\"send_account\":2,\"template_sn\":\"OwqP1h3N8QNBvdTim7MTg9fo40RARsiplsvj_d7FtXM\",\"sms_channel\":\"\",\"start_consume_at\":\"2023-02-14T19:40:07.668096+08:00\",\"send_at\":\"2023-02-14T19:40:07.4949778+08:00\",\"message_param\":{\"receiver\":\"okEEF6WB92HO14qdy0Nosq62OVyY\",\"variables\":{\"data\":{\"order_no\":\"DD12345678\",\"time\":\"2022-01-11 10:00:00\"}},\"extra\":{}}}');
+INSERT INTO `msg_record` VALUES (1625459878262738944, 4, '1625459874982793216', 'okEEF6WB92HO14qdy0Nosq62OVyY', '2798146664082751493', 'official_accounts', '推送成功', '2023-02-14 19:40:08', '2023-02-14 19:40:09', '2023-02-14 19:40:08', '2023-02-14 19:40:09', '543.0679ms', '782.3122ms', '{\"request_id\":\"1625459874982793216\",\"message_template_id\":4,\"business_id\":2000000420230214,\"receiver\":[\"okEEF6WB92HO14qdy0Nosq62OVyY\"],\"id_type\":40,\"send_channel\":50,\"template_type\":20,\"msg_type\":10,\"shield_type\":0,\"content_model\":{\"data\":{\"order_no\":\"DD12345678\",\"time\":\"2022-01-11 10:00:00\"},\"mini_program\":{\"appid\":\"\",\"pagepath\":\"\"},\"template_sn\":\"OwqP1h3N8QNBvdTim7MTg9fo40RARsiplsvj_d7FtXM\",\"url\":\"\"},\"send_account\":2,\"template_sn\":\"OwqP1h3N8QNBvdTim7MTg9fo40RARsiplsvj_d7FtXM\",\"sms_channel\":\"\",\"start_consume_at\":\"2023-02-14T19:40:08.6768027+08:00\",\"send_at\":\"2023-02-14T19:40:08.4375584+08:00\",\"message_param\":{\"receiver\":\"okEEF6WB92HO14qdy0Nosq62OVyY\",\"variables\":{\"data\":{\"order_no\":\"DD12345678\",\"time\":\"2022-01-11 10:00:00\"}},\"extra\":{}}}');
+INSERT INTO `msg_record` VALUES (1625459959212806144, 4, '1625459954225778688', 'okEEF6WB92HO14qdy0Nosq62OVyY', '2798146987883020289', 'official_accounts', '推送成功', '2023-02-14 19:40:27', '2023-02-14 19:40:29', '2023-02-14 19:40:27', '2023-02-14 19:40:28', '649.7771ms', '1.1893555s', '{\"request_id\":\"1625459954225778688\",\"message_template_id\":4,\"business_id\":2000000420230214,\"receiver\":[\"okEEF6WB92HO14qdy0Nosq62OVyY\"],\"id_type\":40,\"send_channel\":50,\"template_type\":20,\"msg_type\":10,\"shield_type\":0,\"content_model\":{\"data\":{\"order_no\":\"DD12345678\",\"time\":\"2022-01-11 10:00:00\"},\"mini_program\":{\"appid\":\"\",\"pagepath\":\"\"},\"template_sn\":\"OwqP1h3N8QNBvdTim7MTg9fo40RARsiplsvj_d7FtXM\",\"url\":\"\"},\"send_account\":2,\"template_sn\":\"OwqP1h3N8QNBvdTim7MTg9fo40RARsiplsvj_d7FtXM\",\"sms_channel\":\"\",\"start_consume_at\":\"2023-02-14T19:40:27.870003+08:00\",\"send_at\":\"2023-02-14T19:40:27.3304246+08:00\",\"message_param\":{\"receiver\":\"okEEF6WB92HO14qdy0Nosq62OVyY\",\"variables\":{\"data\":{\"order_no\":\"DD12345678\",\"time\":\"2022-01-11 10:00:00\"}},\"extra\":{}}}');
 
 -- ----------------------------
 -- Table structure for send_account
 -- ----------------------------
 DROP TABLE IF EXISTS `send_account`;
-CREATE TABLE `send_account` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `send_chanel` varchar(255) NOT NULL DEFAULT '' COMMENT '发送渠道',
-  `config` varchar(2000) NOT NULL DEFAULT '' COMMENT '账户配置',
-  `title` varchar(255) NOT NULL DEFAULT '' COMMENT '账号名称',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE `send_account`  (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `send_chanel` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '发送渠道',
+  `config` varchar(2000) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '账户配置',
+  `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '账号名称',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of send_account
 -- ----------------------------
-BEGIN;
 INSERT INTO `send_account` VALUES (1, '40', '{\"host\":\"smtp.qq.com\",\"port\":25,\"username\":\"test@qq.com\",\"password\":\"tesxxxx\"}', '邮箱账号');
 INSERT INTO `send_account` VALUES (2, '50', '{\"app_id\":\"wx081353459ef4b026\",\"app_secret\":\"1c88fff643fb6a07771a6d37835bb111\",\"token\":\"weixin\"}', '微信公众号配置');
 INSERT INTO `send_account` VALUES (3, '80', '{\"access_token\":\"access_token\",\"secret\":\"secret\"}', '钉钉自定义机器人');
-COMMIT;
 
 -- ----------------------------
 -- Table structure for sms_record
 -- ----------------------------
 DROP TABLE IF EXISTS `sms_record`;
-CREATE TABLE `sms_record` (
-  `id` bigint NOT NULL,
-  `message_template_id` bigint NOT NULL DEFAULT '0' COMMENT '消息模板ID',
-  `phone` bigint NOT NULL DEFAULT '0' COMMENT '手机号',
-  `supplier_id` tinyint NOT NULL DEFAULT '0' COMMENT '发送短信渠道商的ID',
+CREATE TABLE `sms_record`  (
+  `id` bigint(20) NOT NULL,
+  `message_template_id` bigint(20) NOT NULL DEFAULT 0 COMMENT '消息模板ID',
+  `phone` bigint(20) NOT NULL DEFAULT 0 COMMENT '手机号',
+  `supplier_id` tinyint(4) NOT NULL DEFAULT 0 COMMENT '发送短信渠道商的ID',
   `supplier_name` varchar(40) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '发送短信渠道商的名称',
   `msg_content` varchar(600) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '短信发送的内容',
   `series_id` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '下发批次的ID',
-  `charging_num` tinyint NOT NULL DEFAULT '0' COMMENT '计费条数',
+  `charging_num` tinyint(4) NOT NULL DEFAULT 0 COMMENT '计费条数',
   `report_content` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '回执内容',
-  `status` tinyint NOT NULL DEFAULT '0' COMMENT '短信状态： 10.发送 20.成功 30.失败',
-  `send_date` int NOT NULL DEFAULT '0' COMMENT '发送日期：20211112',
-  `created` int NOT NULL DEFAULT '0' COMMENT '创建时间',
-  `updated` int NOT NULL DEFAULT '0' COMMENT '更新时间',
+  `status` tinyint(4) NOT NULL DEFAULT 0 COMMENT '短信状态： 10.发送 20.成功 30.失败',
+  `send_date` int(11) NOT NULL DEFAULT 0 COMMENT '发送日期：20211112',
+  `created` int(11) NOT NULL DEFAULT 0 COMMENT '创建时间',
+  `updated` int(11) NOT NULL DEFAULT 0 COMMENT '更新时间',
   `request_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '唯一请求 ID',
   `biz_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '业务id',
   `send_channel` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '短信渠道 tencent腾讯云  aliyun阿里云 yunpian云片',
-  PRIMARY KEY (`id`),
-  KEY `idx_send_date` (`send_date`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='短信记录信息';
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `idx_send_date`(`send_date`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '短信记录信息' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of sms_record
 -- ----------------------------
-BEGIN;
-COMMIT;
 
 -- ----------------------------
 -- Table structure for sys_administrator
 -- ----------------------------
 DROP TABLE IF EXISTS `sys_administrator`;
-CREATE TABLE `sys_administrator` (
-  `id` int unsigned NOT NULL AUTO_INCREMENT COMMENT '主键id',
+CREATE TABLE `sys_administrator`  (
+  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '主键id',
   `username` char(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '用户名',
   `password` char(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '密码',
   `salt` char(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '密码盐',
   `mobile` char(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '手机号码',
   `nickname` char(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '昵称',
   `avatar` char(150) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '头像地址',
-  `status` tinyint NOT NULL COMMENT '用户状态 1正常 2冻结',
+  `status` tinyint(4) NOT NULL COMMENT '用户状态 1正常 2冻结',
   `role` char(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '当前角色',
   `last_login_time` char(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '上次登陆时间',
   `last_login_ip` char(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '上次登陆ip',
-  `created_at` timestamp NOT NULL COMMENT '创建时间',
-  `updated_at` timestamp NULL COMMENT '更新时间',
+  `created_at` timestamp(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '创建时间',
+  `updated_at` timestamp(0) NULL DEFAULT NULL COMMENT '更新时间',
   `deleted_at` char(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '删除时间 ',
   PRIMARY KEY (`id`) USING BTREE,
-  UNIQUE KEY `mobile_unique_idx` (`mobile`) USING BTREE COMMENT '手机号唯一索引',
-  UNIQUE KEY `username_unique_idx` (`username`) USING BTREE COMMENT '用户名唯一索引'
-) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC COMMENT='管理员表';
+  UNIQUE INDEX `mobile_unique_idx`(`mobile`) USING BTREE COMMENT '手机号唯一索引',
+  UNIQUE INDEX `username_unique_idx`(`username`) USING BTREE COMMENT '用户名唯一索引'
+) ENGINE = InnoDB AUTO_INCREMENT = 29 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '管理员表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of sys_administrator
 -- ----------------------------
-BEGIN;
 INSERT INTO `sys_administrator` VALUES (18, 'admin', 'b9819e53ed8ea2b2b422ff1d2f1317ca', 'e701bf4e804804773099b4b20130d418', '18158445331', '卡牌', 'https://kratos-base-project.oss-cn-hangzhou.aliyuncs.com/3441660123117_.pic.jpg', 1, '超级管理员', '2023-01-06 19:05:11', '127.0.0.1:55139', '2022-08-17 16:15:17', '2022-11-22 17:41:38', '');
 INSERT INTO `sys_administrator` VALUES (27, 'test', '8ab138656a71b1e001aa12cc7298f901', 'cb1461e3e59ec7a2237bf5f5fa105ab5', '18158445332', '测试', 'https://kratos-base-project.oss-cn-hangzhou.aliyuncs.com/3441660123117_.pic.jpg', 1, '测试管理员', '2022-12-07 17:05:50', '127.0.0.1:59530', '2022-12-07 11:28:48', '2022-12-07 11:28:48', '');
 INSERT INTO `sys_administrator` VALUES (28, 'guest', 'a5ac55c657800544fa68377d4bb64505', 'dabba3032e7d0c51c48e7ca794e589b8', '18158445333', '游客', 'https://kratos-base-project.oss-cn-hangzhou.aliyuncs.com/3441660123117_.pic.jpg', 1, '游客', '2022-12-07 17:06:15', '127.0.0.1:59572', '2022-12-07 11:29:26', '2022-12-07 11:29:26', '');
-COMMIT;
 
 SET FOREIGN_KEY_CHECKS = 1;

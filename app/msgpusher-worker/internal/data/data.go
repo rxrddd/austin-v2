@@ -3,10 +3,7 @@ package data
 import (
 	"austin-v2/app/msgpusher-worker/internal/conf"
 	"context"
-	"fmt"
 	"github.com/hibiken/asynq"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 	"gorm.io/gorm"
 	"time"
 
@@ -21,13 +18,13 @@ var DataProviderSet = wire.NewSet(
 	NewData,
 	NewRedisCmd,
 	NewMysqlCmd,
-	//NewMongoDB,
 	NewMessageTemplateRepo,
 	NewSendAccountRepo,
 	NewSmsRecordRepo,
 	NewMysqlMsgRecordRepo,
 	NewAsynqServer,
 	NewAsynqClient,
+	NewAsynqScheduler,
 )
 
 // Data .
@@ -51,7 +48,6 @@ func NewData(
 	return &Data{
 		rds: rds,
 		db:  db,
-		//mongo: mongo,
 	}, cleanup, nil
 }
 
@@ -83,27 +79,6 @@ func NewMysqlCmd(conf *conf.Data, logger log.Logger) *gorm.DB {
 	return db
 }
 
-func NewMongoDB(conf *conf.Data) *mongo.Client {
-	var mgoCli *mongo.Client
-	var err error
-	clientOptions := options.Client().ApplyURI(conf.Mongodb.Url)
-	if conf.Mongodb.Username != "" && conf.Mongodb.Password != "" {
-		clientOptions.SetAuth(options.Credential{
-			Username: conf.Mongodb.Username,
-			Password: conf.Mongodb.Password,
-		})
-	}
-	// 连接到mongoDB
-	if mgoCli, err = mongo.Connect(context.TODO(), clientOptions); err != nil {
-		panic(fmt.Errorf("mongo connect err %v", err))
-	}
-	// 检查连接
-	if err = mgoCli.Ping(context.TODO(), nil); err != nil {
-		panic(fmt.Errorf("mongo ping err %v", err))
-	}
-	return mgoCli
-}
-
 func NewAsynqServer(conf *conf.Data) *asynq.Server {
 	// 首先定义一个client
 	srv := asynq.NewServer(
@@ -123,4 +98,12 @@ func NewAsynqClient(conf *conf.Data) *asynq.Client {
 		Password: conf.Redis.Password,
 	})
 	return client
+}
+
+func NewAsynqScheduler(conf *conf.Data) *asynq.Scheduler {
+	scheduler := asynq.NewScheduler(asynq.RedisClientOpt{
+		Addr:     conf.Redis.Addr,
+		Password: conf.Redis.Password,
+	}, &asynq.SchedulerOpts{})
+	return scheduler
 }

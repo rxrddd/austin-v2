@@ -13,7 +13,7 @@
 
 #### 项目描述
 
-1. 基于kratos/grpc/ants/rabbitmq/mysql/redis 写的一个聚合消息推送平台
+1. 基于kratos/grpc/ants/asynq/mysql/redis 写的一个聚合消息推送平台
 1. 开发时:
 ```
 cd austin-v2/app/msgpusher && kratos run //启动grpc和http接口
@@ -113,14 +113,14 @@ curl --location --request POST 'http://localhost:8001/send' \
 ```
 ├── Makefile
 ├── README.md
-├── api   //grpc 接口定义
-├── app  //项目代码
+├── api   //proto 接口定义
+├── app
 │   ├── administrator //用户服务
 │   ├── authorization //授权服务
 │   ├── files //文件上传服务
-│   ├── msgpusher //消息推送服务对外rpc和http接口
-│   ├── msgpusher-common //公共文件
-│   ├── msgpusher-manager //聚合消息curd服务
+│   ├── msgpusher //消息推送服务对外http接口
+│   ├── msgpusher-common //公用文件
+│   ├── msgpusher-manager //聚合消息后台curd服务
 │   ├── msgpusher-worker //消息推送消费端
 │   └── project
 │       └── admin  //后端BFF项目
@@ -145,6 +145,8 @@ kratos：[https://github.com/go-krato/krato](https://github.com/go-kratos/kratos
 austin：[https://gitee.com/zhongfucheng/austin](https://gitee.com/zhongfucheng/austin)
 
 ants：[https://github.com/panjf2000/ants](https://github.com/panjf2000/ants)
+
+asynq：[https://github.com/hibiken/asynq](https://github.com/hibiken/asynq)
 
 gomail：[https://gopkg.in/gomail.v2](https://gopkg.in/gomail.v2)
 
