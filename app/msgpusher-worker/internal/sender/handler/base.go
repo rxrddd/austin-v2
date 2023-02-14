@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"austin-v2/app/msgpusher-common/model/mongo_model"
+	"austin-v2/app/msgpusher-common/model"
 	"austin-v2/pkg/types"
 	"austin-v2/pkg/utils/jsonHelper"
 	"austin-v2/pkg/utils/stringHelper"
@@ -18,8 +18,8 @@ func (b BaseHandler) Allow(_ context.Context, _ *types.TaskInfo) bool {
 	return true
 }
 
-func (b BaseHandler) getRecord(taskInfo *types.TaskInfo, receiver string) mongo_model.MsgRecord {
-	return mongo_model.MsgRecord{
+func (b BaseHandler) getRecord(taskInfo *types.TaskInfo, receiver string) *model.MsgRecord {
+	return &model.MsgRecord{
 		ID:                stringHelper.NextID(),
 		MessageTemplateID: taskInfo.MessageTemplateId,
 		RequestID:         taskInfo.RequestId,

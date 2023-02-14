@@ -28,20 +28,19 @@ import (
 func wireApp(confData *conf.Data, logger log.Logger) (*kratos.App, func(), error) {
 	taskExecutor := sender.NewTaskExecutor()
 	cmdable := data.NewRedisCmd(confData, logger)
-	iMessagingClient := data.NewMq(confData, logger)
+	client := data.NewAsynqClient(confData)
 	db := data.NewMysqlCmd(confData, logger)
-	client := data.NewMongoDB(confData)
-	dataData, cleanup, err := data.NewData(confData, iMessagingClient, logger, cmdable, db, client)
+	dataData, cleanup, err := data.NewData(confData, logger, cmdable, db)
 	if err != nil {
 		return nil, nil, err
 	}
 	iSendAccountRepo := data.NewSendAccountRepo(dataData, logger)
 	sendAccountUseCase := biz.NewSendAccountUseCase(iSendAccountRepo, logger)
-	yunPian := smsScript.NewYunPin(logger, iMessagingClient, sendAccountUseCase)
-	aliyunSms := smsScript.NewAliyunSms(logger, iMessagingClient, sendAccountUseCase)
+	yunPian := smsScript.NewYunPin(logger, client, sendAccountUseCase)
+	aliyunSms := smsScript.NewAliyunSms(logger, client, sendAccountUseCase)
 	smsManager := smsScript.NewSmsManager(yunPian, aliyunSms)
 	smsHandler := handler.NewSmsHandler(logger, cmdable, smsManager)
-	iMsgRecordRepo := data.NewMsgRecordRepo(dataData, logger)
+	iMsgRecordRepo := data.NewMysqlMsgRecordRepo(dataData, logger)
 	emailHandler := handler.NewEmailHandler(logger, cmdable, sendAccountUseCase, iMsgRecordRepo)
 	officialAccountHandler := handler.NewOfficialAccountHandler(logger, cmdable, sendAccountUseCase, iMsgRecordRepo)
 	dingDingRobotHandler := handler.NewDingDingRobotHandler(logger, cmdable, sendAccountUseCase, iMsgRecordRepo)
@@ -62,10 +61,11 @@ func wireApp(confData *conf.Data, logger log.Logger) (*kratos.App, func(), error
 	taskService := service.NewTaskService(discardMessageService, shieldService, deduplicationRuleService)
 	iSmsRecordRepo := data.NewSmsRecordRepo(dataData, logger)
 	smsRecordUseCase := biz.NewSmsRecordUseCase(iSmsRecordRepo, logger)
-	mqHandler := server.NewMqHandler(logger, taskExecutor, handleManager, taskService, smsRecordUseCase)
-	rabbitMqServer := server.NewRabbitMqServer(confData, mqHandler, iMessagingClient)
-	cronTask := server.NewCronServer(logger, iMessagingClient, cmdable)
-	app := newApp(logger, rabbitMqServer, cronTask)
+	logic := server.NewLogic(logger, taskExecutor, handleManager, taskService, smsRecordUseCase)
+	asynqServer := data.NewAsynqServer(confData)
+	workerServer := server.NewWorkerServer(confData, logic, asynqServer)
+	cronTask := server.NewCronServer(logger, client, cmdable)
+	app := newApp(logger, workerServer, cronTask)
 	return app, func() {
 		cleanup()
 	}, nil

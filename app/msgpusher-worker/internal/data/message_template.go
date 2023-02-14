@@ -29,7 +29,7 @@ func NewMessageTemplateRepo(data *Data, logger log.Logger) IMessageTemplateRepo 
 func (a *messageTemplateRepo) One(ctx context.Context, id int64) (item model.MessageTemplate, err error) {
 	key := fmt.Sprintf("messagetemplate_%d", id)
 	err = a.cache.GetOrSet(ctx, key, &item, func(ctx context.Context, v interface{}) error {
-		return a.data.db.WithContext(ctx).Where("id", id).Limit(1).Find(&v).Error
+		return a.data.db.WithContext(ctx).Where("id", id).First(&v).Error
 	})
 	return item, err
 }

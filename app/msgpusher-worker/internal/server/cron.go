@@ -4,32 +4,32 @@ import (
 	"austin-v2/app/msgpusher-common/enums/channelType"
 	"austin-v2/app/msgpusher-common/enums/messageType"
 	"austin-v2/app/msgpusher-worker/internal/service/srv"
-	"austin-v2/pkg/mq"
 	"austin-v2/pkg/types"
 	"austin-v2/pkg/utils/taskHelper"
 	"context"
 	"encoding/json"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-redis/redis/v8"
+	"github.com/hibiken/asynq"
 	"github.com/robfig/cron/v3"
 )
 
 type CronTask struct {
-	logger   *log.Helper
-	mqHelper mq.IMessagingClient
-	rds      redis.Cmdable
-	c        *cron.Cron
+	logger *log.Helper
+	cli    *asynq.Client
+	rds    redis.Cmdable
+	c      *cron.Cron
 }
 
 func NewCronServer(
 	logger log.Logger,
-	mqHelper mq.IMessagingClient,
+	cli *asynq.Client,
 	rds redis.Cmdable,
 ) *CronTask {
 	return &CronTask{
-		logger:   log.NewHelper(log.With(logger, "module", "server/cron")),
-		mqHelper: mqHelper,
-		rds:      rds,
+		logger: log.NewHelper(log.With(logger, "module", "server/cron")),
+		cli:    cli,
+		rds:    rds,
 	}
 }
 
@@ -37,9 +37,6 @@ func (l *CronTask) Start(context.Context) error {
 	l.c = cron.New(cron.WithSeconds())
 	//每早8点发送被屏蔽的消息
 	l.c.AddFunc("0 0 8 * * ?", l.nightShieldHandler)
-	//l.c.AddFunc("*/1 * * * * ?", func() {
-	//	fmt.Println("cron task 1s" + timeHelper.CurrentTimeYMDHIS())
-	//})
 	l.c.Start()
 	l.logger.Info("start the cron task")
 	return nil
@@ -77,7 +74,7 @@ func (l *CronTask) nightShieldHandler() {
 		channel := channelType.TypeCodeEn[taskInfo.SendChannel]
 		msgType := messageType.TypeCodeEn[taskInfo.MsgType]
 		marshal, _ := json.Marshal([]types.TaskInfo{taskInfo})
-		err = l.mqHelper.Publish(marshal, taskHelper.GetMqKey(channel, msgType))
+		_, err = l.cli.EnqueueContext(ctx, asynq.NewTask(taskHelper.GetMqKey(channel, msgType), marshal))
 		if err != nil {
 			l.logger.Errorf("nightShieldHandler Publish taskInfo err:%v taskInfo: %s ", err, string(marshal))
 		}

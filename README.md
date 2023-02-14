@@ -28,7 +28,7 @@ cd austin-v2/app/msgpusher-worker && kratos run //启动消费端
 5. 使用示例
 > 邮件消息
 ```
-curl --location --request POST 'http://localhost:8888/send' \
+curl --location --request POST 'http://localhost:8001/send' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "code": "send",
@@ -45,7 +45,7 @@ curl --location --request POST 'http://localhost:8888/send' \
 
 > 微信公众号消息
 ```
-curl --location --request POST 'http://localhost:8888/send' \
+curl --location --request POST 'http://localhost:8001/send' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "messageParam": {
@@ -61,7 +61,7 @@ curl --location --request POST 'http://localhost:8888/send' \
 }'
 
 //参数带颜色的
-curl --location --request POST 'http://localhost:8888/send' \
+curl --location --request POST 'http://localhost:8001/send' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "messageParam": {
@@ -79,7 +79,7 @@ curl --location --request POST 'http://localhost:8888/send' \
 > 钉钉自定义机器人
 ```
 //艾特某些手机号
-curl --location --request POST 'http://localhost:8888/send' \
+curl --location --request POST 'http://localhost:8001/send' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "messageParam": {
@@ -92,7 +92,7 @@ curl --location --request POST 'http://localhost:8888/send' \
 }'
 
 //艾特全部人
-curl --location --request POST 'http://localhost:8888/send' \
+curl --location --request POST 'http://localhost:8001/send' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "messageParam": {

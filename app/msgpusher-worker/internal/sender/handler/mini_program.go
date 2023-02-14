@@ -4,6 +4,7 @@ import (
 	"austin-v2/app/msgpusher-common/domain/account"
 	"austin-v2/app/msgpusher-common/domain/content_model"
 	"austin-v2/app/msgpusher-common/enums/channelType"
+	"austin-v2/app/msgpusher-common/model"
 	"austin-v2/app/msgpusher-worker/internal/biz"
 	"austin-v2/app/msgpusher-worker/internal/data"
 	"austin-v2/pkg/types"
@@ -76,7 +77,7 @@ func (h *MiniProgramHandler) Execute(ctx context.Context, taskInfo *types.TaskIn
 		}
 		params[key] = &subscribe.DataItem{Value: value, Color: color}
 	}
-	var records []interface{}
+	var records []*model.MsgRecord
 	for _, receiver := range taskInfo.Receiver {
 		err := sub.Send(&subscribe.Message{
 			ToUser:           receiver,

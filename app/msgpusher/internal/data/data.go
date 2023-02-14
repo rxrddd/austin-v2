@@ -2,11 +2,8 @@ package data
 
 import (
 	"austin-v2/app/msgpusher/internal/conf"
-	"austin-v2/pkg/mq"
 	"context"
-	"github.com/go-kratos/kratos/contrib/registry/etcd/v2"
-	"github.com/go-kratos/kratos/v2/registry"
-	etcdclient "go.etcd.io/etcd/client/v3"
+	"github.com/hibiken/asynq"
 	"gorm.io/gorm"
 	"time"
 
@@ -18,12 +15,11 @@ import (
 
 // DataProviderSet is data providers.
 var DataProviderSet = wire.NewSet(
-	NewMq,
 	NewData,
 	NewMessageTemplateRepo,
-	NewRegistrar,
 	NewRedisCmd,
 	NewMysqlCmd,
+	NewAsynqClient,
 )
 
 // Data .
@@ -36,40 +32,16 @@ type Data struct {
 func NewData(
 	c *conf.Data,
 	logger log.Logger,
-	mq mq.IMessagingClient,
 	db *gorm.DB,
 	rds redis.Cmdable,
 ) (*Data, func(), error) {
 	cleanup := func() {
 		log.NewHelper(logger).Info("closing the data resources")
-		mq.Close()
 	}
 	return &Data{
 		db:  db,
 		rds: rds,
 	}, cleanup, nil
-}
-
-// NewMq .
-func NewMq(c *conf.Data, logger log.Logger) mq.IMessagingClient {
-	logs := log.NewHelper(log.With(logger, "module", "msgpusher-worker/data/mq"))
-	client, err := mq.NewMessagingClientURL(c.Rabbitmq.URL)
-	if err != nil {
-		logs.Fatalf("redis connect error: %v", err)
-	}
-	return client
-}
-
-func NewRegistrar(conf *conf.Registry) registry.Registrar {
-	point := conf.Etcd.Address
-	client, err := etcdclient.New(etcdclient.Config{
-		Endpoints: []string{point},
-	})
-	if err != nil {
-		panic(err)
-	}
-	r := etcd.New(client)
-	return r
 }
 
 func NewRedisCmd(conf *conf.Data, logger log.Logger) redis.Cmdable {
@@ -96,4 +68,12 @@ func NewMysqlCmd(conf *conf.Data, logger log.Logger) *gorm.DB {
 		logs.Fatalf("mysql connect error: %v", err)
 	}
 	return db
+}
+
+func NewAsynqClient(conf *conf.Data) *asynq.Client {
+	client := asynq.NewClient(asynq.RedisClientOpt{
+		Addr:     conf.Redis.Addr,
+		Password: conf.Redis.Password,
+	})
+	return client
 }

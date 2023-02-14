@@ -20,6 +20,5 @@ func NewMessageTemplateUseCase(repo data.IMessageTemplateRepo, logger log.Logger
 }
 
 func (a *MessageTemplateUseCase) One(ctx context.Context, id int64) (item model.MessageTemplate, err error) {
-
 	return a.repo.One(ctx, id)
 }

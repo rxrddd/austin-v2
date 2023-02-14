@@ -22,14 +22,10 @@ message Data {
     string source = 2;
   }
   message Redis {
-    string network = 1;
-    string addr = 2;
-    string password = 3;
-    google.protobuf.Duration read_timeout = 4;
-    google.protobuf.Duration write_timeout = 5;
-  }
-  message RabbitMq {
-    string URL = 1;
+    string addr = 1;
+    string password = 2;
+    google.protobuf.Duration read_timeout = 3;
+    google.protobuf.Duration write_timeout = 4;
   }
   message MongoDB {
     string url = 1;
@@ -38,8 +34,7 @@ message Data {
   }
   Database database = 1;
   Redis redis = 2;
-  RabbitMq rabbitmq = 3;
-  MongoDB mongodb = 4;
+  MongoDB mongodb = 3;
 }
 
 

@@ -5,4 +5,4 @@ import (
 )
 
 // ServerProviderSet is server providers.
-var ServerProviderSet = wire.NewSet(NewMqHandler, NewRabbitMqServer, NewCronServer)
+var ServerProviderSet = wire.NewSet(NewLogic, NewWorkerServer, NewCronServer)

@@ -360,7 +360,7 @@ CREATE TABLE `send_account` (
   `config` varchar(2000) NOT NULL DEFAULT '' COMMENT '账户配置',
   `title` varchar(255) NOT NULL DEFAULT '' COMMENT '账号名称',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ----------------------------
 -- Records of send_account
@@ -419,7 +419,7 @@ CREATE TABLE `sys_administrator` (
   `last_login_time` char(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '上次登陆时间',
   `last_login_ip` char(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '上次登陆ip',
   `created_at` timestamp NOT NULL COMMENT '创建时间',
-  `updated_at` timestamp NOT NULL COMMENT '更新时间',
+  `updated_at` timestamp NULL COMMENT '更新时间',
   `deleted_at` char(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '删除时间 ',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE KEY `mobile_unique_idx` (`mobile`) USING BTREE COMMENT '手机号唯一索引',

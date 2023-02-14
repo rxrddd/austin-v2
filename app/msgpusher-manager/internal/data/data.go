@@ -2,7 +2,6 @@ package data
 
 import (
 	"austin-v2/app/msgpusher-manager/internal/conf"
-	"austin-v2/pkg/mq"
 	"context"
 	"fmt"
 	"github.com/go-kratos/kratos/contrib/registry/etcd/v2"
@@ -22,7 +21,6 @@ import (
 
 // DataProviderSet is data providers.
 var DataProviderSet = wire.NewSet(
-	NewMq,
 	NewData,
 	NewRegistrar,
 	NewRedisCmd,
@@ -46,14 +44,12 @@ type Data struct {
 func NewData(
 	c *conf.Data,
 	logger log.Logger,
-	mq mq.IMessagingClient,
 	db *gorm.DB,
 	rds redis.Cmdable,
 	mongo *mongo.Client,
 ) (*Data, func(), error) {
 	cleanup := func() {
 		log.NewHelper(logger).Info("closing the data resources")
-		mq.Close()
 		_ = mongo.Disconnect(context.Background())
 	}
 	return &Data{
@@ -61,16 +57,6 @@ func NewData(
 		rds:   rds,
 		mongo: mongo,
 	}, cleanup, nil
-}
-
-// NewMq .
-func NewMq(c *conf.Data, logger log.Logger) mq.IMessagingClient {
-	logs := log.NewHelper(log.With(logger, "module", "msgpusher-manager-worker/data/mq"))
-	client, err := mq.NewMessagingClientURL(c.Rabbitmq.URL)
-	if err != nil {
-		logs.Fatalf("redis connect error: %v", err)
-	}
-	return client
 }
 
 func NewRegistrar(conf *conf.Registry) registry.Registrar {

@@ -4,6 +4,7 @@ import (
 	"austin-v2/app/msgpusher-common/domain/account"
 	"austin-v2/app/msgpusher-common/domain/content_model"
 	"austin-v2/app/msgpusher-common/enums/channelType"
+	"austin-v2/app/msgpusher-common/model"
 	"austin-v2/app/msgpusher-worker/internal/biz"
 	"austin-v2/app/msgpusher-worker/internal/data"
 	"austin-v2/pkg/types"
@@ -86,7 +87,7 @@ func (h *OfficialAccountHandler) Execute(ctx context.Context, taskInfo *types.Ta
 	}
 	var (
 		msgIds  []int64
-		records []interface{}
+		records []*model.MsgRecord
 	)
 	for _, receiver := range taskInfo.Receiver {
 		msgID, err := subscribe.Send(&message.TemplateMessage{
@@ -126,7 +127,10 @@ func (h *OfficialAccountHandler) Execute(ctx context.Context, taskInfo *types.Ta
 			"msgIds", msgIds)
 	}
 	_ = ants.Submit(func() {
-		_ = h.mrr.InsertMany(ctx, records)
+		err = h.mrr.InsertMany(ctx, records)
+		if err != nil {
+			h.logger.WithContext(ctx).Errorw("err", err)
+		}
 	})
 	return nil
 }

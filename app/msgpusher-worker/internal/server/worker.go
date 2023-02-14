@@ -10,47 +10,51 @@ import (
 	"austin-v2/app/msgpusher-worker/internal/sender"
 	"austin-v2/app/msgpusher-worker/internal/sender/handler"
 	"austin-v2/app/msgpusher-worker/internal/service"
-	"austin-v2/pkg/mq"
 	"austin-v2/pkg/types"
 	"context"
 	"encoding/json"
 	"fmt"
 	"github.com/go-kratos/kratos/v2/log"
-	"github.com/streadway/amqp"
+	"github.com/hibiken/asynq"
 	"time"
 )
 
-type RabbitMqServer struct {
-	logic    *MqHandler
-	mqHelper mq.IMessagingClient
+type WorkerServer struct {
+	logic  *Logic
+	server *asynq.Server
 }
 
-func NewRabbitMqServer(
+func NewWorkerServer(
 	_ *conf.Data,
-	logic *MqHandler,
-	mqHelper mq.IMessagingClient,
-) *RabbitMqServer {
-	return &RabbitMqServer{
-		mqHelper: mqHelper,
-		logic:    logic,
+	logic *Logic,
+	server *asynq.Server,
+) *WorkerServer {
+	return &WorkerServer{
+		logic:  logic,
+		server: server,
 	}
 }
-
-func (l *RabbitMqServer) Start(context.Context) error {
-	fmt.Println(`RabbitMqServer Start`)
+func withRun(fn func(msg []byte) error) func(ctx context.Context, task *asynq.Task) error {
+	return func(ctx context.Context, task *asynq.Task) error {
+		return fn(task.Payload())
+	}
+}
+func (l *WorkerServer) Start(context.Context) error {
+	fmt.Println(`WorkerServer Start`)
+	mux := asynq.NewServeMux()
 	for _, groupId := range groups.GetAllGroupIds() {
-		_ = l.mqHelper.Subscribe(fmt.Sprintf("austin.biz.%s", groupId), l.logic.onMassage)
+		mux.HandleFunc(fmt.Sprintf("austin.biz.%s", groupId), withRun(l.logic.onMassage))
 	}
-	_ = l.mqHelper.Subscribe("sms.record", l.logic.smsRecord)
-
+	mux.HandleFunc("sms.record", withRun(l.logic.smsRecord))
+	return l.server.Start(mux)
+}
+func (l *WorkerServer) Stop(context.Context) error {
+	fmt.Println(`WorkerServer Stop`)
+	l.server.Stop()
 	return nil
 }
-func (l *RabbitMqServer) Stop(context.Context) error {
-	fmt.Println(`RabbitMqServer Stop`)
-	return nil
-}
 
-type MqHandler struct {
+type Logic struct {
 	logger   log.Logger
 	executor *sender.TaskExecutor
 	hs       *handler.HandleManager
@@ -58,14 +62,14 @@ type MqHandler struct {
 	suc      *biz.SmsRecordUseCase
 }
 
-func NewMqHandler(
+func NewLogic(
 	logger log.Logger,
 	executor *sender.TaskExecutor,
 	hs *handler.HandleManager,
 	taskSvc *service.TaskService,
 	suc *biz.SmsRecordUseCase,
-) *MqHandler {
-	return &MqHandler{
+) *Logic {
+	return &Logic{
 		logger:   logger,
 		executor: executor,
 		hs:       hs,
@@ -74,10 +78,10 @@ func NewMqHandler(
 	}
 }
 
-func (m *MqHandler) onMassage(delivery amqp.Delivery) {
-	l := log.NewHelper(log.With(m.logger, "module", "MqHandler/onMassage"))
+func (m *Logic) onMassage(msg []byte) error {
+	l := log.NewHelper(log.With(m.logger, "module", "Logic/onMassage"))
 	var taskList []*types.TaskInfo
-	_ = json.Unmarshal(delivery.Body, &taskList)
+	_ = json.Unmarshal(msg, &taskList)
 	for _, task := range taskList {
 		channel := channelType.TypeCodeEn[task.SendChannel]
 		msgType := messageType.TypeCodeEn[task.MsgType]
@@ -87,15 +91,15 @@ func (m *MqHandler) onMassage(delivery amqp.Delivery) {
 			l.Errorf(" on massage err: %v task_info: %s", err, task)
 		}
 	}
-	_ = delivery.Ack(false)
+	return nil
 }
 
-func (m *MqHandler) smsRecord(delivery amqp.Delivery) {
+func (m *Logic) smsRecord(msg []byte) error {
 	var smsRecord []*model.SmsRecord
-	_ = json.Unmarshal(delivery.Body, &smsRecord)
-	l := log.NewHelper(log.With(m.logger, "module", "MqHandler/sms-record"))
+	_ = json.Unmarshal(msg, &smsRecord)
+	l := log.NewHelper(log.With(m.logger, "module", "Logic/sms-record"))
 	if err := m.suc.Create(context.Background(), smsRecord); err != nil {
-		l.Errorf(" sms record err: %v body: %s", err, string(delivery.Body))
+		l.Errorf(" sms record err: %v body: %s", err, string(msg))
 	}
-	_ = delivery.Ack(false)
+	return nil
 }
