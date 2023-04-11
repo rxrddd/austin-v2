@@ -1,17 +1,13 @@
 FROM golang:1.18 AS builder
 
-ARG APP_RELATIVE_PATH
-
 COPY . /src
-WORKDIR /src/app/${APP_RELATIVE_PATH}
+WORKDIR /src/app/mgr
 
 ENV GOPROXY https://goproxy.cn
 ENV GO111MODULE on
 RUN make build
 
 FROM debian:stable-slim
-
-ARG APP_RELATIVE_PATH
 
 RUN  sed -i 's/deb.debian.org/mirrors.ustc.edu.cn/g' /etc/apt/sources.list
 
@@ -21,7 +17,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         && rm -rf /var/lib/apt/lists/ \
         && apt-get autoremove -y && apt-get autoclean -y
 
-COPY --from=builder /src/app/${APP_RELATIVE_PATH}/bin /app
+COPY --from=builder /src/app/mgr/bin /app
 
 WORKDIR /app
 
