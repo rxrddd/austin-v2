@@ -8,27 +8,25 @@ const TableNameMessageTemplate = "message_template"
 
 // MessageTemplate mapped from table <message_template>
 type MessageTemplate struct {
-	ID                  int64  `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
-	Name                string `gorm:"column:name;not null" json:"name"`                                 // 标题
-	AuditStatus         int32  `gorm:"column:audit_status;not null" json:"audit_status"`                 // 当前消息审核状态： 10.待审核 20.审核成功 30.被拒绝
-	IDType              int32  `gorm:"column:id_type;not null" json:"id_type"`                           // 消息的发送ID类型：10. userId 20.did 30.手机号 40.openId 50.email 60.企业微信userId
-	SendChannel         int32  `gorm:"column:send_channel;not null" json:"send_channel"`                 // 消息发送渠道：10.IM 20.Push 30.短信 40.Email 50.公众号 60.小程序 70.企业微信
-	TemplateType        int32  `gorm:"column:template_type;not null" json:"template_type"`               // 10.运营类 20.技术类接口调用
-	MsgType             int32  `gorm:"column:msg_type;not null" json:"msg_type"`                         // 10.通知类消息 20.营销类消息 30.验证码类消息
-	ShieldType          int32  `gorm:"column:shield_type;not null" json:"shield_type"`                   // 10.夜间不屏蔽 20.夜间屏蔽 30.夜间屏蔽(次日早上9点发送)
-	MsgContent          string `gorm:"column:msg_content;not null" json:"msg_content"`                   // 消息内容 占位符用{$var}表示
-	SendAccount         int32  `gorm:"column:send_account;not null" json:"send_account"`                 // 发送账号 一个渠道下可存在多个账号
-	Creator             string `gorm:"column:creator;not null" json:"creator"`                           // 创建者
-	Updator             string `gorm:"column:updator;not null" json:"updator"`                           // 更新者
-	Auditor             string `gorm:"column:auditor;not null" json:"auditor"`                           // 审核人
-	Team                string `gorm:"column:team;not null" json:"team"`                                 // 业务方团队
-	Proposer            string `gorm:"column:proposer;not null" json:"proposer"`                         // 业务方
-	IsDeleted           int32  `gorm:"column:is_deleted;not null" json:"is_deleted"`                     // 是否删除：0.不删除 1.删除
-	Created             int32  `gorm:"column:created;not null" json:"created"`                           // 创建时间
-	Updated             int32  `gorm:"column:updated;not null" json:"updated"`                           // 更新时间
-	DeduplicationConfig string `gorm:"column:deduplication_config;not null" json:"deduplication_config"` // 数据去重配置
-	TemplateSn          string `gorm:"column:template_sn;not null" json:"template_sn"`                   // 发送消息的模版ID
-	SmsChannel          string `gorm:"column:sms_channel;not null" json:"sms_channel"`                   // 短信渠道 send_channel=30的时候有用  tencent腾讯云  aliyun阿里云 yunpian云片
+	ID                  int64        `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
+	Name                string       `gorm:"column:name;not null" json:"name"`                                 // 标题
+	AuditStatus         int32        `gorm:"column:audit_status;not null" json:"audit_status"`                 // 当前消息审核状态： 10.待审核 20.审核成功 30.被拒绝
+	IDType              int32        `gorm:"column:id_type;not null" json:"id_type"`                           // 消息的发送ID类型：10. userId 20.did 30.手机号 40.openId 50.email 60.企业微信userId
+	SendChannel         int32        `gorm:"column:send_channel;not null" json:"send_channel"`                 // 消息发送渠道：10.IM 20.Push 30.短信 40.Email 50.公众号 60.小程序 70.企业微信
+	TemplateType        int32        `gorm:"column:template_type;not null" json:"template_type"`               // 10.运营类 20.技术类接口调用
+	MsgType             int32        `gorm:"column:msg_type;not null" json:"msg_type"`                         // 10.通知类消息 20.营销类消息 30.验证码类消息
+	ShieldType          int32        `gorm:"column:shield_type;not null" json:"shield_type"`                   // 10.夜间不屏蔽 20.夜间屏蔽 30.夜间屏蔽(次日早上9点发送)
+	MsgContent          string       `gorm:"column:msg_content;not null" json:"msg_content"`                   // 消息内容 占位符用{$var}表示
+	SendAccount         int32        `gorm:"column:send_account;not null" json:"send_account"`                 // 发送账号 一个渠道下可存在多个账号
+	CreateBy            string       `gorm:"column:create_by;not null" json:"create_by"`                       // 创建者
+	UpdateBy            string       `gorm:"column:update_by;not null" json:"update_by"`                       // 更新者
+	Status              int32        `gorm:"column:status;not null;default:1" json:"status"`                   // 是否删除：0.删除 1.正常 2.禁用
+	CreateAt            int64        `gorm:"column:create_at;not null" json:"create_at"`                       // 创建时间
+	UpdateAt            int64        `gorm:"column:update_at;not null" json:"update_at"`                       // 更新时间
+	DeduplicationConfig string       `gorm:"column:deduplication_config;not null" json:"deduplication_config"` // 数据去重配置
+	TemplateSn          string       `gorm:"column:template_sn;not null" json:"template_sn"`                   // 发送消息的模版ID
+	SmsChannel          string       `gorm:"column:sms_channel;not null" json:"sms_channel"`                   // 短信渠道 send_channel=30的时候有用  tencent腾讯云  aliyun阿里云 yunpian云片
+	SendAccountItem     *SendAccount `gorm:"foreignKey:id;references:send_channel" json:"send_account_item"`
 }
 
 // TableName MessageTemplate's table name

@@ -14,10 +14,10 @@ docker rm msgpusher-manager
 docker rm msgpusher-worker
 
 #删除镜像
-docker rm mgr:v1
-docker rm msgpusher:v1
-docker rm msgpusher-manager:v1
-docker rm msgpusher-worker:v1
+docker rmi mgr:v1
+docker rmi msgpusher:v1
+docker rmi msgpusher-manager:v1
+docker rmi msgpusher-worker:v1
 
 #删除none镜像
 docker rmi $(docker images | grep "none" | awk '{print $3}')

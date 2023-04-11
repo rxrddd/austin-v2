@@ -16,6 +16,20 @@
 #### 项目描述
 
 1. 基于kratos/grpc/ants/asynq/mysql/redis 写的一个聚合消息推送平台
+使用docker快速部署
+ - 使用docker-compose安装ectd，redis，mysql等软件
+```
+docker-compose -f deply/env/docker-compose.yml up -d
+```
+- 修改每个服务的config.yaml中的mysql地址，redis地址，etcd地址等信息
+- 导入数据库`docs/sql/austin-v2.sql`
+
+- 运行脚本
+```
+sh deployment-shell.sh
+```
+
+
 1. 开发时:
 ```
 cd austin-v2/app/msgpusher && kratos run //启动grpc和http接口
