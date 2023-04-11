@@ -2,7 +2,7 @@ package main
 
 import (
 	"austin-v2/app/msgpusher-worker/internal/server"
-	"austin-v2/pkg/utils/stringHelper"
+	"austin-v2/utils/stringHelper"
 	"flag"
 	"os"
 

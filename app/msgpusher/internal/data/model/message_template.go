@@ -1,6 +1,8 @@
 package model
 
-import "austin-v2/app/msgpusher-common/domain"
+import (
+	"austin-v2/common/domain"
+)
 
 type MessageTemplate struct {
 	ID                  int64  `gorm:"column:id" json:"id"`                                     //

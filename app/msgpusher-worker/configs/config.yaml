@@ -4,7 +4,7 @@ service:
 data:
   database:
     driver: mysql
-    source: root:root@tcp(127.0.0.1:3306)/kratos-admin?parseTime=true&collation=utf8mb4_unicode_ci&loc=Asia%2FShanghai&charset=utf8mb4
+    source: root:root@tcp(127.0.0.1:3306)/austin-v2?parseTime=true&collation=utf8mb4_unicode_ci&loc=Asia%2FShanghai&charset=utf8mb4
   redis:
     addr: "127.0.0.1:6379"
     password: "123456"

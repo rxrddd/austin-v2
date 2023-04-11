@@ -1,8 +1,8 @@
 package data
 
 import (
-	"austin-v2/app/msgpusher-common/domain/account"
-	"austin-v2/pkg/utils/accountHelper"
+	"austin-v2/common/domain/account"
+	"austin-v2/utils/accountHelper"
 	"context"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/silenceper/wechat/v2"

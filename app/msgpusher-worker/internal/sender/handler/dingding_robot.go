@@ -1,16 +1,16 @@
 package handler
 
 import (
-	"austin-v2/app/msgpusher-common/domain/account"
-	"austin-v2/app/msgpusher-common/domain/content_model"
-	"austin-v2/app/msgpusher-common/enums/channelType"
-	"austin-v2/app/msgpusher-common/model"
 	"austin-v2/app/msgpusher-worker/internal/biz"
 	"austin-v2/app/msgpusher-worker/internal/data"
+	"austin-v2/common/domain/account"
+	"austin-v2/common/domain/content_model"
+	"austin-v2/common/enums/channelType"
+	"austin-v2/common/model"
 	"austin-v2/pkg/types"
-	"austin-v2/pkg/utils/accountHelper"
-	"austin-v2/pkg/utils/arrayHelper"
-	"austin-v2/pkg/utils/contentHelper"
+	"austin-v2/utils/accountHelper"
+	"austin-v2/utils/arrayHelper"
+	"austin-v2/utils/contentHelper"
 	"context"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-redis/redis/v8"

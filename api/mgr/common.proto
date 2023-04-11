@@ -1,0 +1,64 @@
+syntax = "proto3";
+
+package api.gvs_mgr;
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+
+option go_package = "gvs-mgr-kit/api/mgr";
+
+service Common {
+  rpc GetWorkbench (google.protobuf.Empty) returns (ConsoleReply){
+    option (google.api.http) = {
+      get : "/common/index/console"
+    };
+  };
+  rpc GetIndexConfig (google.protobuf.Empty) returns (IndexConfigReply){
+    option (google.api.http) = {
+      get : "/common/index/config"
+    };
+  };
+}
+
+message ConsoleToday {
+  string time = 1;
+  int32 todayOrder = 2;
+  int32 todaySales = 3;
+  int32 todayUsers = 4;
+  int32 todayVisits = 5;
+  int32 totalOrder = 6;
+  int32 totalSales = 7;
+  int32 totalUsers = 8;
+  int32 totalVisits = 9;
+}
+
+
+message ConsoleVersion {
+  string based = 1;
+  string name = 2;
+  string version = 3;
+  string website = 4;
+}
+
+message ConsoleVisitor {
+  repeated string date = 1;
+  repeated int32 list = 2;
+}
+
+message ConsoleReply {
+  ConsoleToday today = 1;
+  ConsoleVersion version = 2;
+  ConsoleVisitor visitor = 3;
+}
+message IndexConfigReply {
+  message Copyright {
+    string link = 1;
+    string name = 2;
+  }
+  repeated Copyright copyright = 1;
+  string ossDomain = 2;
+  string webBackdrop = 3;
+  string webFavicon = 4;
+  string webLogo = 5;
+  string webName = 6;
+}

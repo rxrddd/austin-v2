@@ -1,11 +1,11 @@
 package process
 
 import (
-	"austin-v2/app/msgpusher-common/domain/content_model"
 	"austin-v2/app/msgpusher/internal/data/model"
+	"austin-v2/common/domain/content_model"
 	"austin-v2/pkg/types"
-	"austin-v2/pkg/utils/taskHelper"
-	"austin-v2/pkg/utils/transformHelper"
+	"austin-v2/utils/taskHelper"
+	"austin-v2/utils/transformHelper"
 	"context"
 	"strings"
 	"time"

@@ -2,11 +2,11 @@ package process
 
 import (
 	pb "austin-v2/api/msgpusher/v1"
-	"austin-v2/app/msgpusher-common/enums/channelType"
-	"austin-v2/app/msgpusher-common/enums/idType"
 	"austin-v2/app/msgpusher/internal/data/model"
+	"austin-v2/common/enums/channelType"
+	"austin-v2/common/enums/idType"
 	"austin-v2/pkg/types"
-	"austin-v2/pkg/utils/taskHelper"
+	"austin-v2/utils/taskHelper"
 	"context"
 	"regexp"
 )

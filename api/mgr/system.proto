@@ -1,0 +1,315 @@
+syntax = "proto3";
+
+package api.gvs_mgr;
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+
+option go_package = "austin-v2/api/mgr";
+
+service System {
+  rpc AdminLogin (LoginReq) returns (LoginResp){
+    option (google.api.http) = {
+      post : "/system/login"
+      body : "*"
+    };
+  };
+  rpc AdminLogout (google.protobuf.Empty) returns (google.protobuf.Empty){
+    option (google.api.http) = {
+      post : "/system/logout"
+      body : "*"
+    };
+  };
+  rpc GetSelfInfo (google.protobuf.Empty) returns (SelfReply){
+    option (google.api.http) = {
+      get : "/system/admin/self"
+    };
+  };
+
+  rpc GetMenuRoute (google.protobuf.Empty) returns (GetMenuRouteReply){
+    option (google.api.http) = {
+      get : "/system/menu/route"
+    };
+  };
+
+  rpc GetMenuAllList (google.protobuf.Empty) returns (GetMenuRouteReply){
+    option (google.api.http) = {
+      get : "/system/menu/list"
+    };
+  };
+  rpc SaveMenu (SaveMenuReq) returns (google.protobuf.Empty){
+    option (google.api.http) = {
+      post : "/system/menu/save"
+      body : "*"
+    };
+  };
+  rpc DeleteMenu (DeleteMenuReq) returns (google.protobuf.Empty){
+    option (google.api.http) = {
+      post : "/system/menu/del"
+      body : "*"
+    };
+  };
+  rpc RoleList (RoleListReq) returns (RoleListReply){
+    option (google.api.http) = {
+      get : "/system/role/list"
+    };
+  };
+  rpc RoleAll (google.protobuf.Empty) returns (RoleAllReply){
+    option (google.api.http) = {
+      get : "/system/role/all"
+    };
+  };
+
+  rpc SaveRole (SaveRoleReq) returns (google.protobuf.Empty){
+    option (google.api.http) = {
+      post : "/system/role/save"
+      body : "*"
+    };
+  };
+  rpc ChangeRoleStatus (ChangeRoleStatusReq) returns (google.protobuf.Empty){
+    option (google.api.http) = {
+      post : "/system/role/change"
+      body : "*"
+    };
+  };
+  rpc RoleDetail (RoleDetailReq) returns (RoleDetailReply){
+    option (google.api.http) = {
+      get : "/system/role/detail"
+    };
+  };
+
+  rpc AdminList (AdminListReq) returns (AdminListReply){
+    option (google.api.http) = {
+      get : "/system/admin/list"
+    };
+  };
+
+  rpc AdminDetail (AdminDetailReq) returns (AdminDetailReply){
+    option (google.api.http) = {
+      get : "/system/admin/detail"
+    };
+  };
+  rpc AdminSave (AdminSaveReq) returns (AdminSaveReply){
+    option (google.api.http) = {
+      post : "/system/admin/save"
+      body : "*"
+    };
+  };
+  rpc AdminDisable (AdminDisableReq) returns (google.protobuf.Empty){
+    option (google.api.http) = {
+      post : "/system/admin/disable"
+      body : "*"
+    };
+  };
+  rpc UpdateInfo (UpdateInfoReq) returns (google.protobuf.Empty){
+    option (google.api.http) = {
+      post : "/system/admin/upInfo"
+      body : "*"
+    };
+  };
+}
+
+message AdminDetailReq{
+  int32 id = 1;
+}
+message AdminListReq{
+  int64 pageNo = 1;
+  int64 pageSize = 2;
+  string nickname = 3;
+  string username = 4;
+  string role = 5;
+}
+message AdminListReply{
+  message AdminItems{
+    int32 id = 1;
+    string username = 2;
+    string nickname = 3;
+    string avatar = 4;
+    string role = 5;
+    string dept = 6;
+    int32 isMultipoint = 7;
+    int32 isDisable = 8;
+    string lastLoginIp = 9;
+    int64 lastLoginTime = 10;
+    int64 createTime = 11;
+    int64 updateTime = 12;
+  }
+  repeated AdminItems items = 1;
+  int32 total = 2;
+}
+
+message AdminDetailReply{
+  int32 id = 1;
+  string nickname = 2;
+  string avatar = 3;
+  string username = 4;
+  repeated string role_ids = 5;
+}
+
+message AdminSaveReq{
+  int32 id = 1;
+  string nickname = 2;
+  string avatar = 3;
+  string username = 4;
+  repeated string role_ids = 5;
+  string mobile = 6;
+  string sex = 7;
+}
+
+message AdminSaveReply{
+  int32 id = 1;
+}
+
+message AdminDisableReq{
+  int32 id = 1;
+  int32 status = 2;
+}
+
+
+message LoginReq {
+  string username = 1;
+  // @gotags: mask:"password"
+  string password = 2;
+  int32 terminal = 3; //是否记住密码
+}
+
+
+message LoginResp {
+  string token = 1;
+}
+
+message UserInfo {
+  int32 id = 1;
+  string username = 2;
+  string nickname = 3;
+  string avatar = 4;
+  string role = 5;
+  string dept = 6;
+  int32 isMultipoint = 7;
+  int32 isDisable = 8;
+  string lastLoginIp = 9;
+  int64 lastLoginTime = 10;
+  int64 createTime = 11;
+  int64 updateTime = 12;
+}
+
+message SelfReply {
+  UserInfo user = 1;
+  repeated string permissions = 2;
+}
+message GetMenuRouteReply {
+  message MenuRoute {
+    repeated MenuRoute children = 1;
+    string component = 2;
+    int64 createTime = 3;
+    int32 id = 4;
+    int32 isCache = 5;
+    int32 isDisable = 6;
+    int32 isShow = 7;
+    string menuIcon = 8;
+    string menuName = 9;
+    int32 menuSort = 10;
+    string menuType = 11;
+    string params = 12;
+    string paths = 13;
+    string perms = 14;
+    int32 pid = 15;
+    string selected = 16;
+    int64 updateTime = 17;
+  }
+
+  repeated MenuRoute items = 1;
+}
+
+message SaveMenuReq {
+  int32 id = 1;
+  int32 pid = 2;
+  string menuType = 3;
+  string menuIcon = 4;
+  string menuName = 5;
+  int32 menuSort = 6;
+  string paths = 7;
+  string perms = 8;
+  string component = 9;
+  string selected = 10;
+  string params = 11;
+  int32 isCache = 12;
+  int32 isShow = 13;
+  int32 isDisable = 14;
+}
+message DeleteMenuReq {
+  int32 id = 1;
+}
+message RoleListReply {
+  message Lists {
+    int32 id = 1;
+    string name = 2;
+    string remark = 3;
+    repeated string menus = 4;
+    int32 member = 5;
+    int32 sort = 6;
+    int32 isDisable = 7;
+    int64 createTime = 8;
+    int64 updateTime = 9;
+  }
+  int32 total = 1;
+  repeated Lists items = 2;
+}
+
+message RoleAllReply {
+  message Lists {
+    int32 id = 1;
+    string name = 2;
+    string remark = 3;
+    repeated string menus = 4;
+    int32 member = 5;
+    int32 sort = 6;
+    int32 isDisable = 7;
+    int64 createTime = 8;
+    int64 updateTime = 9;
+  }
+  repeated Lists items = 1;
+}
+
+message SaveRoleReq {
+  int32 id = 1;
+  string name = 2;
+  string remark = 3;
+  int32 sort = 4;
+  int32 isDisable = 5;
+  string menuIds = 6;
+}
+
+message RoleListReq {
+  int64 pageNo = 1;
+  int64 pageSize = 2;
+  string keywords = 3;
+}
+
+message ChangeRoleStatusReq {
+  int32 id = 1;
+  int32 status = 2;
+}
+
+message RoleDetailReq {
+  int32 id = 1;
+}
+message RoleDetailReply {
+  int32 id = 1;
+  string name = 2;
+  string remark = 3;
+  repeated string menus = 4;
+  int32 sort = 5;
+  int32 isDisable = 6;
+  int64 createTime = 7;
+  int64 updateTime = 8;
+}
+message UpdateInfoReq{
+  string avatar = 1;
+  string username = 2;
+  string nickname = 3;
+  // @gotags: mask:"password"
+  string password = 4;
+  // @gotags: mask:"password"
+  string passwordConfirm = 5;
+}

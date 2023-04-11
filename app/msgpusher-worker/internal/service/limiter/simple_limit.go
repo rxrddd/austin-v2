@@ -2,7 +2,7 @@ package limit
 
 import (
 	"austin-v2/pkg/types"
-	"austin-v2/pkg/utils/redisHelper"
+	"austin-v2/utils/redisHelper"
 	"context"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-redis/redis/v8"

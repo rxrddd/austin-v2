@@ -1,7 +1,7 @@
 package sender
 
 import (
-	"austin-v2/app/msgpusher-common/enums/groups"
+	"austin-v2/common/enums/groups"
 	"context"
 	"fmt"
 	"github.com/panjf2000/ants/v2"

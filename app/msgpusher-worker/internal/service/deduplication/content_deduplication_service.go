@@ -3,7 +3,7 @@ package deduplication
 import (
 	limit "austin-v2/app/msgpusher-worker/internal/service/limiter"
 	"austin-v2/pkg/types"
-	"austin-v2/pkg/utils/encrypt"
+	"austin-v2/utils/encrypt"
 	"context"
 	"encoding/json"
 	"github.com/spf13/cast"

@@ -1,7 +1,7 @@
 package data
 
 import (
-	"austin-v2/app/msgpusher-common/model"
+	"austin-v2/common/model"
 	"context"
 	"github.com/go-kratos/kratos/v2/log"
 )

@@ -2,7 +2,7 @@ package deduplication
 
 import (
 	"austin-v2/pkg/types"
-	"austin-v2/pkg/utils/arrayHelper"
+	"austin-v2/utils/arrayHelper"
 	"context"
 )
 

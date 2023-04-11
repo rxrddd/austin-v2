@@ -1,7 +1,7 @@
 package main
 
 import (
-	"austin-v2/pkg/utils/stringHelper"
+	"austin-v2/utils/stringHelper"
 	"flag"
 	"github.com/go-kratos/kratos/v2/transport/http"
 	"os"

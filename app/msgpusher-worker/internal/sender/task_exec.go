@@ -1,9 +1,9 @@
 package sender
 
 import (
-	"austin-v2/app/msgpusher-common/enums/channelType"
 	"austin-v2/app/msgpusher-worker/internal/sender/handler"
 	"austin-v2/app/msgpusher-worker/internal/service"
+	"austin-v2/common/enums/channelType"
 	"austin-v2/pkg/types"
 	"context"
 	"github.com/go-kratos/kratos/v2/log"

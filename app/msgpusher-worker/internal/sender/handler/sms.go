@@ -1,10 +1,10 @@
 package handler
 
 import (
-	"austin-v2/app/msgpusher-common/enums/channelType"
 	"austin-v2/app/msgpusher-worker/internal/sender/smsScript"
+	"austin-v2/common/enums/channelType"
 	"austin-v2/pkg/types"
-	"austin-v2/pkg/utils/timeHelper"
+	"austin-v2/utils/timeHelper"
 	"context"
 	"fmt"
 	"github.com/go-kratos/kratos/v2/log"

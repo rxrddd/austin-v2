@@ -1,11 +1,11 @@
 package handler
 
 import (
-	"austin-v2/app/msgpusher-common/model"
+	"austin-v2/common/model"
 	"austin-v2/pkg/types"
-	"austin-v2/pkg/utils/jsonHelper"
-	"austin-v2/pkg/utils/stringHelper"
-	"austin-v2/pkg/utils/timeHelper"
+	"austin-v2/utils/jsonHelper"
+	"austin-v2/utils/stringHelper"
+	"austin-v2/utils/timeHelper"
 	"context"
 	"time"
 )

@@ -2,7 +2,7 @@ package data
 
 import (
 	"austin-v2/app/msgpusher/internal/data/model"
-	"austin-v2/pkg/utils/cacheHepler"
+	"austin-v2/utils/cacheHepler"
 	"context"
 	"fmt"
 	"github.com/go-kratos/kratos/v2/log"

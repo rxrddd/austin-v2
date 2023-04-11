@@ -1,9 +1,9 @@
 package service
 
 import (
-	"austin-v2/app/msgpusher-common/enums/channelType"
 	"austin-v2/app/msgpusher-manager/internal/biz"
 	"austin-v2/app/msgpusher-manager/internal/domain"
+	"austin-v2/common/enums/channelType"
 	"context"
 	"github.com/spf13/cast"
 	"time"

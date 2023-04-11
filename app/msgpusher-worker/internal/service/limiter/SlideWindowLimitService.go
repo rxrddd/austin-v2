@@ -3,7 +3,7 @@ package limit
 import (
 	"austin-v2/app/msgpusher-worker/internal/conf"
 	"austin-v2/pkg/types"
-	"austin-v2/pkg/utils/timeHelper"
+	"austin-v2/utils/timeHelper"
 	"context"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-redis/redis/v8"

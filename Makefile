@@ -1,122 +1,88 @@
+GOHOSTOS:=$(shell go env GOHOSTOS)
 GOPATH:=$(shell go env GOPATH)
 VERSION=$(shell git describe --tags --always)
-APP_RELATIVE_PATH=$(shell a=`basename $$PWD` && cd .. && b=`basename $$PWD` && echo $$a)
-INTERNAL_PROTO_FILES=$(shell find internal -name *.proto)
-API_PROTO_FILES=$(shell cd ../../../api/$(APP_RELATIVE_PATH) && find . -name *.proto)
-KRATOS_VERSION=$(shell go mod graph |grep go-kratos/kratos/v2 |head -n 1 |awk -F '@' '{print $$2}')
-KRATOS=$(GOPATH)/pkg/mod/github.com/go-kratos/kratos/v2@$(KRATOS_VERSION)
-#APP_NAME=$(shell echo $(APP_RELATIVE_PATH) | sed -En "s/\//-/p")
-#DOCKER_IMAGE=$(shell echo $(APP_NAME) |awk -F '@' '{print "austin-v2/" $$0 ":0.1.0"}')
+APP_RELATIVE_PATH=$(shell a=`basename $$PWD` && cd .. && b=`basename $$PWD` && echo $$b/$$a)
+SERVICE_NAME=$(shell a=`basename $$PWD` && echo $$a)
+SERVICE_NAME_UPPER=$(shell echo $(SERVICE_NAME) | cut -b 1 | tr [a-z] [A-Z])
+SERVICE_NAME_UPPER1=$(shell echo $(SERVICE_NAME) | cut -b 2-)
+SERVICE_NAME_UPPERAll=$(shell echo $(SERVICE_NAME_UPPER)$(SERVICE_NAME_UPPER1) )
+APP_NAME=$(shell echo $(APP_RELATIVE_PATH) | sed -En "s/\//-/p")
+DOCKER_IMAGE=$(shell echo $(APP_NAME) |awk -F '@' '{print "kratos-crud-layout/" $$0 ":0.1.0"}')
+TEMPLATE_SERVICE_NAME=serviceName
+TEMPLATE_SERVICE_NAME_UPPER=ServiceName
+
+#
+
+ifeq ($(GOHOSTOS), windows)
+	#the `find.exe` is different from `find` in bash/shell.
+	#to see https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/find.
+	#changed to use git-bash.exe to run find cli or other cli friendly, caused of every developer has a Git.
+	Git_Bash= $(subst cmd\,bin\bash.exe,$(dir $(shell where git)))
+	INTERNAL_PROTO_FILES=$(shell $(Git_Bash) -c "find internal -name *.proto")
+	API_PROTO_FILES=$(shell $(Git_Bash) -c "find api -name *.proto")
+	PB_PROTO_FILES=$(shell $(Git_Bash) -c "find api -name *.pb.go")
+else
+	INTERNAL_PROTO_FILES=$(shell find internal -name *.proto)
+	API_PROTO_FILES=$(shell find api -name *.proto)
+	PB_PROTO_FILES=$(shell find api -name *.pb.go)
+endif
 
 .PHONY: init
 # init env
 init:
-	go get -u google.golang.org/protobuf/cmd/protoc-gen-go
-	go get -u google.golang.org/grpc/cmd/protoc-gen-go-grpc
-	go get -u github.com/go-kratos/kratos/cmd/protoc-gen-go-http/v2
-	go get -u github.com/google/wire/cmd/wire
-	go get -u github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2
+	go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+	go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+	go install github.com/go-kratos/kratos/cmd/kratos/v2@latest
+	go install github.com/go-kratos/kratos/cmd/protoc-gen-go-http/v2@latest
+	go install github.com/google/gnostic/cmd/protoc-gen-openapi@latest
 
-.PHONY: grpc
-# generate grpc code
-grpc:
-	 cd ../../api/$(APP_RELATIVE_PATH) && protoc --proto_path=. \
-           --proto_path=../../third_party \
-           --go_out=paths=source_relative:. \
-           --go-grpc_out=paths=source_relative:. \
-           $(API_PROTO_FILES)
+.PHONY: config
+# generate internal proto
+config:
+	protoc --proto_path=./internal \
+	       --proto_path=../../third_party \
+ 	       --go_out=paths=source_relative:./internal \
+	       $(INTERNAL_PROTO_FILES)
 
-.PHONY: http
-# generate http code
-http:
-	cd ../../api/$(APP_RELATIVE_PATH) && protoc --proto_path=. \
-           --proto_path=../../third_party \
-           --go_out=paths=source_relative:. \
-           --go-http_out=paths=source_relative:. \
-           $(API_PROTO_FILES)
-
-.PHONY: errors
-# generate errors code
-errors:
-	cd ../../api/$(APP_RELATIVE_PATH) && protoc --proto_path=. \
-           --proto_path=../../third_party \
-           --go_out=paths=source_relative:. \
-           --go-errors_out=paths=source_relative:. \
-           $(API_PROTO_FILES)
-
-.PHONY: swagger
-# generate swagger
-swagger:
-	cd ../../api/$(APP_RELATIVE_PATH) && protoc --proto_path=. \
-	        --proto_path=../../third_party \
-	        --openapiv2_out . \
-	        --openapiv2_opt logtostderr=true \
-           $(API_PROTO_FILES)
-
-.PHONY: proto
-# generate internal proto struct
-proto:
-	protoc --proto_path=. \
-           --proto_path=../../../third_party \
-           --go_out=paths=source_relative:. \
-           $(INTERNAL_PROTO_FILES)
-
-.PHONY: generate
-# generate client code
-generate:
-	go generate ./...
+.PHONY: api
+# generate api proto
+api:
+	protoc --proto_path=./api \
+	       --proto_path=../../third_party \
+ 	       --go_out=paths=source_relative:./api \
+ 	       --go-http_out=paths=source_relative:./api \
+ 	       --go-grpc_out=paths=source_relative:./api \
+	       --openapi_out=fq_schema_naming=true,default_response=false:. \
+	       $(API_PROTO_FILES)
 
 .PHONY: build
 # build
 build:
 	mkdir -p bin/ && go build -ldflags "-X main.Version=$(VERSION)" -o ./bin/ ./...
 
-.PHONY: test
-# test
-test:
-	go test -v ./... -cover
+.PHONY: generate
+# generate
+generate:
+	go mod tidy
+	go get github.com/google/wire/cmd/wire@latest
+	go generate ./...
 
-.PHONY: run
-run:
-	cd cmd/server/ && go run .
-
-.PHONY: ent
-ent:
-	cd internal/data/ && ent generate ./ent/schema
-
-
-.PHONY: docker
-# grpc服务生成docker
-docker:
-	cd ../.. && docker build -f deploy/build/Dockerfile --build-arg APP_RELATIVE_PATH=$(APP_RELATIVE_PATH) -t $(DOCKER_IMAGE) .
-	#cd ../.. && docker build -f deploy/build/Dockerfile --build-arg APP_RELATIVE_PATH=$(APP_RELATIVE_PATH) -t $(DOCKER_IMAGE) .
-
-.PHONY: dockerAdmin
-# 管理后台生成docker
-dockerAdmin:
-	#cd ../../../../ && docker build -f deploy/build/DockerfileAdmin --build-arg APP_RELATIVE_PATH=$(APP_RELATIVE_PATH) -t $(DOCKER_IMAGE) .
-	cd ../../../ && docker build -f deploy/build/DockerfileAdmin --build-arg APP_RELATIVE_PATH=$(APP_RELATIVE_PATH) -t $(DOCKER_IMAGE) .
-
-.PHONY: wire
-# generate wire
+# wire
 wire:
-	cd cmd/server && wire
+	cd cmd\server && wire
 
-.PHONY: config
-# generate internal proto
-config:
-	protoc --proto_path=. \
-	       --proto_path=../../third_party \
- 	       --go_out=paths=source_relative:. \
-	       $(INTERNAL_PROTO_FILES)
+# wire
+gen:
+	go run gvs-mgr-kit/app/gen
 
-.PHONY: api
-# generate api proto
-api: grpc http swagger errors
+
 
 .PHONY: all
 # generate all
-all: grpc http proto generate build test
+all:
+	make api;
+	make config;
+	make generate;
 
 # show help
 help:
@@ -136,3 +102,7 @@ help:
 	{ lastLine = $$0 }' $(MAKEFILE_LIST)
 
 .DEFAULT_GOAL := help
+# docker编译
+.PHONY: docker
+docker:
+	docker build -f ./Dockerfile --build-arg APP_RELATIVE_PATH=$(APP_RELATIVE_PATH) -t $(DOCKER_IMAGE) .

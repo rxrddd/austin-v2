@@ -1,8 +1,8 @@
 package server
 
 import (
-	"austin-v2/app/msgpusher-common/enums/groups"
 	"austin-v2/app/msgpusher-worker/internal/conf"
+	"austin-v2/common/enums/groups"
 	"context"
 	"fmt"
 	"github.com/hibiken/asynq"

@@ -1,0 +1,49 @@
+version: '3'
+
+networks:
+  software_network:
+    driver: bridge
+
+services:
+  mysql:
+    hostname: mysql
+    image: mysql:latest
+    container_name: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./mysql/data:/var/lib/mysql
+      - ./mysql/logs:/var/log/mysql
+    networks:
+      - software_network
+  redis:
+    hostname: redis
+    image: redis:latest
+    container_name: redis
+    restart: always
+    ports:
+      - "6379:6379"
+    command: ["redis-server", "--appendonly", "yes", "--requirepass","123456"]
+    volumes:
+      - ./redis/data:/data
+      - ./redis/logs:/var/log/redis
+    networks:
+      - software_network
+  etcd:
+    hostname: etcd
+    image: bitnami/etcd:latest
+    container_name: etcd
+    restart: always
+    environment:
+      - ALLOW_NONE_AUTHENTICATION=yes
+      - ETCD_ADVERTISE_CLIENT_URLS=http://0.0.0.0:2379
+    ports:
+      - "2379:2379"
+      - "2380:2380"
+    volumes:
+      - ./data:/bitnami/etcd
+    networks:
+      - software_network
