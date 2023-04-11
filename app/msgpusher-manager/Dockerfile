@@ -6,8 +6,8 @@ WORKDIR /src
 ENV GOPROXY https://goproxy.cn
 ENV GO111MODULE on
 
-RUN GOPROXY=https://goproxy.cn && go mod tidy
-RUN GOPROXY=https://goproxy.cn make build
+RUN go mod tidy
+RUN make build
 
 FROM debian:stable-slim
 
