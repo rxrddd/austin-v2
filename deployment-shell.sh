@@ -29,7 +29,7 @@ docker build -t msgpusher-manager:v1 -f app/msgpusher-manager/Dockerfile .
 docker build -t msgpusher-worker:v1 -f app/msgpusher-worker/Dockerfile .
 
 #启动服务
-docker run -itd --net=host --name=mgr mgr:v1
-docker run -itd --net=host --name=msgpusher msgpusher:v1
-docker run -itd --net=host --name=msgpusher-manager msgpusher-manager:v1
-docker run -itd --net=host --name=msgpusher-worker msgpusher-worker:v1
+docker run -itd --net=host -v /www/wwwroot/austin-v2/app/mgr/configs:/data/conf --name=mgr mgr:v1
+docker run -itd --net=host -v /www/wwwroot/austin-v2/app/msgpusher/configs:/data/conf --name=msgpusher msgpusher:v1
+docker run -itd --net=host -v /www/wwwroot/austin-v2/app/msgpusher-manager/configs:/data/conf --name=msgpusher-manager msgpusher-manager:v1
+docker run -itd --net=host -v /www/wwwroot/austin-v2/app/msgpusher-worker/configs:/data/conf --name=msgpusher-worker msgpusher-worker:v1
