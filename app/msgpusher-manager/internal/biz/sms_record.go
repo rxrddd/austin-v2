@@ -23,7 +23,7 @@ func NewSmsRecordUseCase(repo data.ISmsRecordRepo, logger log.Logger) *SmsRecord
 func (s *SmsRecordUseCase) GetSmsRecord(ctx context.Context, req *domain.SmsRecordRequest) (*pb.SmsRecordResp, error) {
 	var (
 		items       = make([]*pb.SmsRecordRow, 0)
-		total int64 = 0
+		total int32 = 0
 	)
 
 	return &pb.SmsRecordResp{

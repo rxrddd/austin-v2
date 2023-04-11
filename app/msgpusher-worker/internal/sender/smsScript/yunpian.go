@@ -2,9 +2,9 @@ package smsScript
 
 import (
 	"austin-v2/app/msgpusher-worker/internal/biz"
+	"austin-v2/common/dal/model"
 	"austin-v2/common/domain/account"
 	"austin-v2/common/domain/content_model"
-	"austin-v2/common/model"
 	"austin-v2/pkg/types"
 	"austin-v2/utils/accountHelper"
 	"austin-v2/utils/contentHelper"
@@ -138,11 +138,10 @@ func (h *YunPian) smsRecord(response *YunPianResp,
 		Phone:             cast.ToInt64(phoneNumber),
 		MsgContent:        content.ReplaceContent,
 		Status:            10,
-		ChargingNum:       response.Count,
-		Fee:               response.Fee,
+		ChargingNum:       cast.ToInt32(response.Count),
 		SendDate:          cast.ToInt32(time.Now().Format(timeHelper.DateYMD)),
-		Created:           cast.ToInt32(time.Now().Unix()),
-		BizId:             cast.ToString(response.Sid),
+		CreateAt:          time.Now().Unix(),
+		BizID:             cast.ToString(response.Sid),
 		SendChannel:       "aliyun",
 	}
 	return insert

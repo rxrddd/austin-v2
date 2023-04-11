@@ -21,26 +21,23 @@ func NewMsgRecordUseCase(repo data.IMsgRecordRepo, logger log.Logger) *MsgRecord
 }
 
 func (s *MsgRecordUseCase) GetMsgRecord(ctx context.Context, req *domain.MsgRecordRequest) (*domain.MsgRecordResp, error) {
-	var (
-		items       = make([]*domain.MsgRecordRow, 0)
-		total int64 = 0
-	)
 	records, total, err := s.repo.GetMsgRecord(ctx, &domain.MsgRecordRequest{
 		TemplateId: req.TemplateId,
 		RequestId:  req.RequestId,
 		Channel:    req.Channel,
-		Page:       req.Page,
+		PageNo:     req.PageNo,
 		PageSize:   req.PageSize,
 	})
 	if err != nil {
 		return nil, err
 	}
+	var items []*domain.MsgRecordRow
 	for _, v := range records {
 		items = append(items, &domain.MsgRecordRow{
 			MessageTemplateId: v.MessageTemplateID,
 			RequestId:         v.RequestID,
 			Receiver:          v.Receiver,
-			MsgId:             v.MsgId,
+			MsgId:             v.MsgID,
 			Channel:           v.Channel,
 			Msg:               v.Msg,
 			SendAt:            v.SendAt,

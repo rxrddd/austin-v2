@@ -37,17 +37,19 @@ func newMessageTemplate(db *gorm.DB, opts ...gen.DOOption) messageTemplate {
 	_messageTemplate.ShieldType = field.NewInt32(tableName, "shield_type")
 	_messageTemplate.MsgContent = field.NewString(tableName, "msg_content")
 	_messageTemplate.SendAccount = field.NewInt32(tableName, "send_account")
-	_messageTemplate.Creator = field.NewString(tableName, "creator")
-	_messageTemplate.Updator = field.NewString(tableName, "updator")
-	_messageTemplate.Auditor = field.NewString(tableName, "auditor")
-	_messageTemplate.Team = field.NewString(tableName, "team")
-	_messageTemplate.Proposer = field.NewString(tableName, "proposer")
-	_messageTemplate.IsDeleted = field.NewInt32(tableName, "is_deleted")
-	_messageTemplate.Created = field.NewInt32(tableName, "created")
-	_messageTemplate.Updated = field.NewInt32(tableName, "updated")
+	_messageTemplate.CreateBy = field.NewString(tableName, "create_by")
+	_messageTemplate.UpdateBy = field.NewString(tableName, "update_by")
+	_messageTemplate.Status = field.NewInt32(tableName, "status")
+	_messageTemplate.CreateAt = field.NewInt64(tableName, "create_at")
+	_messageTemplate.UpdateAt = field.NewInt64(tableName, "update_at")
 	_messageTemplate.DeduplicationConfig = field.NewString(tableName, "deduplication_config")
 	_messageTemplate.TemplateSn = field.NewString(tableName, "template_sn")
 	_messageTemplate.SmsChannel = field.NewString(tableName, "sms_channel")
+	_messageTemplate.SendAccountItem = messageTemplateHasOneSendAccountItem{
+		db: db.Session(&gorm.Session{}),
+
+		RelationField: field.NewRelation("SendAccountItem", "model.SendAccount"),
+	}
 
 	_messageTemplate.fillFieldMap()
 
@@ -68,17 +70,15 @@ type messageTemplate struct {
 	ShieldType          field.Int32  // 10.夜间不屏蔽 20.夜间屏蔽 30.夜间屏蔽(次日早上9点发送)
 	MsgContent          field.String // 消息内容 占位符用{$var}表示
 	SendAccount         field.Int32  // 发送账号 一个渠道下可存在多个账号
-	Creator             field.String // 创建者
-	Updator             field.String // 更新者
-	Auditor             field.String // 审核人
-	Team                field.String // 业务方团队
-	Proposer            field.String // 业务方
-	IsDeleted           field.Int32  // 是否删除：0.不删除 1.删除
-	Created             field.Int32  // 创建时间
-	Updated             field.Int32  // 更新时间
+	CreateBy            field.String // 创建者
+	UpdateBy            field.String // 更新者
+	Status              field.Int32  // 是否删除：0.删除 1.正常 2.禁用
+	CreateAt            field.Int64  // 创建时间
+	UpdateAt            field.Int64  // 更新时间
 	DeduplicationConfig field.String // 数据去重配置
 	TemplateSn          field.String // 发送消息的模版ID
 	SmsChannel          field.String // 短信渠道 send_channel=30的时候有用  tencent腾讯云  aliyun阿里云 yunpian云片
+	SendAccountItem     messageTemplateHasOneSendAccountItem
 
 	fieldMap map[string]field.Expr
 }
@@ -105,14 +105,11 @@ func (m *messageTemplate) updateTableName(table string) *messageTemplate {
 	m.ShieldType = field.NewInt32(table, "shield_type")
 	m.MsgContent = field.NewString(table, "msg_content")
 	m.SendAccount = field.NewInt32(table, "send_account")
-	m.Creator = field.NewString(table, "creator")
-	m.Updator = field.NewString(table, "updator")
-	m.Auditor = field.NewString(table, "auditor")
-	m.Team = field.NewString(table, "team")
-	m.Proposer = field.NewString(table, "proposer")
-	m.IsDeleted = field.NewInt32(table, "is_deleted")
-	m.Created = field.NewInt32(table, "created")
-	m.Updated = field.NewInt32(table, "updated")
+	m.CreateBy = field.NewString(table, "create_by")
+	m.UpdateBy = field.NewString(table, "update_by")
+	m.Status = field.NewInt32(table, "status")
+	m.CreateAt = field.NewInt64(table, "create_at")
+	m.UpdateAt = field.NewInt64(table, "update_at")
 	m.DeduplicationConfig = field.NewString(table, "deduplication_config")
 	m.TemplateSn = field.NewString(table, "template_sn")
 	m.SmsChannel = field.NewString(table, "sms_channel")
@@ -132,7 +129,7 @@ func (m *messageTemplate) GetFieldByName(fieldName string) (field.OrderExpr, boo
 }
 
 func (m *messageTemplate) fillFieldMap() {
-	m.fieldMap = make(map[string]field.Expr, 21)
+	m.fieldMap = make(map[string]field.Expr, 19)
 	m.fieldMap["id"] = m.ID
 	m.fieldMap["name"] = m.Name
 	m.fieldMap["audit_status"] = m.AuditStatus
@@ -143,17 +140,15 @@ func (m *messageTemplate) fillFieldMap() {
 	m.fieldMap["shield_type"] = m.ShieldType
 	m.fieldMap["msg_content"] = m.MsgContent
 	m.fieldMap["send_account"] = m.SendAccount
-	m.fieldMap["creator"] = m.Creator
-	m.fieldMap["updator"] = m.Updator
-	m.fieldMap["auditor"] = m.Auditor
-	m.fieldMap["team"] = m.Team
-	m.fieldMap["proposer"] = m.Proposer
-	m.fieldMap["is_deleted"] = m.IsDeleted
-	m.fieldMap["created"] = m.Created
-	m.fieldMap["updated"] = m.Updated
+	m.fieldMap["create_by"] = m.CreateBy
+	m.fieldMap["update_by"] = m.UpdateBy
+	m.fieldMap["status"] = m.Status
+	m.fieldMap["create_at"] = m.CreateAt
+	m.fieldMap["update_at"] = m.UpdateAt
 	m.fieldMap["deduplication_config"] = m.DeduplicationConfig
 	m.fieldMap["template_sn"] = m.TemplateSn
 	m.fieldMap["sms_channel"] = m.SmsChannel
+
 }
 
 func (m messageTemplate) clone(db *gorm.DB) messageTemplate {
@@ -164,6 +159,72 @@ func (m messageTemplate) clone(db *gorm.DB) messageTemplate {
 func (m messageTemplate) replaceDB(db *gorm.DB) messageTemplate {
 	m.messageTemplateDo.ReplaceDB(db)
 	return m
+}
+
+type messageTemplateHasOneSendAccountItem struct {
+	db *gorm.DB
+
+	field.RelationField
+}
+
+func (a messageTemplateHasOneSendAccountItem) Where(conds ...field.Expr) *messageTemplateHasOneSendAccountItem {
+	if len(conds) == 0 {
+		return &a
+	}
+
+	exprs := make([]clause.Expression, 0, len(conds))
+	for _, cond := range conds {
+		exprs = append(exprs, cond.BeCond().(clause.Expression))
+	}
+	a.db = a.db.Clauses(clause.Where{Exprs: exprs})
+	return &a
+}
+
+func (a messageTemplateHasOneSendAccountItem) WithContext(ctx context.Context) *messageTemplateHasOneSendAccountItem {
+	a.db = a.db.WithContext(ctx)
+	return &a
+}
+
+func (a messageTemplateHasOneSendAccountItem) Model(m *model.MessageTemplate) *messageTemplateHasOneSendAccountItemTx {
+	return &messageTemplateHasOneSendAccountItemTx{a.db.Model(m).Association(a.Name())}
+}
+
+type messageTemplateHasOneSendAccountItemTx struct{ tx *gorm.Association }
+
+func (a messageTemplateHasOneSendAccountItemTx) Find() (result *model.SendAccount, err error) {
+	return result, a.tx.Find(&result)
+}
+
+func (a messageTemplateHasOneSendAccountItemTx) Append(values ...*model.SendAccount) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Append(targetValues...)
+}
+
+func (a messageTemplateHasOneSendAccountItemTx) Replace(values ...*model.SendAccount) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Replace(targetValues...)
+}
+
+func (a messageTemplateHasOneSendAccountItemTx) Delete(values ...*model.SendAccount) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Delete(targetValues...)
+}
+
+func (a messageTemplateHasOneSendAccountItemTx) Clear() error {
+	return a.tx.Clear()
+}
+
+func (a messageTemplateHasOneSendAccountItemTx) Count() int64 {
+	return a.tx.Count()
 }
 
 type messageTemplateDo struct{ gen.DO }

@@ -38,8 +38,8 @@ func newSmsRecord(db *gorm.DB, opts ...gen.DOOption) smsRecord {
 	_smsRecord.ReportContent = field.NewString(tableName, "report_content")
 	_smsRecord.Status = field.NewInt32(tableName, "status")
 	_smsRecord.SendDate = field.NewInt32(tableName, "send_date")
-	_smsRecord.Created = field.NewInt32(tableName, "created")
-	_smsRecord.Updated = field.NewInt32(tableName, "updated")
+	_smsRecord.CreateAt = field.NewInt64(tableName, "create_at")
+	_smsRecord.UpdateAt = field.NewInt64(tableName, "update_at")
 	_smsRecord.RequestID = field.NewString(tableName, "request_id")
 	_smsRecord.BizID = field.NewString(tableName, "biz_id")
 	_smsRecord.SendChannel = field.NewString(tableName, "send_channel")
@@ -64,8 +64,8 @@ type smsRecord struct {
 	ReportContent     field.String // 回执内容
 	Status            field.Int32  // 短信状态： 10.发送 20.成功 30.失败
 	SendDate          field.Int32  // 发送日期：20211112
-	Created           field.Int32  // 创建时间
-	Updated           field.Int32  // 更新时间
+	CreateAt          field.Int64  // 创建时间
+	UpdateAt          field.Int64  // 更新时间
 	RequestID         field.String // 唯一请求 ID
 	BizID             field.String // 业务id
 	SendChannel       field.String // 短信渠道 tencent腾讯云  aliyun阿里云 yunpian云片
@@ -96,8 +96,8 @@ func (s *smsRecord) updateTableName(table string) *smsRecord {
 	s.ReportContent = field.NewString(table, "report_content")
 	s.Status = field.NewInt32(table, "status")
 	s.SendDate = field.NewInt32(table, "send_date")
-	s.Created = field.NewInt32(table, "created")
-	s.Updated = field.NewInt32(table, "updated")
+	s.CreateAt = field.NewInt64(table, "create_at")
+	s.UpdateAt = field.NewInt64(table, "update_at")
 	s.RequestID = field.NewString(table, "request_id")
 	s.BizID = field.NewString(table, "biz_id")
 	s.SendChannel = field.NewString(table, "send_channel")
@@ -129,8 +129,8 @@ func (s *smsRecord) fillFieldMap() {
 	s.fieldMap["report_content"] = s.ReportContent
 	s.fieldMap["status"] = s.Status
 	s.fieldMap["send_date"] = s.SendDate
-	s.fieldMap["created"] = s.Created
-	s.fieldMap["updated"] = s.Updated
+	s.fieldMap["create_at"] = s.CreateAt
+	s.fieldMap["update_at"] = s.UpdateAt
 	s.fieldMap["request_id"] = s.RequestID
 	s.fieldMap["biz_id"] = s.BizID
 	s.fieldMap["send_channel"] = s.SendChannel

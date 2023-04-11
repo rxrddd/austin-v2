@@ -42,82 +42,82 @@ service MsgPusherManager {
 }
 
 message SendAccountEditRequest {
-  int64 ID = 1;
-  string Title = 2;
+  int32 id = 1;
+  string title = 2;
   string config = 3;
-  string SendChannel = 4;
+  string send_channel = 4;
 }
 
 message SendAccountListRequest {
-  string Title = 1;
-  string SendChannel = 2;
-  int64 Page = 3;
-  int64 PageSize = 4;
+  string title = 1;
+  string send_channel = 2;
+  int64 pageNo = 3;
+  int64 pageSize = 4;
 }
 
 message SendAccountChangeStatusRequest {
-  int64 ID = 1;
-  uint64 Status = 2;
+  int32 id = 1;
+  int32 Status = 2;
 }
 
 message SendAccountRow {
-  int64 ID = 1;
-  string Title = 2;
-  string Config = 3;
-  string SendChannel = 4;
-  int64 Status = 5;
+  int32 id = 1;
+  string title = 2;
+  string config = 3;
+  string send_channel = 4;
+  int32 status = 5;
 }
 
 message SendAccountListResp {
   repeated SendAccountRow rows = 1;
-  int64 total = 2;
+  int32 total = 2;
 }
 
 message SendAccountQueryResp {
   repeated SendAccountRow rows = 1;
 }
 message TemplateEditRequest {
-  int64 ID = 1;
-  string Name = 2;
-  int64 IdType = 3;
-  int64 SendChannel = 4;
-  int64 TemplateType = 5;
-  int64 MsgType = 6;
-  int64 ShieldType = 7;
-  string MsgContent = 8;
-  int64 SendAccount = 9;
-  string TemplateSn = 10;
-  string SmsChannel = 11;
-  string DeduplicationConfig = 12;
+  int64 id = 1;
+  string name = 2;
+  int32 id_type = 3;
+  int32 send_channel = 4;
+  int32 template_type = 5;
+  int32 msg_type = 6;
+  int32 shield_type = 7;
+  string msg_content = 8;
+  int32 send_account = 9;
+  string template_sn = 10;
+  string sms_channel = 11;
+  string deduplication_config = 12;
 }
 
 message TemplateChangeStatusRequest {
-  int64 ID = 1;
-  uint64 Status = 2;
+  int64 id = 1;
+  int32 status = 2;
 }
 
 message TemplateListRequest {
-  string Name = 1;
-  string SendChannel = 2;
-  int64 Page = 3;
-  int64 PageSize = 4;
+  string name = 1;
+  string send_channel = 2;
+  int64 pageNo = 3;
+  int64 pageSize = 4;
 }
 
 message TemplateListRow {
-  int64 ID = 1;
-  string Name = 2;
-  int64 IdType = 3;
-  int64 SendChannel = 4;
-  int64 TemplateType = 5;
-  int64 MsgType = 6;
-  int64 ShieldType = 7;
-  string MsgContent = 8;
-  int64 SendAccount = 9;
-  string SendAccountName = 10;
-  string TemplateSn = 11;
-  string SmsChannel = 12;
-  string CreateAt = 13;
-  string DeduplicationConfig = 14;
+  int64 id = 1;
+  string name = 2;
+  int32 id_type = 3;
+  int32 send_channel = 4;
+  int32 template_type = 5;
+  int32 msg_type = 6;
+  int32 shield_type = 7;
+  string msg_content = 8;
+  int32 send_account = 9;
+  string send_account_name = 10;
+  string template_sn = 11;
+  string sms_channel = 12;
+  string create_at = 13;
+  string deduplication_config = 14;
 }
 
 message TemplateOneRequest{
@@ -133,90 +133,87 @@ message TemplateOneResp{
   int32 msg_type = 8;
   int32 shield_type = 9;
   string msg_content = 10;
-  int64  send_account = 11;
-  string creator = 12;
-  string updator = 13;
-  string auditor = 14;
-  string team = 15;
-  string proposer = 16;
-  string sms_channel = 17;
-  string deduplication_config = 21;
+  int32  send_account = 11;
+  string create_by = 12;
+  string update_by = 13;
+  string sms_channel = 14;
+  string deduplication_config = 15;
 }
 
 message TemplateListResp {
   repeated TemplateListRow rows = 1;
-  int64 total = 2;
+  int32 total = 2;
 }
 
 message TemplateRemoveRequest{
-  int64 ID = 1;
+  int64 id = 1;
 }
 
 message Channel{
-  int64 Id = 1;
-  string Name = 2;
-  string Channel = 3;
+  int32 id = 1;
+  string name = 2;
+  string channel = 3;
 }
 
 message GetAllChannelResp{
   repeated Channel rows = 1;
 }
 message SmsRecordRequest{
-  string TemplateId = 1;
-  string RequestId = 2;
-  string SendChannel = 3;
-  int64 Page = 4;
-  int64 PageSize = 5;
+  string template_id = 1;
+  string request_id = 2;
+  string send_channel = 3;
+  int64 pageNo = 4;
+  int64 pageSize = 5;
 }
 
 message SmsRecordRow{
-  int64 Id = 1;
-  string SeriesId = 2;
-  string MsgContent = 3;
-  string SupplierName = 4;
-  int64 SupplierId = 5;
-  string Phone = 6;
-  int64 MessageTemplateId = 7;
-  string Created_at = 8;
-  string SendDate = 9;
-  string Status = 10;
-  string ReportContent = 11;
-  int64 ChargingNum = 12;
-  string UpdatedAt = 13;
+  int64 id = 1;
+  string series_id = 2;
+  string msg_content = 3;
+  string supplier_name = 4;
+  int64 supplier_id = 5;
+  string phone = 6;
+  int64 message_template_id = 7;
+  string create_at = 8;
+  string send_date = 9;
+  string status = 10;
+  string report_content = 11;
+  int64 charging_num = 12;
+  string update_at = 13;
 }
 
 message SmsRecordResp{
   repeated SmsRecordRow rows = 1;
-  int64 total = 2;
+  int32 total = 2;
 }
 message MsgRecordRequest{
   string TemplateId = 1;
   string RequestId = 2;
   string Channel = 3;
-  int64 Page = 4;
-  int64 PageSize = 5;
+  int64 pageNo = 4;
+  int64 pageSize = 5;
 }
 
 message MsgRecordRow{
-  int64 MessageTemplateId = 1;
-  string RequestId = 2;
-  string Receiver = 3;
-  string MsgId = 4;
-  string Channel = 5;
-  string Msg = 6;
-  string SendAt = 7;
-  string CreateAt = 8;
-  string SendSinceTime = 9;
-  int64 ID = 10;
+  int64 message_template_id = 1;
+  string request_id = 2;
+  string receiver = 3;
+  string msg_id = 4;
+  string channel = 5;
+  string msg = 6;
+  string send_at = 7;
+  string create_at = 8;
+  string send_since_time = 9;
+  int64 id = 10;
 }
 
 message MsgRecordResp{
   repeated MsgRecordRow rows = 1;
-  int64 total = 2;
+  int32 total = 2;
 }
 
 message OfficialAccountTemplateRequest{
-  int64 SendAccount=1;
+  int64 send_account=1;
 }
 
 message OfficialAccountTemplateResp{
@@ -224,8 +221,8 @@ message OfficialAccountTemplateResp{
 }
 
 message OfficialAccountTemplateRow{
-  string TemplateID = 1;
-  string Title = 2;
-  string Content = 3;
-  string Example = 4;
+  string template_id = 1;
+  string title = 2;
+  string content = 3;
+  string example = 4;
 }

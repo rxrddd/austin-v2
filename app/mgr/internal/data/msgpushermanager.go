@@ -78,7 +78,7 @@ type MsgPusherManagerRepo struct {
 
 func (s *MsgPusherManagerRepo) SendAccountEdit(ctx context.Context, req *pb.SendAccountEditRequest) (*emptypb.Empty, error) {
 	return s.data.msgPusherManagerClient.SendAccountEdit(ctx, &msgpushermanagerV1.SendAccountEditRequest{
-		ID:          req.Id,
+		Id:          req.Id,
 		Title:       req.Title,
 		Config:      req.Config,
 		SendChannel: req.SendChannel,
@@ -86,7 +86,7 @@ func (s *MsgPusherManagerRepo) SendAccountEdit(ctx context.Context, req *pb.Send
 }
 func (s *MsgPusherManagerRepo) SendAccountChangeStatus(ctx context.Context, req *pb.SendAccountChangeStatusRequest) (*emptypb.Empty, error) {
 	return s.data.msgPusherManagerClient.SendAccountChangeStatus(ctx, &msgpushermanagerV1.SendAccountChangeStatusRequest{
-		ID:     req.Id,
+		Id:     req.Id,
 		Status: req.Status,
 	})
 }
@@ -94,7 +94,7 @@ func (s *MsgPusherManagerRepo) SendAccountList(ctx context.Context, req *pb.Send
 	list, err := s.data.msgPusherManagerClient.SendAccountList(ctx, &msgpushermanagerV1.SendAccountListRequest{
 		Title:       req.Title,
 		SendChannel: req.SendChannel,
-		Page:        req.Page,
+		PageNo:      req.PageNo,
 		PageSize:    req.PageSize,
 	})
 
@@ -104,7 +104,7 @@ func (s *MsgPusherManagerRepo) SendAccountList(ctx context.Context, req *pb.Send
 	resp := make([]*pb.SendAccountRow, 0)
 	for _, item := range list.Rows {
 		resp = append(resp, &pb.SendAccountRow{
-			Id:          item.ID,
+			Id:          item.Id,
 			Title:       item.Title,
 			Config:      item.Config,
 			SendChannel: item.SendChannel,
@@ -129,7 +129,7 @@ func (s *MsgPusherManagerRepo) SendAccountQuery(ctx context.Context, req *pb.Sen
 	resp := make([]*pb.SendAccountRow, 0)
 	for _, item := range list.Rows {
 		resp = append(resp, &pb.SendAccountRow{
-			Id:          item.ID,
+			Id:          item.Id,
 			Title:       item.Title,
 			Config:      item.Config,
 			SendChannel: item.SendChannel,
@@ -142,7 +142,7 @@ func (s *MsgPusherManagerRepo) SendAccountQuery(ctx context.Context, req *pb.Sen
 }
 func (s *MsgPusherManagerRepo) TemplateEdit(ctx context.Context, req *pb.TemplateEditRequest) (*emptypb.Empty, error) {
 	return s.data.msgPusherManagerClient.TemplateEdit(ctx, &msgpushermanagerV1.TemplateEditRequest{
-		ID:                  req.Id,
+		Id:                  req.Id,
 		Name:                req.Name,
 		IdType:              req.IdType,
 		SendChannel:         req.SendChannel,
@@ -158,7 +158,7 @@ func (s *MsgPusherManagerRepo) TemplateEdit(ctx context.Context, req *pb.Templat
 }
 func (s *MsgPusherManagerRepo) TemplateChangeStatus(ctx context.Context, req *pb.TemplateChangeStatusRequest) (*emptypb.Empty, error) {
 	return s.data.msgPusherManagerClient.TemplateChangeStatus(ctx, &msgpushermanagerV1.TemplateChangeStatusRequest{
-		ID:     req.Id,
+		Id:     req.Id,
 		Status: req.Status,
 	})
 }
@@ -166,7 +166,7 @@ func (s *MsgPusherManagerRepo) TemplateList(ctx context.Context, req *pb.Templat
 	list, err := s.data.msgPusherManagerClient.TemplateList(ctx, &msgpushermanagerV1.TemplateListRequest{
 		Name:        req.Name,
 		SendChannel: req.SendChannel,
-		Page:        req.Page,
+		PageNo:      req.PageNo,
 		PageSize:    req.PageSize,
 	})
 	if err != nil {
@@ -175,7 +175,7 @@ func (s *MsgPusherManagerRepo) TemplateList(ctx context.Context, req *pb.Templat
 	resp := make([]*pb.TemplateListRow, 0)
 	for _, item := range list.Rows {
 		resp = append(resp, &pb.TemplateListRow{
-			Id:                  item.ID,
+			Id:                  item.Id,
 			Name:                item.Name,
 			IdType:              item.IdType,
 			SendChannel:         item.SendChannel,
@@ -198,7 +198,7 @@ func (s *MsgPusherManagerRepo) TemplateList(ctx context.Context, req *pb.Templat
 }
 func (s *MsgPusherManagerRepo) TemplateRemove(ctx context.Context, req *pb.TemplateRemoveRequest) (*emptypb.Empty, error) {
 	return s.data.msgPusherManagerClient.TemplateRemove(ctx, &msgpushermanagerV1.TemplateRemoveRequest{
-		ID: req.Id,
+		Id: req.Id,
 	})
 }
 
@@ -213,18 +213,15 @@ func (s *MsgPusherManagerRepo) TemplateOne(ctx context.Context, req *pb.Template
 		Id:                  one.Id,
 		Name:                one.Name,
 		IdType:              one.IdType,
-		SendChannel:         cast.ToString(one.SendChannel),
-		TemplateType:        cast.ToString(one.TemplateType),
+		SendChannel:         one.SendChannel,
+		TemplateType:        one.TemplateType,
 		TemplateSn:          one.TemplateSn,
-		MsgType:             cast.ToString(one.MsgType),
-		ShieldType:          cast.ToString(one.ShieldType),
+		MsgType:             one.MsgType,
+		ShieldType:          one.ShieldType,
 		MsgContent:          one.MsgContent,
 		SendAccount:         one.SendAccount,
-		Creator:             one.Creator,
-		Updator:             one.Updator,
-		Auditor:             one.Auditor,
-		Team:                one.Team,
-		Proposer:            one.Proposer,
+		CreateBy:            one.CreateBy,
+		UpdateBy:            one.UpdateBy,
 		SmsChannel:          one.SmsChannel,
 		DeduplicationConfig: one.DeduplicationConfig,
 	}, nil
@@ -255,7 +252,7 @@ func (s *MsgPusherManagerRepo) GetSmsRecord(ctx context.Context, req *pb.SmsReco
 		TemplateId:  req.TemplateId,
 		RequestId:   req.RequestId,
 		SendChannel: req.SendChannel,
-		Page:        req.Page,
+		PageNo:      req.PageNo,
 		PageSize:    req.PageSize,
 	})
 	if err != nil {
@@ -271,12 +268,12 @@ func (s *MsgPusherManagerRepo) GetSmsRecord(ctx context.Context, req *pb.SmsReco
 			SupplierId:        item.SupplierId,
 			Phone:             item.Phone,
 			MessageTemplateId: item.MessageTemplateId,
-			CreatedAt:         item.CreatedAt,
+			CreatedAt:         item.CreateAt,
 			SendDate:          item.SendDate,
 			Status:            item.Status,
 			ReportContent:     item.ReportContent,
 			ChargingNum:       item.ChargingNum,
-			UpdatedAt:         item.UpdatedAt,
+			UpdatedAt:         item.UpdateAt,
 		})
 	}
 
@@ -292,7 +289,7 @@ func (s *MsgPusherManagerRepo) GetMsgRecord(ctx context.Context, req *pb.MsgReco
 		TemplateId: req.TemplateId,
 		RequestId:  req.RequestId,
 		Channel:    req.Channel,
-		Page:       req.Page,
+		PageNo:     req.PageNo,
 		PageSize:   req.PageSize,
 	})
 	if err != nil {
@@ -301,7 +298,7 @@ func (s *MsgPusherManagerRepo) GetMsgRecord(ctx context.Context, req *pb.MsgReco
 	resp := make([]*pb.MsgRecordRow, 0)
 	for _, item := range list.Rows {
 		resp = append(resp, &pb.MsgRecordRow{
-			Id:                item.ID,
+			Id:                item.Id,
 			MessageTemplateId: item.MessageTemplateId,
 			RequestId:         item.RequestId,
 			Receiver:          item.Receiver,
@@ -323,7 +320,7 @@ func (s *MsgPusherManagerRepo) GetMsgRecord(ctx context.Context, req *pb.MsgReco
 
 func (s *MsgPusherManagerRepo) GetOfficialAccountTemplateList(ctx context.Context, req *pb.OfficialAccountTemplateRequest) (*pb.OfficialAccountTemplateResp, error) {
 	list, err := s.data.msgPusherManagerClient.GetOfficialAccountTemplateList(ctx, &msgpushermanagerV1.OfficialAccountTemplateRequest{
-		SendAccount: req.SendAccount,
+		SendAccount: cast.ToInt64(req.SendAccount),
 	})
 	if err != nil {
 		return nil, err
@@ -331,7 +328,7 @@ func (s *MsgPusherManagerRepo) GetOfficialAccountTemplateList(ctx context.Contex
 	resp := make([]*pb.OfficialAccountTemplateRow, 0)
 	for _, item := range list.Rows {
 		resp = append(resp, &pb.OfficialAccountTemplateRow{
-			TemplateId: item.TemplateID,
+			TemplateId: item.TemplateId,
 			Title:      item.Title,
 			Content:    item.Content,
 			Example:    item.Example,

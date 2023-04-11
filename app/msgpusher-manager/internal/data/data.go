@@ -2,6 +2,8 @@ package data
 
 import (
 	"austin-v2/app/msgpusher-manager/internal/conf"
+	"austin-v2/common/dal/query"
+	"austin-v2/pkg/transaction"
 	"context"
 	"github.com/go-kratos/kratos/contrib/registry/etcd/v2"
 	"github.com/go-kratos/kratos/v2/registry"
@@ -18,6 +20,7 @@ import (
 
 // DataProviderSet is data providers.
 var DataProviderSet = wire.NewSet(
+	transaction.NewTranMgr,
 	NewData,
 	NewRegistrar,
 	NewRedisCmd,
@@ -31,8 +34,9 @@ var DataProviderSet = wire.NewSet(
 
 // Data .
 type Data struct {
-	db  *gorm.DB
-	rds redis.Cmdable
+	db    *gorm.DB
+	rds   redis.Cmdable
+	txMgr transaction.ITranMgr
 }
 
 // NewData .
@@ -41,14 +45,26 @@ func NewData(
 	logger log.Logger,
 	db *gorm.DB,
 	rds redis.Cmdable,
+	txMgr transaction.ITranMgr,
 ) (*Data, func(), error) {
 	cleanup := func() {
 		log.NewHelper(logger).Info("closing the data resources")
 	}
 	return &Data{
-		db:  db,
-		rds: rds,
+		db:    db,
+		rds:   rds,
+		txMgr: txMgr,
 	}, cleanup, nil
+}
+
+// DB 根据此方法来判断当前的 db 是不是使用 事务的 DB
+func (d *Data) DB(ctx context.Context) *gorm.DB {
+	return d.txMgr.DB(ctx)
+}
+
+// Query 根据此方法来判断当前的 db 是不是使用 事务的 DB
+func (d *Data) Query(ctx context.Context) *query.Query {
+	return d.txMgr.Query(ctx)
 }
 
 func NewRegistrar(conf *conf.Registry) registry.Registrar {

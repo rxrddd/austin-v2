@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"austin-v2/common/model"
+	"austin-v2/common/dal/model"
 	"austin-v2/pkg/types"
 	"austin-v2/utils/jsonHelper"
 	"austin-v2/utils/stringHelper"

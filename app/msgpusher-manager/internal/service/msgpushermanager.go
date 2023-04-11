@@ -5,7 +5,6 @@ import (
 	"austin-v2/app/msgpusher-manager/internal/domain"
 	"austin-v2/common/enums/channelType"
 	"context"
-	"github.com/spf13/cast"
 	"time"
 
 	pb "austin-v2/api/msgpusher-manager/v1"
@@ -39,20 +38,20 @@ func NewMsgPusherManagerService(
 
 func (s *MsgPusherManagerService) SendAccountEdit(ctx context.Context, req *pb.SendAccountEditRequest) (*emptypb.Empty, error) {
 	return s.sa.SendAccountEdit(ctx, &domain.SendAccountEditRequest{
-		ID:          req.ID,
+		ID:          req.Id,
 		SendChannel: req.SendChannel,
 		Config:      req.Config,
 		Title:       req.Title,
 	})
 }
 func (s *MsgPusherManagerService) SendAccountChangeStatus(ctx context.Context, req *pb.SendAccountChangeStatusRequest) (*emptypb.Empty, error) {
-	return s.sa.SendAccountChangeStatus(ctx, req.ID, int(req.Status))
+	return s.sa.SendAccountChangeStatus(ctx, req.Id, req.Status)
 }
 func (s *MsgPusherManagerService) SendAccountList(ctx context.Context, req *pb.SendAccountListRequest) (*pb.SendAccountListResp, error) {
 	result, err := s.sa.SendAccountList(ctx, &domain.SendAccountListRequest{
 		Title:       req.Title,
 		SendChannel: req.SendChannel,
-		Page:        req.Page,
+		PageNo:      req.PageNo,
 		PageSize:    req.PageSize,
 	})
 	if err != nil {
@@ -63,11 +62,11 @@ func (s *MsgPusherManagerService) SendAccountList(ctx context.Context, req *pb.S
 	}
 	for _, item := range result.Rows {
 		response.Rows = append(response.Rows, &pb.SendAccountRow{
-			ID:          item.ID,
+			Id:          item.ID,
 			Title:       item.Title,
 			Config:      item.Config,
 			SendChannel: item.SendChannel,
-			Status:      int64(item.Status),
+			Status:      item.Status,
 		})
 	}
 
@@ -77,7 +76,7 @@ func (s *MsgPusherManagerService) SendAccountQuery(ctx context.Context, req *pb.
 	result, err := s.sa.SendAccountList(ctx, &domain.SendAccountListRequest{
 		Title:       req.Title,
 		SendChannel: req.SendChannel,
-		Page:        req.Page,
+		PageNo:      req.PageNo,
 		PageSize:    req.PageSize,
 	})
 	if err != nil {
@@ -86,7 +85,7 @@ func (s *MsgPusherManagerService) SendAccountQuery(ctx context.Context, req *pb.
 	response := &pb.SendAccountQueryResp{}
 	for _, item := range result.Rows {
 		response.Rows = append(response.Rows, &pb.SendAccountRow{
-			ID:          item.ID,
+			Id:          item.ID,
 			Title:       item.Title,
 			Config:      item.Config,
 			SendChannel: item.SendChannel,
@@ -97,29 +96,29 @@ func (s *MsgPusherManagerService) SendAccountQuery(ctx context.Context, req *pb.
 }
 func (s *MsgPusherManagerService) TemplateEdit(ctx context.Context, req *pb.TemplateEditRequest) (*emptypb.Empty, error) {
 	return s.mt.TemplateEdit(ctx, &domain.TemplateEditRequest{
-		ID:                  req.ID,
+		ID:                  req.Id,
 		Name:                req.Name,
-		IDType:              int(req.IdType),
-		SendChannel:         int(req.SendChannel),
-		TemplateType:        int(req.TemplateType),
+		IDType:              req.IdType,
+		SendChannel:         req.SendChannel,
+		TemplateType:        req.TemplateType,
 		TemplateSn:          req.TemplateSn,
-		MsgType:             int(req.MsgType),
-		ShieldType:          int(req.ShieldType),
+		MsgType:             req.MsgType,
+		ShieldType:          req.ShieldType,
 		MsgContent:          req.MsgContent,
 		SendAccount:         req.SendAccount,
 		SmsChannel:          req.SmsChannel,
-		Updated:             time.Now().Unix(),
+		UpdateAt:            time.Now().Unix(),
 		DeduplicationConfig: req.DeduplicationConfig,
 	})
 }
 func (s *MsgPusherManagerService) TemplateChangeStatus(ctx context.Context, req *pb.TemplateChangeStatusRequest) (*emptypb.Empty, error) {
-	return s.mt.TemplateChangeStatus(ctx, req.ID, int(req.Status))
+	return s.mt.TemplateChangeStatus(ctx, req.Id, req.Status)
 }
 func (s *MsgPusherManagerService) TemplateList(ctx context.Context, req *pb.TemplateListRequest) (*pb.TemplateListResp, error) {
 	result, err := s.mt.TemplateList(ctx, &domain.TemplateListRequest{
 		Name:        req.Name,
 		SendChannel: req.SendChannel,
-		Page:        req.Page,
+		PageNo:      req.PageNo,
 		PageSize:    req.PageSize,
 	})
 	if err != nil {
@@ -130,7 +129,7 @@ func (s *MsgPusherManagerService) TemplateList(ctx context.Context, req *pb.Temp
 	}
 	for _, item := range result.Rows {
 		response.Rows = append(response.Rows, &pb.TemplateListRow{
-			ID:                  item.ID,
+			Id:                  item.ID,
 			Name:                item.Name,
 			IdType:              item.IdType,
 			SendChannel:         item.SendChannel,
@@ -150,7 +149,7 @@ func (s *MsgPusherManagerService) TemplateList(ctx context.Context, req *pb.Temp
 	return response, nil
 }
 func (s *MsgPusherManagerService) TemplateRemove(ctx context.Context, req *pb.TemplateRemoveRequest) (*emptypb.Empty, error) {
-	return s.mt.TemplateRemove(ctx, req.ID)
+	return s.mt.TemplateRemove(ctx, req.Id)
 }
 func (s *MsgPusherManagerService) TemplateOne(ctx context.Context, req *pb.TemplateOneRequest) (*pb.TemplateOneResp, error) {
 	one, err := s.mt.TemplateOne(ctx, &domain.TemplateOneRequest{
@@ -166,15 +165,12 @@ func (s *MsgPusherManagerService) TemplateOne(ctx context.Context, req *pb.Templ
 		SendChannel:         int32(one.SendChannel),
 		TemplateType:        int32(one.TemplateType),
 		TemplateSn:          one.TemplateSn,
-		MsgType:             int32(one.MsgType),
-		ShieldType:          int32(one.ShieldType),
+		MsgType:             one.MsgType,
+		ShieldType:          one.ShieldType,
 		MsgContent:          one.MsgContent,
 		SendAccount:         one.SendAccount,
-		Creator:             one.Creator,
-		Updator:             one.Updator,
-		Auditor:             one.Auditor,
-		Team:                one.Team,
-		Proposer:            one.Proposer,
+		CreateBy:            one.CreateBy,
+		UpdateBy:            one.UpdateBy,
 		SmsChannel:          one.SmsChannel,
 		DeduplicationConfig: one.DeduplicationConfig,
 	}, nil
@@ -184,7 +180,7 @@ func (s *MsgPusherManagerService) GetAllChannel(ctx context.Context, req *emptyp
 	var res []*pb.Channel
 	for key, val := range channelType.TypeEnCode {
 		res = append(res, &pb.Channel{
-			Id:      cast.ToInt64(val),
+			Id:      int32(val),
 			Name:    channelType.TypeText[val],
 			Channel: key,
 		})
@@ -198,7 +194,7 @@ func (s *MsgPusherManagerService) GetSmsRecord(ctx context.Context, req *pb.SmsR
 		TemplateId:  req.TemplateId,
 		RequestId:   req.RequestId,
 		SendChannel: req.SendChannel,
-		Page:        req.Page,
+		Page:        req.PageNo,
 		PageSize:    req.PageSize,
 	})
 }
@@ -207,7 +203,7 @@ func (s *MsgPusherManagerService) GetMsgRecord(ctx context.Context, req *pb.MsgR
 		TemplateId: req.TemplateId,
 		RequestId:  req.RequestId,
 		Channel:    req.Channel,
-		Page:       req.Page,
+		PageNo:     req.PageNo,
 		PageSize:   req.PageSize,
 	})
 	if err != nil {
@@ -227,7 +223,7 @@ func (s *MsgPusherManagerService) GetMsgRecord(ctx context.Context, req *pb.MsgR
 			SendAt:            item.SendAt,
 			CreateAt:          item.CreateAt,
 			SendSinceTime:     item.SendSinceTime,
-			ID:                item.ID,
+			Id:                item.ID,
 		})
 	}
 
@@ -244,7 +240,7 @@ func (s *MsgPusherManagerService) GetOfficialAccountTemplateList(ctx context.Con
 	response := &pb.OfficialAccountTemplateResp{}
 	for _, item := range result.Rows {
 		response.Rows = append(response.Rows, &pb.OfficialAccountTemplateRow{
-			TemplateID: item.TemplateID,
+			TemplateId: item.TemplateID,
 			Title:      item.Title,
 			Content:    item.Content,
 			Example:    item.Example,

@@ -19,8 +19,8 @@ type SmsRecord struct {
 	ReportContent     string `gorm:"column:report_content;not null" json:"report_content"`           // 回执内容
 	Status            int32  `gorm:"column:status;not null" json:"status"`                           // 短信状态： 10.发送 20.成功 30.失败
 	SendDate          int32  `gorm:"column:send_date;not null" json:"send_date"`                     // 发送日期：20211112
-	Created           int32  `gorm:"column:created;not null" json:"created"`                         // 创建时间
-	Updated           int32  `gorm:"column:updated;not null" json:"updated"`                         // 更新时间
+	CreateAt          int64  `gorm:"column:create_at;not null" json:"create_at"`                     // 创建时间
+	UpdateAt          int64  `gorm:"column:update_at;not null" json:"update_at"`                     // 更新时间
 	RequestID         string `gorm:"column:request_id;not null" json:"request_id"`                   // 唯一请求 ID
 	BizID             string `gorm:"column:biz_id;not null" json:"biz_id"`                           // 业务id
 	SendChannel       string `gorm:"column:send_channel;not null" json:"send_channel"`               // 短信渠道 tencent腾讯云  aliyun阿里云 yunpian云片

@@ -12,6 +12,7 @@ import (
 	"austin-v2/app/msgpusher-manager/internal/data"
 	"austin-v2/app/msgpusher-manager/internal/server"
 	"austin-v2/app/msgpusher-manager/internal/service"
+	"austin-v2/pkg/transaction"
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/log"
 )
@@ -22,7 +23,8 @@ import (
 func wireApp(confServer *conf.Server, registry *conf.Registry, confData *conf.Data, logger log.Logger) (*kratos.App, func(), error) {
 	db := data.NewMysqlCmd(confData, logger)
 	cmdable := data.NewRedisCmd(confData, logger)
-	dataData, cleanup, err := data.NewData(confData, logger, db, cmdable)
+	iTranMgr := transaction.NewTranMgr(db)
+	dataData, cleanup, err := data.NewData(confData, logger, db, cmdable, iTranMgr)
 	if err != nil {
 		return nil, nil, err
 	}

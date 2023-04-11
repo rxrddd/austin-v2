@@ -11,7 +11,7 @@ type MsgRecordRequest struct {
 	TemplateId string
 	RequestId  string
 	Channel    string
-	Page       int64
+	PageNo     int64
 	PageSize   int64
 }
 type MsgRecordRow struct {
@@ -28,5 +28,5 @@ type MsgRecordRow struct {
 }
 type MsgRecordResp struct {
 	Rows  []*MsgRecordRow
-	Total int64
+	Total int32
 }

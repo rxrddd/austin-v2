@@ -12,7 +12,7 @@ var g *gen.Generator
 var db *gorm.DB
 
 func init() {
-	db, _ = gorm.Open(mysql.Open("root:root@tcp(127.0.0.1:3306)/austin-v2?parseTime=true&collation=utf8mb4_unicode_ci&loc=Asia%2FShanghai&charset=utf8mb4"), &gorm.Config{})
+	db, _ = gorm.Open(mysql.Open("root:root@tcp(192.168.127.128:3306)/austin-v2?parseTime=true&collation=utf8mb4_unicode_ci&loc=Asia%2FShanghai&charset=utf8mb4"), &gorm.Config{})
 }
 
 //model 查询生成器  gorm gen
@@ -49,6 +49,10 @@ func relationship(tableList []string) []string {
 	adminRoleModel := g.GenerateModel("la_system_admin_role",
 		hasOne("Role", "la_system_auth_role", "id", "role_id"),
 	)
+
+	messageTemplateModel := g.GenerateModel("message_template",
+		hasOne("SendAccountItem", "send_account", "id", "send_channel"),
+	)
 	adminModel := g.GenerateModel("la_system_auth_admin",
 		gen.FieldRelate(field.HasMany, "AuthRoles",
 			adminRoleModel,
@@ -70,6 +74,7 @@ func relationship(tableList []string) []string {
 		adminRoleModel,
 		menuModel,
 		roleModel,
+		messageTemplateModel,
 	}...)
 
 	return clearTable(tableList, []string{
@@ -77,6 +82,7 @@ func relationship(tableList []string) []string {
 		adminRoleModel.TableName,
 		roleModel.TableName,
 		menuModel.TableName,
+		messageTemplateModel.TableName,
 	})
 }
 

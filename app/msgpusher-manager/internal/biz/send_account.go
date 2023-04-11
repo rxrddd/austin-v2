@@ -3,7 +3,7 @@ package biz
 import (
 	"austin-v2/app/msgpusher-manager/internal/data"
 	"austin-v2/app/msgpusher-manager/internal/domain"
-	"austin-v2/common/model"
+	"austin-v2/common/dal/model"
 	"context"
 	"github.com/go-kratos/kratos/v2/log"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -37,7 +37,7 @@ func (s *SendAccountUseCase) SendAccountEdit(ctx context.Context, req *domain.Se
 
 	return &emptypb.Empty{}, err
 }
-func (s *SendAccountUseCase) SendAccountChangeStatus(ctx context.Context, id int64, status int) (*emptypb.Empty, error) {
+func (s *SendAccountUseCase) SendAccountChangeStatus(ctx context.Context, id int32, status int32) (*emptypb.Empty, error) {
 	return &emptypb.Empty{}, s.repo.SendAccountChangeStatus(ctx, id, status)
 }
 func (s *SendAccountUseCase) SendAccountList(ctx context.Context, req *domain.SendAccountListRequest) (*domain.SendAccountListResp, error) {

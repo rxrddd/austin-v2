@@ -8,10 +8,11 @@ const TableNameSendAccount = "send_account"
 
 // SendAccount mapped from table <send_account>
 type SendAccount struct {
-	ID         int32  `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
-	SendChanel string `gorm:"column:send_chanel;not null" json:"send_chanel"` // 发送渠道
-	Config     string `gorm:"column:config;not null" json:"config"`           // 账户配置
-	Title      string `gorm:"column:title;not null" json:"title"`             // 账号名称
+	ID          int32  `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
+	SendChannel string `gorm:"column:send_channel;not null" json:"send_channel"` // 发送渠道
+	Config      string `gorm:"column:config;not null" json:"config"`             // 账户配置
+	Title       string `gorm:"column:title;not null" json:"title"`               // 账号名称
+	Status      int32  `gorm:"column:status" json:"status"`
 }
 
 // TableName SendAccount's table name

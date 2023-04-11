@@ -5,7 +5,6 @@ import (
 	"austin-v2/app/mgr/internal/data"
 	"austin-v2/common/enums/channelType"
 	"context"
-	"github.com/spf13/cast"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
@@ -52,7 +51,7 @@ func (s *GmpPlatformService) GetAllChannel(ctx context.Context, req *emptypb.Emp
 	var res []*pb.Channel
 	for key, val := range channelType.TypeEnCode {
 		res = append(res, &pb.Channel{
-			Id:      cast.ToInt64(val),
+			Id:      int32(val),
 			Name:    channelType.TypeText[val],
 			Channel: key,
 		})

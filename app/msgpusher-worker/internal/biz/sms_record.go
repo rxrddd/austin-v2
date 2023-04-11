@@ -2,7 +2,7 @@ package biz
 
 import (
 	"austin-v2/app/msgpusher-worker/internal/data"
-	"austin-v2/common/model"
+	"austin-v2/common/dal/model"
 	"context"
 	"github.com/go-kratos/kratos/v2/log"
 )

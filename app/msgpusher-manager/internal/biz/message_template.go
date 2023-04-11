@@ -3,7 +3,7 @@ package biz
 import (
 	"austin-v2/app/msgpusher-manager/internal/data"
 	"austin-v2/app/msgpusher-manager/internal/domain"
-	"austin-v2/common/model"
+	"austin-v2/common/dal/model"
 	"austin-v2/utils/timeHelper"
 	"context"
 	"github.com/go-kratos/kratos/v2/log"
@@ -40,7 +40,7 @@ func (s *MessageTemplateUseCase) TemplateEdit(ctx context.Context, req *domain.T
 		MsgContent:          req.MsgContent,
 		SendAccount:         req.SendAccount,
 		SmsChannel:          req.SmsChannel,
-		Updated:             time.Now().Unix(),
+		UpdateAt:            time.Now().Unix(),
 		DeduplicationConfig: req.DeduplicationConfig,
 	}
 	if req.ID > 0 {
@@ -51,7 +51,7 @@ func (s *MessageTemplateUseCase) TemplateEdit(ctx context.Context, req *domain.T
 	}
 	return &emptypb.Empty{}, err
 }
-func (s *MessageTemplateUseCase) TemplateChangeStatus(ctx context.Context, id int64, status int) (*emptypb.Empty, error) {
+func (s *MessageTemplateUseCase) TemplateChangeStatus(ctx context.Context, id int64, status int32) (*emptypb.Empty, error) {
 	return &emptypb.Empty{}, s.repo.TemplateChangeStatus(ctx, id, status)
 }
 
@@ -66,17 +66,17 @@ func (s *MessageTemplateUseCase) TemplateList(ctx context.Context, req *domain.T
 		rows = append(rows, &domain.TemplateListRow{
 			ID:                  item.ID,
 			Name:                item.Name,
-			IdType:              int64(item.IDType),
-			SendChannel:         int64(item.SendChannel),
-			TemplateType:        int64(item.TemplateType),
-			MsgType:             int64(item.MsgType),
-			ShieldType:          int64(item.ShieldType),
+			IdType:              item.IDType,
+			SendChannel:         item.SendChannel,
+			TemplateType:        item.TemplateType,
+			MsgType:             item.MsgType,
+			ShieldType:          item.ShieldType,
 			MsgContent:          item.MsgContent,
 			SendAccount:         item.SendAccount,
 			SendAccountName:     item.SendAccountItem.Title,
 			TemplateSn:          item.TemplateSn,
 			SmsChannel:          item.SmsChannel,
-			CreateAt:            timeHelper.FormatTimeInt64YMDHIS(item.Created),
+			CreateAt:            timeHelper.FormatTimeInt64YMDHIS(item.CreateAt),
 			DeduplicationConfig: item.DeduplicationConfig,
 		})
 	}
@@ -104,15 +104,12 @@ func (s *MessageTemplateUseCase) TemplateOne(ctx context.Context, req *domain.Te
 		ShieldType:          item.ShieldType,
 		MsgContent:          item.MsgContent,
 		SendAccount:         item.SendAccount,
-		Creator:             item.Creator,
-		Updator:             item.Updator,
-		Auditor:             item.Auditor,
-		Team:                item.Team,
-		Proposer:            item.Proposer,
+		CreateBy:            item.CreateBy,
+		UpdateBy:            item.UpdateBy,
 		SmsChannel:          item.SmsChannel,
-		IsDeleted:           item.IsDeleted,
-		Created:             item.Created,
-		Updated:             item.Updated,
+		Status:              item.Status,
+		CreateAt:            item.CreateAt,
+		UpdateAt:            item.UpdateAt,
 		DeduplicationConfig: item.DeduplicationConfig,
 	}, err
 }

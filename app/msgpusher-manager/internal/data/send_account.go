@@ -2,22 +2,22 @@ package data
 
 import (
 	"austin-v2/app/msgpusher-manager/internal/domain"
-	"austin-v2/common/model"
+	"austin-v2/common/dal/model"
 	"austin-v2/utils/cacheHepler"
 	"austin-v2/utils/emptyHelper"
-	"austin-v2/utils/gromHelper"
-	"austin-v2/utils/stringHelper"
+	"austin-v2/utils/gormHelper"
 	"context"
 	"fmt"
 	"github.com/go-kratos/kratos/v2/log"
+	"github.com/spf13/cast"
 )
 
 type ISendAccountRepo interface {
 	SendAccountEdit(ctx context.Context, req *model.SendAccount) error
 	SendAccountCreate(ctx context.Context, req *model.SendAccount) error
-	SendAccountChangeStatus(ctx context.Context, id int64, status int) error
-	SendAccountList(ctx context.Context, req *domain.SendAccountListRequest) (items []model.SendAccount, total int64, err error)
-	SendAccountQuery(ctx context.Context, req *domain.SendAccountListRequest) (items []model.SendAccount, err error)
+	SendAccountChangeStatus(ctx context.Context, id int32, status int32) error
+	SendAccountList(ctx context.Context, req *domain.SendAccountListRequest) (items []*model.SendAccount, total int32, err error)
+	SendAccountQuery(ctx context.Context, req *domain.SendAccountListRequest) (items []*model.SendAccount, err error)
 	One(ctx context.Context, id int64) (item model.SendAccount, err error)
 }
 
@@ -39,36 +39,50 @@ func (r *sendAccountRepo) SendAccountEdit(ctx context.Context, req *model.SendAc
 	return r.data.db.WithContext(ctx).Model(model.SendAccount{}).Where("id = ?", req.ID).Updates(req).Error
 }
 func (r *sendAccountRepo) SendAccountCreate(ctx context.Context, req *model.SendAccount) error {
-	req.ID = stringHelper.NextID()
 	return r.data.db.WithContext(ctx).Model(model.SendAccount{}).Create(req).Error
 }
-func (r *sendAccountRepo) SendAccountChangeStatus(ctx context.Context, id int64, status int) error {
-	return r.data.db.WithContext(ctx).Model(model.SendAccount{}).Where("id = ?", id).UpdateColumn("status", status).Error
+func (r *sendAccountRepo) SendAccountChangeStatus(ctx context.Context, id int32, status int32) error {
+	u := r.data.Query(ctx).SendAccount
+	_, err := u.
+		Where(u.ID.Eq(id)).
+		UpdateSimple(u.Status.Value(status))
+	return err
 }
-func (r *sendAccountRepo) SendAccountList(ctx context.Context, req *domain.SendAccountListRequest) (items []model.SendAccount, total int64, err error) {
-	items = make([]model.SendAccount, 0)
-	query := r.data.db.WithContext(ctx).Model(items)
+func (r *sendAccountRepo) SendAccountList(ctx context.Context, req *domain.SendAccountListRequest) (items []*model.SendAccount, total int32, err error) {
+	u := r.data.Query(ctx).SendAccount
+	qx := u.
+		Order(u.ID.Desc())
 	if emptyHelper.IsNotEmpty(req.Title) {
-		query.Where("title like ?", "%"+req.Title+"%")
+		qx = qx.Where(u.Title.Like("%" + req.Title + "%"))
 	}
 	if emptyHelper.IsNotEmpty(req.SendChannel) {
-		query.Where("send_channel = ?", req.SendChannel)
+		qx = qx.Where(u.SendChannel.Eq(req.SendChannel))
 	}
-	query.Count(&total).
-		Scopes(gromHelper.Page(req.Page, req.PageSize)).
-		Find(&items)
-	return items, total, nil
+
+	items = make([]*model.SendAccount, 0)
+	count, err := qx.Count()
+	if err != nil || count <= 0 {
+		return items, 0, err
+	}
+	total = cast.ToInt32(count)
+	items, err = qx.Scopes(gormHelper.QueryPage(req.PageNo, req.PageSize)).
+		Find()
+	return items, total, err
 }
-func (r *sendAccountRepo) SendAccountQuery(ctx context.Context, req *domain.SendAccountListRequest) (items []model.SendAccount, err error) {
-	items = make([]model.SendAccount, 0)
-	query := r.data.db.WithContext(ctx).Model(items)
+func (r *sendAccountRepo) SendAccountQuery(ctx context.Context, req *domain.SendAccountListRequest) (items []*model.SendAccount, err error) {
+	u := r.data.Query(ctx).SendAccount
+	qx := u.
+		Order(u.ID.Desc())
 	if emptyHelper.IsNotEmpty(req.Title) {
-		query.Where("title like ?", "%"+req.Title+"%")
+		qx = qx.Where(u.Title.Like("%" + req.Title + "%"))
 	}
 	if emptyHelper.IsNotEmpty(req.SendChannel) {
-		query.Where("send_channel = ?", req.SendChannel)
+		qx = qx.Where(u.SendChannel.Eq(req.SendChannel))
 	}
-	query.Where("status = ?", 0).Find(&items)
+
+	items = make([]*model.SendAccount, 0)
+	items, err = qx.Scopes(gormHelper.QueryPage(req.PageNo, req.PageSize)).
+		Find()
 	return items, nil
 }
 

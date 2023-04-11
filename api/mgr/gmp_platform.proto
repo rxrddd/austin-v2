@@ -97,7 +97,7 @@ service GmpPlatform {
 }
 
 message SendAccountEditRequest {
-  int64 id = 1;
+  int32 id = 1;
   string title = 2;
   string config = 3;
   string send_channel = 4;
@@ -106,26 +106,26 @@ message SendAccountEditRequest {
 message SendAccountListRequest {
   string title = 1;
   string send_channel = 2;
-  int64 page = 3;
-  int64 page_size = 4;
+  int64 pageNo = 4;
+  int64 pageSize = 5;
 }
 
 message SendAccountChangeStatusRequest {
-  int64 id = 1;
-  uint64 status = 2;
+  int32 id = 1;
+  int32 status = 2;
 }
 
 message SendAccountRow {
-  int64 id = 1;
+  int32 id = 1;
   string title = 2;
   string config = 3;
   string send_channel = 4;
-  int64 status = 5;
+  int32 status = 5;
 }
 
 message SendAccountListResp {
   repeated SendAccountRow items = 1;
-  int64 total = 2;
+  int32 total = 2;
 }
 
 message SendAccountQueryResp {
@@ -134,13 +134,13 @@ message SendAccountQueryResp {
 message TemplateEditRequest {
   int64 id = 1;
   string name = 2;
-  int64 id_type = 3;
-  int64 send_channel = 4;
-  int64 template_type = 5;
-  int64 msg_type = 6;
-  int64 shield_type = 7;
+  int32 id_type = 3;
+  int32 send_channel = 4;
+  int32 template_type = 5;
+  int32 msg_type = 6;
+  int32 shield_type = 7;
   string msg_content = 8;
-  int64 send_account = 9;
+  int32 send_account = 9;
   string template_sn = 10;
   string sms_channel = 11;
   string deduplication_config = 12;
@@ -148,26 +148,26 @@ message TemplateEditRequest {
 
 message TemplateChangeStatusRequest {
   int64 id = 1;
-  uint64 status = 2;
+  int32 status = 2;
 }
 
 message TemplateListRequest {
   string name = 1;
   string send_channel = 2;
-  int64 page = 3;
-  int64 page_size = 4;
+  int64 pageNo = 3;
+  int64 pageSize = 4;
 }
 
 message TemplateListRow {
   int64 id = 1;
   string name = 2;
-  int64 id_type = 3;
-  int64 send_channel = 4;
-  int64 template_type = 5;
-  int64 msg_type = 6;
-  int64 shield_type = 7;
+  int32 id_type = 3;
+  int32 send_channel = 4;
+  int32 template_type = 5;
+  int32 msg_type = 6;
+  int32 shield_type = 7;
   string msg_content = 8;
-  int64 send_account = 9;
+  int32 send_account = 9;
   string send_account_name = 10;
   string template_sn = 11;
   string sms_channel = 12;
@@ -177,7 +177,7 @@ message TemplateListRow {
 
 message TemplateListResp {
   repeated TemplateListRow items = 1;
-  int64 total = 2;
+  int32 total = 2;
 }
 
 message TemplateRemoveRequest{
@@ -185,7 +185,7 @@ message TemplateRemoveRequest{
 }
 
 message Channel{
-  int64 id = 1;
+  int32 id = 1;
   string name = 2;
   string channel = 3;
 }
@@ -197,8 +197,8 @@ message SmsRecordRequest{
   string template_id = 1;
   string request_id = 2;
   string send_channel = 3;
-  int64 page = 4;
-  int64 page_size = 5;
+  int64 pageNo = 4;
+  int64 pageSize = 5;
 }
 
 message SmsRecordRow{
@@ -219,14 +219,14 @@ message SmsRecordRow{
 
 message SmsRecordResp{
   repeated SmsRecordRow items = 1;
-  int64 total = 2;
+  int32 total = 2;
 }
 message MsgRecordRequest{
   string template_id = 1;
   string request_id = 2;
   string channel = 3;
-  int64 page = 4;
-  int64 page_size = 5;
+  int64 pageNo = 4;
+  int64 pageSize = 5;
 }
 
 message MsgRecordRow{
@@ -244,11 +244,11 @@ message MsgRecordRow{
 
 message MsgRecordResp{
   repeated MsgRecordRow items = 1;
-  int64 total = 2;
+  int32 total = 2;
 }
 
 message OfficialAccountTemplateRequest{
-  int64 send_account = 1;
+  string send_account = 1;
 }
 
 message OfficialAccountTemplateResp{
@@ -270,18 +270,15 @@ message TemplateOneResp{
   int64  id = 1;
   string name = 2;
   int32 id_type = 4;
-  string send_channel = 5;
-  string template_type = 6;
+  int32 send_channel = 5;
+  int32 template_type = 6;
   string template_sn = 7;
-  string msg_type = 8;
-  string shield_type = 9;
+  int32 msg_type = 8;
+  int32 shield_type = 9;
   string msg_content = 10;
-  int64  send_account = 11;
-  string creator = 12;
-  string updator = 13;
-  string auditor = 14;
-  string team = 15;
-  string proposer = 16;
-  string sms_channel = 17;
-  string deduplication_config = 21;
+  int32  send_account = 11;
+  string create_by = 12;
+  string update_by = 13;
+  string sms_channel = 14;
+  string deduplication_config = 15;
 }

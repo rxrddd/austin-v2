@@ -1,7 +1,7 @@
 package data
 
 import (
-	"austin-v2/common/model"
+	"austin-v2/common/dal/model"
 	"austin-v2/utils/cacheHepler"
 	"context"
 	"fmt"

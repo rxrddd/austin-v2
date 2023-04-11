@@ -28,9 +28,10 @@ func newSendAccount(db *gorm.DB, opts ...gen.DOOption) sendAccount {
 	tableName := _sendAccount.sendAccountDo.TableName()
 	_sendAccount.ALL = field.NewAsterisk(tableName)
 	_sendAccount.ID = field.NewInt32(tableName, "id")
-	_sendAccount.SendChanel = field.NewString(tableName, "send_chanel")
+	_sendAccount.SendChannel = field.NewString(tableName, "send_channel")
 	_sendAccount.Config = field.NewString(tableName, "config")
 	_sendAccount.Title = field.NewString(tableName, "title")
+	_sendAccount.Status = field.NewInt32(tableName, "status")
 
 	_sendAccount.fillFieldMap()
 
@@ -40,11 +41,12 @@ func newSendAccount(db *gorm.DB, opts ...gen.DOOption) sendAccount {
 type sendAccount struct {
 	sendAccountDo
 
-	ALL        field.Asterisk
-	ID         field.Int32
-	SendChanel field.String // 发送渠道
-	Config     field.String // 账户配置
-	Title      field.String // 账号名称
+	ALL         field.Asterisk
+	ID          field.Int32
+	SendChannel field.String // 发送渠道
+	Config      field.String // 账户配置
+	Title       field.String // 账号名称
+	Status      field.Int32
 
 	fieldMap map[string]field.Expr
 }
@@ -62,9 +64,10 @@ func (s sendAccount) As(alias string) *sendAccount {
 func (s *sendAccount) updateTableName(table string) *sendAccount {
 	s.ALL = field.NewAsterisk(table)
 	s.ID = field.NewInt32(table, "id")
-	s.SendChanel = field.NewString(table, "send_chanel")
+	s.SendChannel = field.NewString(table, "send_channel")
 	s.Config = field.NewString(table, "config")
 	s.Title = field.NewString(table, "title")
+	s.Status = field.NewInt32(table, "status")
 
 	s.fillFieldMap()
 
@@ -81,11 +84,12 @@ func (s *sendAccount) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (s *sendAccount) fillFieldMap() {
-	s.fieldMap = make(map[string]field.Expr, 4)
+	s.fieldMap = make(map[string]field.Expr, 5)
 	s.fieldMap["id"] = s.ID
-	s.fieldMap["send_chanel"] = s.SendChanel
+	s.fieldMap["send_channel"] = s.SendChannel
 	s.fieldMap["config"] = s.Config
 	s.fieldMap["title"] = s.Title
+	s.fieldMap["status"] = s.Status
 }
 
 func (s sendAccount) clone(db *gorm.DB) sendAccount {

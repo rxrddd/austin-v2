@@ -7,44 +7,41 @@ type TemplateOneRequest struct {
 type TemplateOneResp struct {
 	ID                  int64
 	Name                string
-	AuditStatus         int
-	IDType              int
-	SendChannel         int
-	TemplateType        int
+	AuditStatus         int32
+	IDType              int32
+	SendChannel         int32
+	TemplateType        int32
 	TemplateSn          string
-	MsgType             int
-	ShieldType          int
+	MsgType             int32
+	ShieldType          int32
 	MsgContent          string
-	SendAccount         int64
-	Creator             string
-	Updator             string
-	Auditor             string
-	Team                string
-	Proposer            string
+	SendAccount         int32
+	CreateBy            string
+	UpdateBy            string
 	SmsChannel          string
-	IsDeleted           int
-	Created             int64
-	Updated             int64
+	Status              int32
+	CreateAt            int64
+	UpdateAt            int64
 	DeduplicationConfig string
 }
 
 type TemplateListRequest struct {
 	Name        string
 	SendChannel string
-	Page        int64
+	PageNo      int64
 	PageSize    int64
 }
 
 type TemplateListRow struct {
 	ID                  int64
 	Name                string
-	IdType              int64
-	SendChannel         int64
-	TemplateType        int64
-	MsgType             int64
-	ShieldType          int64
+	IdType              int32
+	SendChannel         int32
+	TemplateType        int32
+	MsgType             int32
+	ShieldType          int32
 	MsgContent          string
-	SendAccount         int64
+	SendAccount         int32
 	SendAccountName     string
 	TemplateSn          string
 	SmsChannel          string
@@ -54,29 +51,26 @@ type TemplateListRow struct {
 
 type TemplateListResp struct {
 	Rows  []*TemplateListRow
-	Total int64
+	Total int32
 }
 
 type TemplateEditRequest struct {
 	ID                  int64
 	Name                string
-	AuditStatus         int
-	IDType              int
-	SendChannel         int
-	TemplateType        int
+	AuditStatus         int32
+	IDType              int32
+	SendChannel         int32
+	TemplateType        int32
 	TemplateSn          string
-	MsgType             int
-	ShieldType          int
+	MsgType             int32
+	ShieldType          int32
 	MsgContent          string
-	SendAccount         int64
-	Creator             string
-	Updator             string
-	Auditor             string
-	Team                string
-	Proposer            string
+	SendAccount         int32
+	CreateBy            string
+	UpdateBy            string
 	SmsChannel          string
-	IsDeleted           int
-	Created             int64
-	Updated             int64
+	Status              int32
+	CreateAt            int64
+	UpdateAt            int64
 	DeduplicationConfig string
 }

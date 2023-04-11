@@ -3,10 +3,10 @@ package handler
 import (
 	"austin-v2/app/msgpusher-worker/internal/biz"
 	"austin-v2/app/msgpusher-worker/internal/data"
+	"austin-v2/common/dal/model"
 	"austin-v2/common/domain/account"
 	"austin-v2/common/domain/content_model"
 	"austin-v2/common/enums/channelType"
-	"austin-v2/common/model"
 	"austin-v2/pkg/types"
 	"austin-v2/utils/accountHelper"
 	"austin-v2/utils/contentHelper"
@@ -104,7 +104,7 @@ func (h *OfficialAccountHandler) Execute(ctx context.Context, taskInfo *types.Ta
 			}{AppID: content.MiniProgram.Appid, PagePath: content.MiniProgram.PagePath}),
 		})
 		record := h.getRecord(taskInfo, receiver)
-		record.MsgId = cast.ToString(msgID)
+		record.MsgID = cast.ToString(msgID)
 		record.Channel = h.Name()
 
 		if err != nil {

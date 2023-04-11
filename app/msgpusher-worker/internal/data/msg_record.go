@@ -1,7 +1,7 @@
 package data
 
 import (
-	"austin-v2/common/model"
+	"austin-v2/common/dal/model"
 	"context"
 	"github.com/go-kratos/kratos/v2/log"
 )

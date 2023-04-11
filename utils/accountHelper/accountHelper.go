@@ -1,7 +1,7 @@
 package accountHelper
 
 import (
-	"austin-v2/common/model"
+	"austin-v2/common/dal/model"
 	"context"
 	"encoding/json"
 	"errors"
