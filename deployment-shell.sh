@@ -24,9 +24,9 @@ docker rmi $(docker images | grep "none" | awk '{print $3}')
 
 #构建服务
 docker build -t mgr:v1 -f app/mgr/Dockerfile  .
-docker build -t msgpusher:v1 -f app/msgpusher/Dockerfile -t msgpusher .
-docker build -t msgpusher-manager:v1 -f app/msgpusher-manager/Dockerfile -t msgpusher-manager .
-docker build -t msgpusher-worker:v1 -f app/msgpusher-worker/Dockerfile -t msgpusher-worker .
+docker build -t msgpusher:v1 -f app/msgpusher/Dockerfile .
+docker build -t msgpusher-manager:v1 -f app/msgpusher-manager/Dockerfile .
+docker build -t msgpusher-worker:v1 -f app/msgpusher-worker/Dockerfile .
 
 #启动服务
 docker run -itd --net=host --name=mgr mgr:v1
