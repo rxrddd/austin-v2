@@ -5,7 +5,9 @@ WORKDIR /src/app/msgpushermanager
 
 ENV GOPROXY https://goproxy.cn
 ENV GO111MODULE on
-RUN make build
+
+RUN GOPROXY=https://goproxy.cn && go mod tidy
+RUN GOPROXY=https://goproxy.cn make build
 
 FROM debian:stable-slim
 
