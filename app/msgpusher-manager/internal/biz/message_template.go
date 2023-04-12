@@ -63,6 +63,10 @@ func (s *MessageTemplateUseCase) TemplateList(ctx context.Context, req *domain.T
 	rows := make([]*domain.TemplateListRow, 0)
 
 	for _, item := range items {
+		var sendAccountName string
+		if item.SendAccountItem != nil {
+			sendAccountName = item.SendAccountItem.Title
+		}
 		rows = append(rows, &domain.TemplateListRow{
 			ID:                  item.ID,
 			Name:                item.Name,
@@ -73,7 +77,7 @@ func (s *MessageTemplateUseCase) TemplateList(ctx context.Context, req *domain.T
 			ShieldType:          item.ShieldType,
 			MsgContent:          item.MsgContent,
 			SendAccount:         item.SendAccount,
-			SendAccountName:     item.SendAccountItem.Title,
+			SendAccountName:     sendAccountName,
 			TemplateSn:          item.TemplateSn,
 			SmsChannel:          item.SmsChannel,
 			CreateAt:            timeHelper.FormatTimeInt64YMDHIS(item.CreateAt),

@@ -51,7 +51,7 @@ func relationship(tableList []string) []string {
 	)
 
 	messageTemplateModel := g.GenerateModel("message_template",
-		hasOne("SendAccountItem", "send_account", "id", "send_channel"),
+		hasOne("SendAccountItem", "send_account", "id", "send_account"),
 	)
 	adminModel := g.GenerateModel("la_system_auth_admin",
 		gen.FieldRelate(field.HasMany, "AuthRoles",
