@@ -30,13 +30,6 @@ sh deployment-shell.sh
 ```
 
 
-1. 开发时:
-```
-cd austin-v2/app/msgpusher && kratos run //启动grpc和http接口
-
-cd austin-v2/app/msgpusher-worker && kratos run //启动消费端
-```
-
 1. 如需要测试去重服务则修改`message_template`表中的`deduplication_config`字段
 ```
 {"deduplication_10":{"num":1,"time":300},"deduplication_20":{"num":5}}
@@ -131,18 +124,17 @@ curl --location --request POST 'http://localhost:8001/send' \
 ├── README.md
 ├── api   //proto 接口定义
 ├── app
-│   ├── administrator //用户服务
-│   ├── authorization //授权服务
-│   ├── files //文件上传服务
+│   ├── mgr //admin管理端接口  内含rbac 调用msgpusher-manager rpc服务接口
+│   ├── msgpusher-manager //聚合消息后台curd rpc服务
 │   ├── msgpusher //消息推送服务对外http接口
 │   ├── msgpusher-common //公用文件
-│   ├── msgpusher-manager //聚合消息后台curd服务
 │   ├── msgpusher-worker //消息推送消费端
-│   └── project
-│       └── admin  //后端BFF项目
 ├── deploy  //部署文件
+│   ├── env 
+│   │   ├── docker-compose.yml 所需mysql，etcd，redis组件环境 
 ├── dev.md
-├── docs  //文档
+├── docs  //sql文件
+├── deployment-shell.sh 一键部署所有模块的脚本
 ├── go.mod
 ├── go.sum
 ├── openapi.yaml
